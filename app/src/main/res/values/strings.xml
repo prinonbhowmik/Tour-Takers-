@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Ture Guide1.1</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="verify_your_number">Verify Your Number</string>
+    <string name="next">Next</string>
+    <string name="password">Password</string>
+    <string name="name">Name</string>
 </resources>

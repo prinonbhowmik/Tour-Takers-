@@ -9,29 +9,30 @@
         android:id="@+id/txt1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Verify Your Number"
+        android:text="@string/verify_your_number"
         android:textSize="35sp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp"/>
 
-
     <EditText
         android:id="@+id/phone_ET"
         android:layout_width="250dp"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/phone_number"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/txt1"
-        android:hint="01..."
-        android:textSize="35sp"
+        android:textSize="25sp"
+        android:layout_marginTop="50dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:inputType="phone"
-        android:layout_marginTop="30dp"/>
+        android:background="@drawable/edit_text_design"
+        android:layout_below="@+id/txt1"/>
+
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Next"
+        android:text="@string/next"
         android:textSize="30sp"
         android:id="@+id/nextbtn1"
         android:layout_below="@+id/phone_ET"

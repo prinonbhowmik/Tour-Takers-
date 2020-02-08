@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CodeVerification"/>
+        <activity android:name=".Term_And_Condition"></activity>
+        <activity android:name=".Password" />
+        <activity android:name=".CodeVerification" />
         <activity android:name=".AccessPhoneNumber" />
         <activity android:name=".MainActivity" />
         <activity android:name=".Splash">

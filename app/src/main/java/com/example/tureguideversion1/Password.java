@@ -9,22 +9,22 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
-public class CodeVerification extends AppCompatActivity {
-    private Button next;
+public class Password extends AppCompatActivity {
+    private Button singin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_code_verification);
+        setContentView(R.layout.activity_password);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        next=findViewById(R.id.nextbtn2);
+        singin=findViewById(R.id.signin_BTN);
 
 
-        next.setOnClickListener(new View.OnClickListener() {
+        singin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myintent=new Intent(CodeVerification.this,Password.class);
+                Intent myintent=new Intent(Password.this,Term_And_Condition.class);
                 startActivity(myintent);
                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
 
@@ -46,4 +46,5 @@ public class CodeVerification extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
 
     }
+
 }

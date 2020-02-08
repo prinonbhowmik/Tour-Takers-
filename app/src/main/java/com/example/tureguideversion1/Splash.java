@@ -18,6 +18,7 @@ public class Splash extends AppCompatActivity {
                 public void run() {
                     Intent myintent=new Intent(Splash.this,AccessPhoneNumber.class);
                     startActivity(myintent);
+                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                     finish();
                 }
             },splash_time_out);
