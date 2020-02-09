@@ -40,6 +40,8 @@ public class CodeVerification extends AppCompatActivity {
         verification_ET = findViewById(R.id.verification_ET);
         auth = FirebaseAuth.getInstance();
 
+        phoneNo = getIntent().getStringExtra("phone");
+
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,9 +81,10 @@ public class CodeVerification extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    Intent intent = new Intent(CodeVerification.this,Password.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                    Intent myintent=new Intent(CodeVerification.this,Password.class);
+                    startActivity(myintent);
+                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+
                 }
             }
         });
