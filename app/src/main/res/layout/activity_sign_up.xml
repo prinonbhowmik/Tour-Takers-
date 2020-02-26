@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
-    tools:context=".Activities.SignIn"
-    >
+    tools:context=".Activities.SignUp"
+    android:background="@android:color/white">
+
 
     <TextView
         android:id="@+id/txt1"
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:text="Sign In"
+        android:text="Sign Up"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:textSize="35sp" />
@@ -27,22 +27,21 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/txt1"
         android:layout_marginEnd="20dp"
+        android:hint="Email"
+        android:textColorHint="@color/colorYellow"
         android:layout_marginStart="20dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-
-        android:hint="Email"
-        android:textColorHint="@color/colorYellow">
+        android:layout_marginTop="50dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/name_ET"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:inputType="text"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:textSize="21sp"
-            android:background="@drawable/edit_text_design" />
+            android:background="@drawable/edit_text_design"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -57,8 +56,8 @@
         android:hint="@string/password"
         android:textColorHint="@color/colorYellow"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        >
+        android:layout_marginTop="10dp">
+
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_ET"
@@ -73,7 +72,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/signin_BTN"
+        android:id="@+id/signup_BTN"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/password_TIL"
@@ -82,34 +81,12 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginTop="30dp"
-        android:text="Sign In"
+        android:text="Sign Up"
         android:textColor="@color/colorYellow"
         android:textAllCaps="false" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="15dp"
-        android:gravity="center">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Don't have any account! "
-            android:textSize="18sp"
-            android:textColor="@color/colorYellow"
-            />
-        <TextView
-            android:id="@+id/signupTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sign_up"
-            android:layout_marginLeft="5dp"
-            android:textColor="#000"
-            android:textStyle="bold"
-            android:textSize="18sp"/>
-    </LinearLayout>
+
+
 
 
 

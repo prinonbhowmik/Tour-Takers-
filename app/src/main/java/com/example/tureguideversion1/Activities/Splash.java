@@ -15,7 +15,7 @@ import com.example.tureguideversion1.R;
 public class Splash extends AppCompatActivity {
 
         Animation topAnim,bottomAnim,leftAnim,rightAnim,ball1Anim,ball2Anim,ball3Anim;
-        private TextView tourtv,ball1,ball2;
+        private TextView tourtv,ball1,ball2,ball3;
         private ImageView logo;
 
         private  static int splash_time_out=3500;
@@ -32,10 +32,12 @@ public class Splash extends AppCompatActivity {
             rightAnim= AnimationUtils.loadAnimation(this,R.anim.right_animation);
             ball1Anim=AnimationUtils.loadAnimation(this,R.anim.ball1_animation);
             ball2Anim=AnimationUtils.loadAnimation(this,R.anim.ball2_animation);
+            ball3Anim=AnimationUtils.loadAnimation(this,R.anim.ball3_animation);
 
             tourtv.setAnimation(bottomAnim);
             ball1.setAnimation(ball1Anim);
             ball2.setAnimation(ball2Anim);
+            ball3.setAnimation(ball3Anim);
             logo.setAnimation(topAnim);
 
             new Handler().postDelayed(new Runnable() {
@@ -55,6 +57,7 @@ public class Splash extends AppCompatActivity {
         ball1=findViewById(R.id.ball1);
         ball2=findViewById(R.id.ball2);
         logo=findViewById(R.id.logoIV);
+        ball3=findViewById(R.id.ball3);
     }
 
 }
