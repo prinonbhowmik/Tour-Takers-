@@ -1,4 +1,4 @@
-package com.example.tureguideversion1;
+package com.example.tureguideversion1.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +9,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.tureguideversion1.R;
 
 public class Splash extends AppCompatActivity {
 
@@ -39,7 +41,7 @@ public class Splash extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Intent myintent=new Intent(Splash.this,AccessPhoneNumber.class);
+                    Intent myintent=new Intent(Splash.this, SignIn.class);
                     startActivity(myintent);
                     overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                     finish();

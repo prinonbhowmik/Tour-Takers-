@@ -1,9 +1,11 @@
-package com.example.tureguideversion1;
+package com.example.tureguideversion1.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+
+import com.example.tureguideversion1.R;
 
 public class MainActivity extends AppCompatActivity {
 

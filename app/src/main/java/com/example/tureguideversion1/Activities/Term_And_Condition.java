@@ -1,4 +1,4 @@
-package com.example.tureguideversion1;
+package com.example.tureguideversion1.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.tureguideversion1.R;
 
 public class Term_And_Condition extends AppCompatActivity {
 
@@ -22,7 +24,7 @@ public class Term_And_Condition extends AppCompatActivity {
         next4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myintent=new Intent(Term_And_Condition.this,MainActivity.class);
+                Intent myintent=new Intent(Term_And_Condition.this, MainActivity.class);
                 startActivity(myintent);
                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
 
