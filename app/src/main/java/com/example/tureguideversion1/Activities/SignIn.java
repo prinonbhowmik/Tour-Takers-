@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,6 +18,7 @@ import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -28,6 +30,7 @@ public class SignIn extends AppCompatActivity {
     private EditText nameET,passEt;
     private Button singin;
     private TextView signupTv;
+    private String email,password;
     private FirebaseAuth auth;
     private DatabaseReference reference;
 
@@ -54,11 +57,43 @@ public class SignIn extends AppCompatActivity {
 
         singin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
+                email = nameET.getText().toString();
+                password = passEt.getText().toString();
 
+                if (TextUtils.isEmpty(email)){
+                    Toast.makeText(SignIn.this, "Please enter email Id!", Toast.LENGTH_SHORT).show();
+                }
+                else if (TextUtils.isEmpty(password)){
+                    Toast.makeText(SignIn.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                }
+                else if (passEt.length()<6){
+                    Toast.makeText(SignIn.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    signinuser(email,password);
+                }
+            }
+        });
+    }
 
+    private void signinuser(final String email, final String password) {
+        auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()){
+                    Toast.makeText(SignIn.this, "Sign in successfull!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(SignIn.this,MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    finish();
+                    startActivity(intent);
 
-
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(SignIn.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
