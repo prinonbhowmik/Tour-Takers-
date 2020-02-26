@@ -51,6 +51,8 @@ public class SignIn extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(SignIn.this,SignUp.class));
+                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+
             }
         });
 
@@ -82,7 +84,7 @@ public class SignIn extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
-                    Toast.makeText(SignIn.this, "Sign in successfull!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignIn.this, "Sign in successful!", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(SignIn.this,MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     finish();
@@ -101,15 +103,9 @@ public class SignIn extends AppCompatActivity {
 
     @Override
     public void finish() {
-        super.finish();
         overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+        super.finish();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
-        return super.onOptionsItemSelected(item);
-
-    }
 
 }

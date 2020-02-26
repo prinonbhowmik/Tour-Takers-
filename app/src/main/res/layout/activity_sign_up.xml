@@ -19,22 +19,51 @@
         android:textColor="@android:color/black"
         android:textSize="35sp" />
 
+    <LinearLayout
+        android:id="@+id/liner1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@+id/txt1"
+        android:layout_marginTop="30dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/name_TIL"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txt1"
+        android:layout_marginEnd="20dp"
+        android:hint="Name"
+        android:textColorHint="@color/colorYellow"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name_ET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textSize="21sp"
+            android:background="@drawable/edit_text_design"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/email_TIL"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:hint="Email"
         android:textColorHint="@color/colorYellow"
         android:layout_marginStart="20dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp">
+        android:layout_marginTop="10dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/name_ET"
+            android:id="@+id/email_ET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -50,12 +79,10 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/name_TIL"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:hint="@string/password"
         android:textColorHint="@color/colorYellow"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp">
 
 
@@ -71,16 +98,41 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/phone_TIL"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:hint="phone"
+        android:textColorHint="@color/colorYellow"
+        android:layout_marginTop="10dp">
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/phone_ET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textSize="21sp"
+            android:background="@drawable/edit_text_design"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
     <Button
         android:id="@+id/signup_BTN"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/password_TIL"
+        android:layout_below="@id/liner1"
         android:background="@drawable/custom_btn"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         android:text="Sign Up"
         android:textColor="@color/colorYellow"
         android:textAllCaps="false" />
