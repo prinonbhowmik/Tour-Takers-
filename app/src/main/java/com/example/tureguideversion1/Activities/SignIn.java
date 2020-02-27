@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -29,10 +31,11 @@ public class SignIn extends AppCompatActivity {
 
     private EditText nameET,passEt;
     private Button singin;
-    private TextView signupTv;
+    private TextView signupTv,txt1;
     private String email,password;
     private FirebaseAuth auth;
     private DatabaseReference reference;
+    Animation topAnim,bottomAnim,leftAnim,rightAnim,ball1Anim,ball2Anim,ball3Anim,edittext_anim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,9 @@ public class SignIn extends AppCompatActivity {
         passEt = findViewById(R.id.password_ET);
         signupTv = findViewById(R.id.signupTv);
         auth = FirebaseAuth.getInstance();
+        txt1 = findViewById(R.id.txt1);
+
+        animation();
 
 
         signupTv.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +81,24 @@ public class SignIn extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void animation() {
+
+        topAnim= AnimationUtils.loadAnimation(this,R.anim.top_animation);
+        bottomAnim= AnimationUtils.loadAnimation(this,R.anim.bottom_animation);
+        leftAnim= AnimationUtils.loadAnimation(this,R.anim.left_animation);
+        rightAnim= AnimationUtils.loadAnimation(this,R.anim.right_animation);
+        ball1Anim=AnimationUtils.loadAnimation(this,R.anim.ball1_animation);
+        ball2Anim=AnimationUtils.loadAnimation(this,R.anim.ball2_animation);
+        ball3Anim=AnimationUtils.loadAnimation(this,R.anim.ball3_animation);
+        edittext_anim=AnimationUtils.loadAnimation(this,R.anim.edittext_anim);
+
+        txt1.setAnimation(topAnim);
+        nameET.setAnimation(edittext_anim);
+        passEt.setAnimation(edittext_anim);
+        singin.setAnimation(bottomAnim);
+
     }
 
     private void signinuser(final String email, final String password) {
