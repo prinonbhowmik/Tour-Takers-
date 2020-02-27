@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (menuItem.getItemId()){
             case R.id.profile:
-                Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show();
+               startActivity(new Intent(MainActivity.this,UserProfile.class));
                 drawerLayout.closeDrawers();
                 break;
 
