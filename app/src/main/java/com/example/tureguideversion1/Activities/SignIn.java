@@ -112,6 +112,7 @@ public class SignIn extends AppCompatActivity {
                     Intent intent = new Intent(SignIn.this,MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     finish();
+                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                     startActivity(intent);
 
                 }

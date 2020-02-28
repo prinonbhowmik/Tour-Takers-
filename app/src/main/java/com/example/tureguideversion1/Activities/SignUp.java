@@ -101,8 +101,9 @@ public class SignUp extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()){
-                                Toast.makeText(SignUp.this, "Successfully Added", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignUp.this, "Successfully Sign Up", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(SignUp.this,SignIn.class));
+                                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                             }
 
                         }
