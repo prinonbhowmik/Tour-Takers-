@@ -159,7 +159,7 @@
             android:id="@+id/address_ET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"
+            android:inputType="text"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:textSize="21sp"

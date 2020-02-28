@@ -46,13 +46,14 @@
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
-            android:background="@android:color/holo_blue_light"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:itemIconTint="@android:color/white"
             app:itemTextColor="@android:color/white"
-            app:menu="@menu/nav_options" />
+            android:backgroundTint="@android:color/holo_blue_light"
+            app:menu="@menu/nav_options"
+            />
 
     </androidx.drawerlayout.widget.DrawerLayout>
 
