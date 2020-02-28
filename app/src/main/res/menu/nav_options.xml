@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/profile"
+            android:icon="@drawable/ic_account_circle_black_24dp"
+            android:title="Profile" />
+        <item
+            android:id="@+id/event"
+            android:icon="@drawable/ic_event_black_24dp"
+            android:title="Event" />
+        <item
+            android:id="@+id/map"
+            android:icon="@drawable/ic_map_black_24dp"
+            android:title="Map" />
+        <item
+            android:id="@+id/weather"
+            android:icon="@drawable/ic_wb_incandescent_black_24dp"
+            android:title="Weather" />
+        <item
+            android:id="@+id/guide"
+            android:icon="@drawable/ic_map_black_24dp"
+            android:title="Guide" />
+        <item android:title="Want to Exit?">
+            <menu>
+                <item
+                    android:id="@+id/logout"
+                    android:title="logout"
+                    android:icon="@drawable/ic_power_settings_new_black_24dp"/>
+            </menu>
+        </item>
+
+    </group>
+
+</menu>

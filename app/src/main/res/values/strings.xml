@@ -6,4 +6,6 @@
     <string name="password">Password</string>
     <string name="name">Name</string>
     <string name="sign_up"><u>sign_up</u></string>
+    <string name="drawerOpen" />
+    <string name="drawerClose" />
 </resources>
