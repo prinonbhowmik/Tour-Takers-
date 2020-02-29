@@ -55,6 +55,7 @@ public class SignIn extends AppCompatActivity {
                 email = nameET.getText().toString();
                 if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     checkmail();
+
                 }
                 else{
                     Toast.makeText(getApplicationContext(),"Invalid email address!",Toast.LENGTH_LONG).show();

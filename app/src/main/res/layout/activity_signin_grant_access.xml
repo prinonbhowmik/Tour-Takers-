@@ -11,14 +11,14 @@
 
     <TextView
         android:id="@+id/txt1"
-        android:layout_width="166dp"
+        android:layout_width="202dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/logoG"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="129dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="116dp"
+        android:layout_marginEnd="80dp"
         android:fontFamily="@font/amarante"
         android:text="Enter your password"
         android:textColor="@android:color/black"
