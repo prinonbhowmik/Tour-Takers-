@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
@@ -16,11 +17,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tureguideversion1.R;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -41,10 +44,14 @@ public class SignUp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         txt1 = findViewById(R.id.txt1);
+        emailEt = findViewById(R.id.email_ET);
         signupBtn = findViewById(R.id.signup_BTN);
+        final long[] mLastClickTime = {0};
         animation();
         init();
-
+        Intent intent = getIntent();
+        email = intent.getExtras().getString("email");
+        emailEt.setText(email);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,26 +69,55 @@ public class SignUp extends AppCompatActivity {
                 password = passwordEt.getText().toString();
                 address = addressEt.getText().toString();
 
-
-                if (TextUtils.isEmpty(email)){
-                    emailEt.setError("Enter valid email");
-                }else if (TextUtils.isEmpty(name)){
-                    nameEt.setError("Enter User name");
-                }else if (TextUtils.isEmpty(phone)){
-                    phoneNoEt.setError("Enter phone No.");
+                if (SystemClock.elapsedRealtime() - mLastClickTime[0] < 2000) {
+                    return;
                 }
-                else if (TextUtils.isEmpty(password)){
-                    passwordEt.setError("Enter Password!");
-                }
-                else if (TextUtils.isEmpty(address)){
-                    addressEt.setError("Address is required!");
-                }
-                else {
-                    signup(email,name,phone,password,address);
+                mLastClickTime[0] = SystemClock.elapsedRealtime();
+                if (view == signupBtn) {
+                    if (TextUtils.isEmpty(email)){
+                        emailEt.setError("Enter email");
+                    }else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        emailEt.setError("Enter valid email");
+                        emailEt.requestFocus();
+                    }else if (TextUtils.isEmpty(name)){
+                        nameEt.setError("Enter User name");
+                    }else if (TextUtils.isEmpty(phone)){
+                        phoneNoEt.setError("Enter phone No.");
+                    }
+                    else if (TextUtils.isEmpty(password)){
+                        passwordEt.setError("Enter Password!");
+                    }
+                    else if (passwordEt.length()<6){
+                        passwordEt.setError("At least 6 characters!",null);
+                        passwordEt.requestFocus();
+                    }
+                    else if (TextUtils.isEmpty(address)){
+                        addressEt.setError("Address is required!");
+                    }
+                    else {
+                        checkmail();
+                    }
                 }
             }
         });
 
+    }
+
+    private void checkmail(){
+        email = emailEt.getText().toString();
+        auth.fetchSignInMethodsForEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                        boolean check = !task.getResult().getSignInMethods().isEmpty();
+                        if(!check){
+                            //Toast.makeText(getApplicationContext(),"Email not found",Toast.LENGTH_SHORT).show();
+                            signup(email,name,phone,password,address);
+                        }else {
+                            Toast.makeText(getApplicationContext(),"The email address is already in use by another account",Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
     }
 
     private void animation() {
@@ -123,9 +159,19 @@ public class SignUp extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()){
-                                Toast.makeText(SignUp.this, "Successfully Sign Up", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SignUp.this,SignIn.class));
-                                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                                auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()){
+                                            Toast.makeText(SignUp.this, "Successfully Sign Up. Please check your email for verification", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(SignUp.this,SignIn.class));
+                                            overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                                        }else{
+                                            Toast.makeText(getApplicationContext(),task.getException().toString(),Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+
                             }
 
                         }

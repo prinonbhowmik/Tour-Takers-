@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
@@ -46,20 +47,25 @@ public class SignIn extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         txt1 = findViewById(R.id.txt1);
         logo = findViewById(R.id.logoS);
-
+        final long[] mLastClickTime = {0};
         animation();
 
         singin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 email = nameET.getText().toString();
-                if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    checkmail();
+                if (SystemClock.elapsedRealtime() - mLastClickTime[0] < 2000) {
+                    return;
+                }
+                mLastClickTime[0] = SystemClock.elapsedRealtime();
+                if (view == singin) {
+                    if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        checkmail();
+                    }else{
+                        Toast.makeText(getApplicationContext(),"Invalid email address!",Toast.LENGTH_LONG).show();
+                    }
+                }
 
-                }
-                else{
-                    Toast.makeText(getApplicationContext(),"Invalid email address!",Toast.LENGTH_LONG).show();
-                }
 
             }
         });
@@ -74,7 +80,7 @@ public class SignIn extends AppCompatActivity {
                         boolean check = !task.getResult().getSignInMethods().isEmpty();
                         if(!check){
                             //Toast.makeText(getApplicationContext(),"Email not found",Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignIn.this,SignUp.class));
+                            startActivity(new Intent(SignIn.this,SignUp.class).putExtra("email",email));
                             overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                         }else {
                             //Toast.makeText(getApplicationContext(),"Email found",Toast.LENGTH_SHORT).show();

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
@@ -45,7 +46,7 @@ public class SignInGrantAccess extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         txt1 = findViewById(R.id.txt1);
         logo = findViewById(R.id.logoG);
-
+        final long[] mLastClickTime = {0};
         animation();
 
         singin.setOnClickListener(new View.OnClickListener() {
@@ -54,15 +55,20 @@ public class SignInGrantAccess extends AppCompatActivity {
                 Intent intent = getIntent();
                 email = intent.getExtras().getString("email");
                 password = passEt.getText().toString();
-
-                if (TextUtils.isEmpty(password)){
-                    Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                if (SystemClock.elapsedRealtime() - mLastClickTime[0] < 2000) {
+                    return;
                 }
-                else if (passEt.length()<6){
-                    Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    signinuser(email,password);
+                mLastClickTime[0] = SystemClock.elapsedRealtime();
+                if (view == singin) {
+                    if (TextUtils.isEmpty(password)){
+                        Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                    }
+                    else if (passEt.length()<6){
+                        Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        signinuser(email,password);
+                    }
                 }
             }
         });
@@ -91,12 +97,16 @@ public class SignInGrantAccess extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
-                    Toast.makeText(SignInGrantAccess.this, "Sign in successful!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(SignInGrantAccess.this,MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    finish();
-                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
-                    startActivity(intent);
+                    if(auth.getCurrentUser().isEmailVerified()){
+                        Toast.makeText(SignInGrantAccess.this, "Sign in successful!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SignInGrantAccess.this,MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        finish();
+                        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(getApplicationContext(),"Please verify your email address!",Toast.LENGTH_LONG).show();
+                    }
 
                 }
             }
