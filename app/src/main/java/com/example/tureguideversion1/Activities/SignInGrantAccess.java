@@ -98,7 +98,6 @@ public class SignInGrantAccess extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
                     if(auth.getCurrentUser().isEmailVerified()){
-                        Toast.makeText(SignInGrantAccess.this, "Sign in successful!", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(SignInGrantAccess.this,MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         finish();
@@ -119,11 +118,12 @@ public class SignInGrantAccess extends AppCompatActivity {
     }
 
 
+
     @Override
     public void finish() {
-        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
         super.finish();
-    }
+        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
 
+    }
 
 }

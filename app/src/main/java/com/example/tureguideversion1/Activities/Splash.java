@@ -18,7 +18,7 @@ public class Splash extends AppCompatActivity {
         private TextView tourtv,ball1,ball2,ball3;
         private ImageView logo;
 
-        private  static int splash_time_out=3500;
+        private  static int splash_time_out=2000;
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
