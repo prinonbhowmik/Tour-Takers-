@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.UserProfile"></activity>
+        <activity android:name=".Activities.UserProfile" />
         <activity android:name=".Activities.Term_And_Condition" />
         <activity android:name=".Activities.SignIn" />
         <activity android:name=".Activities.SignInGrantAccess" />

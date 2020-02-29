@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -23,7 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 public class UserProfile extends AppCompatActivity {
 
     private TextView profilename, profileemail, profilephoneno, profileaddress;
-    private ImageButton backBtn;
+
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference reference;
@@ -38,13 +39,6 @@ public class UserProfile extends AppCompatActivity {
 
         init();
 
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(UserProfile.this,MainActivity.class));
-                finish();
-            }
-        });
 
         userId = auth.getUid();
 
@@ -88,7 +82,22 @@ public class UserProfile extends AppCompatActivity {
         editBtn = findViewById(R.id.editBtn);
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("profile");
-        backBtn = findViewById(R.id.backBtn);
+
+
+    }
+
+
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
 
     }
 }
