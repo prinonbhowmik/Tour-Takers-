@@ -11,6 +11,7 @@
         <activity android:name=".Activities.UserProfile"></activity>
         <activity android:name=".Activities.Term_And_Condition" />
         <activity android:name=".Activities.SignIn" />
+        <activity android:name=".Activities.SignInGrantAccess" />
         <activity android:name=".Activities.SignUp" />
         <activity android:name=".Activities.MainActivity" />
         <activity android:name=".Activities.Splash">

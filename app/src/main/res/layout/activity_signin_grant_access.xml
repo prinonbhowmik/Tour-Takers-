@@ -5,40 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
-    tools:context=".Activities.SignIn"
+    tools:context=".Activities.SignInGrantAccess"
     >
 
 
-    <ImageView
-        android:id="@+id/logoS"
-        android:layout_width="wrap_content"
-        android:layout_height="197dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="98dp"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="81dp"
-        app:srcCompat="@drawable/logo" />
-
     <TextView
         android:id="@+id/txt1"
-        android:layout_width="139dp"
+        android:layout_width="166dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/logoS"
+        android:layout_below="@+id/logoG"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="138dp"
+        android:layout_marginStart="129dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="134dp"
+        android:layout_marginEnd="116dp"
         android:fontFamily="@font/amarante"
-        android:text="Login with Email"
+        android:text="Enter your password"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="normal" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/name_TIL"
+        android:id="@+id/password_TIL"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,16 +35,17 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
-
-        android:hint="Email"
-        android:textColorHint="@color/colorYellow">
+        android:hint="@string/password"
+        android:textColorHint="@color/colorYellow"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="@android:color/holo_orange_light">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/name_ET"
+            android:id="@+id/password_ET"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@drawable/edit_text_design"
-            android:inputType="textEmailAddress"
+            android:inputType="textPassword"
             android:maxLines="1"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
@@ -66,18 +55,30 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/continue_BTN"
+        android:id="@+id/signin_BTN"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/name_TIL"
+        android:layout_below="@id/password_TIL"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/custom_btn"
-        android:text="Continue"
+        android:text="Login"
         android:textAllCaps="false"
         android:textColor="@color/colorYellow" />
+
+    <ImageView
+        android:id="@+id/logoG"
+        android:layout_width="wrap_content"
+        android:layout_height="197dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="98dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="81dp"
+        app:srcCompat="@drawable/logo" />
 
 
 </RelativeLayout>

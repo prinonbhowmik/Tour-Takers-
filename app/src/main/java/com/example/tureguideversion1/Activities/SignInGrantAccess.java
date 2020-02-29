@@ -22,66 +22,50 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DatabaseReference;
 
-public class SignIn extends AppCompatActivity {
+public class SignInGrantAccess extends AppCompatActivity {
 
-    private EditText nameET;
+    private EditText passEt;
     private Button singin;
+    private String email,password;
     private TextView txt1;
-    private String email;
     private ImageView logo;
-    FirebaseAuth auth;
+    private FirebaseAuth auth;
     Animation topAnim,bottomAnim,leftAnim,rightAnim,ball1Anim,ball2Anim,ball3Anim,edittext_anim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signin);
+        setContentView(R.layout.activity_signin_grant_access);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        singin=findViewById(R.id.continue_BTN);
-        nameET = findViewById(R.id.name_ET);
+        singin=findViewById(R.id.signin_BTN);
+        passEt = findViewById(R.id.password_ET);
         auth = FirebaseAuth.getInstance();
         txt1 = findViewById(R.id.txt1);
-        logo = findViewById(R.id.logoS);
+        logo = findViewById(R.id.logoG);
 
         animation();
 
         singin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                email = nameET.getText().toString();
-                if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    checkmail();
+                Intent intent = getIntent();
+                email = intent.getExtras().getString("email");
+                password = passEt.getText().toString();
+
+                if (TextUtils.isEmpty(password)){
+                    Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                }
+                else if (passEt.length()<6){
+                    Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Toast.makeText(getApplicationContext(),"Invalid email address!",Toast.LENGTH_LONG).show();
+                    signinuser(email,password);
                 }
-
             }
         });
-    }
-
-    private void checkmail(){
-        email = nameET.getText().toString();
-        auth.fetchSignInMethodsForEmail(email)
-                .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-                        boolean check = !task.getResult().getSignInMethods().isEmpty();
-                        if(!check){
-                            //Toast.makeText(getApplicationContext(),"Email not found",Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignIn.this,SignUp.class));
-                            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
-                        }else {
-                            //Toast.makeText(getApplicationContext(),"Email found",Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignIn.this,SignInGrantAccess.class).putExtra("email",email));
-                            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
-                        }
-                    }
-                });
     }
 
     private void animation() {
@@ -97,7 +81,7 @@ public class SignIn extends AppCompatActivity {
 
         logo.setAnimation(leftAnim);
         txt1.setAnimation(topAnim);
-        nameET.setAnimation(edittext_anim);
+        passEt.setAnimation(edittext_anim);
         singin.setAnimation(bottomAnim);
 
     }
@@ -107,8 +91,8 @@ public class SignIn extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
-                    Toast.makeText(SignIn.this, "Sign in successful!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(SignIn.this,MainActivity.class);
+                    Toast.makeText(SignInGrantAccess.this, "Sign in successful!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(SignInGrantAccess.this,MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     finish();
                     overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
@@ -119,7 +103,7 @@ public class SignIn extends AppCompatActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(SignIn.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignInGrantAccess.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

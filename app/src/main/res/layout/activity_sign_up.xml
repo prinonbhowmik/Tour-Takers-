@@ -20,12 +20,14 @@
         android:id="@+id/txt1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="83dp"
+        android:fontFamily="@font/amarante"
         android:text="Sign Up"
-        android:textStyle="bold"
         android:textColor="@android:color/black"
-        android:textSize="35sp" />
+        android:textSize="35sp"
+        android:textStyle="bold" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/username_TIL"
@@ -33,12 +35,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txt1"
+        android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
         android:hint="UserName"
-        android:textColorHint="@color/colorYellow"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp">
+        android:textColorHint="@color/colorYellow">
 
 
         <com.google.android.material.textfield.TextInputEditText
@@ -47,11 +49,11 @@
             android:layout_height="wrap_content"
             android:background="@drawable/edit_text_design"
             android:inputType="text"
-            android:textColor="#000"
             android:maxLines="1"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:textSize="21sp"/>
+            android:textColor="#000"
+            android:textSize="21sp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -173,14 +175,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/address_TIL"
-        android:background="@drawable/custom_btn"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="30dp"
+        android:background="@drawable/custom_btn"
         android:text="Sign Up"
-        android:textColor="@color/colorYellow"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:textColor="@color/colorYellow" />
 
 
 

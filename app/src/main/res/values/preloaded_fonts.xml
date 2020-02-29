@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="preloaded_fonts" translatable="false">
+        <item>@font/aclonica</item>
+        <item>@font/aladin</item>
+        <item>@font/almendra_sc</item>
+        <item>@font/amarante</item>
+        <item>@font/bilbo_swash_caps</item>
         <item>@font/bree_serif</item>
+        <item>@font/bungee_hairline</item>
         <item>@font/faster_one</item>
+        <item>@font/trade_winds</item>
     </array>
 </resources>

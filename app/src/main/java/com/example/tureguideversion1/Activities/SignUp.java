@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -29,15 +31,18 @@ public class SignUp extends AppCompatActivity {
     private EditText emailEt,nameEt,phoneNoEt,passwordEt,addressEt;
     private Button signupBtn;
     private ImageButton backBtn;
+    private TextView txt1;
     private FirebaseAuth auth;
     private DatabaseReference reference;
     private String email,name,phone,password,address;
-
+    Animation topAnim,bottomAnim,leftAnim,rightAnim,ball1Anim,ball2Anim,ball3Anim,edittext_anim;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
+        txt1 = findViewById(R.id.txt1);
+        signupBtn = findViewById(R.id.signup_BTN);
+        animation();
         init();
 
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -57,6 +62,7 @@ public class SignUp extends AppCompatActivity {
                 password = passwordEt.getText().toString();
                 address = addressEt.getText().toString();
 
+
                 if (TextUtils.isEmpty(email)){
                     emailEt.setError("Enter valid email");
                 }else if (TextUtils.isEmpty(name)){
@@ -75,6 +81,22 @@ public class SignUp extends AppCompatActivity {
                 }
             }
         });
+
+    }
+
+    private void animation() {
+
+        topAnim= AnimationUtils.loadAnimation(this,R.anim.top_animation);
+        bottomAnim= AnimationUtils.loadAnimation(this,R.anim.bottom_animation);
+        leftAnim= AnimationUtils.loadAnimation(this,R.anim.left_animation);
+        rightAnim= AnimationUtils.loadAnimation(this,R.anim.right_animation);
+        ball1Anim=AnimationUtils.loadAnimation(this,R.anim.ball1_animation);
+        ball2Anim=AnimationUtils.loadAnimation(this,R.anim.ball2_animation);
+        ball3Anim=AnimationUtils.loadAnimation(this,R.anim.ball3_animation);
+        edittext_anim=AnimationUtils.loadAnimation(this,R.anim.edittext_anim);
+
+        txt1.setAnimation(topAnim);
+        signupBtn.setAnimation(bottomAnim);
 
     }
 
