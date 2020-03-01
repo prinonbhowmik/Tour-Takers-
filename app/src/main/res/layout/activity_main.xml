@@ -49,9 +49,9 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:itemIconTint="@android:color/white"
-            app:itemTextColor="@android:color/white"
-            android:backgroundTint="@android:color/holo_blue_light"
+            app:itemIconTint="@android:color/black"
+            app:itemTextColor="@android:color/black"
+            android:backgroundTint="#fff"
             app:menu="@menu/nav_options"
             />
 
