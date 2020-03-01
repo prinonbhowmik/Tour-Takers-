@@ -44,6 +44,7 @@
             android:id="@+id/password_ET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/amarante"
             android:background="@drawable/edit_text_design"
             android:inputType="textPassword"
             android:maxLines="1"

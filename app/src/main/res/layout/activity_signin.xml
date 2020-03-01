@@ -50,7 +50,6 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
-
         android:hint="Email"
         android:textColorHint="@color/colorYellow">
 
@@ -60,6 +59,7 @@
             android:layout_height="match_parent"
             android:background="@drawable/edit_text_design"
             android:inputType="textEmailAddress"
+            android:fontFamily="@font/amarante"
             android:maxLines="1"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
