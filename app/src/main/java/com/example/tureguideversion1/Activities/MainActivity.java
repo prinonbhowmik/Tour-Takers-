@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -80,8 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.map:
                 Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
-
-                break;
+                return true;
             case R.id.weather:
                 Toast.makeText(this, "Weather", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
                 finish();
                 break;
+
         }
 
         return false;
@@ -107,20 +108,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
-            return;
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
         }
-        this.doubleBackToExitPressedOnce = true;
-        toast.setText("Press again to exit");
-        toast.show();
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce = false;
+        else {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
             }
-        }, 2000);
+            this.doubleBackToExitPressedOnce = true;
+            toast.setText("Press again to exit");
+            toast.show();
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        }
     }
 
     @Override

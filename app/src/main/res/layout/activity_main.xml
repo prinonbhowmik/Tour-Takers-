@@ -7,43 +7,52 @@
     android:background="#fff"
     tools:context=".Activities.MainActivity">
 
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/toolbarTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize">
+
+
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/logo"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginLeft="-10dp"
-                    android:layout_centerHorizontal="true" />
+                    android:src="@drawable/logo" />
 
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
+
+
     <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbarTop"
-        android:id="@+id/drawer_layout"
         tools:openDrawer="start">
 
 
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-
+            android:layout_height="match_parent" />
 
 
         <com.google.android.material.navigation.NavigationView
@@ -51,11 +60,12 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:itemIconTint="@android:color/black"
-            app:itemTextColor="@android:color/black"
             android:backgroundTint="#fff"
-            app:menu="@menu/nav_options"
-            />
+            app:headerLayout="@layout/navigation_drawer_header"
+            app:itemIconTint="@drawable/drawer_item_color"
+            app:itemTextColor="@drawable/drawer_item_color"
+            app:menu="@menu/nav_options" />
+
 
     </androidx.drawerlayout.widget.DrawerLayout>
 
