@@ -37,33 +37,33 @@ public class SignIn extends AppCompatActivity {
     private String email;
     private ImageView logo;
     boolean doubleBackToExitPressedOnce = false;
+    private Toast toast = null;
     FirebaseAuth auth;
-    Animation topAnim,bottomAnim,leftAnim,rightAnim,ball1Anim,ball2Anim,ball3Anim,edittext_anim;
+    Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        singin=findViewById(R.id.continue_BTN);
+        toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
+        singin = findViewById(R.id.continue_BTN);
         nameET = findViewById(R.id.name_ET);
         auth = FirebaseAuth.getInstance();
         txt1 = findViewById(R.id.txt1);
         logo = findViewById(R.id.logoS);
-        final long[] mLastClickTime = {0};
         animation();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Intent intent = getIntent();
-        if(intent.getExtras() != null) {
+        if (intent.getExtras() != null) {
             nameET.setText(intent.getExtras().getString("email"));
         }
         if (user != null && user.isEmailVerified()) {
             // User is signed in
-            intent = new Intent(SignIn.this,MainActivity.class);
+            intent = new Intent(SignIn.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             finish();
-            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             startActivity(intent);
         }
 
@@ -72,40 +72,33 @@ public class SignIn extends AppCompatActivity {
             public void onClick(View view) {
                 email = nameET.getText().toString();
 
-
-
-                if (SystemClock.elapsedRealtime() - mLastClickTime[0] < 2000) {
-                    return;
+                if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    singin.setEnabled(false);
+                    checkmail();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Invalid email address!", Toast.LENGTH_LONG).show();
                 }
-                mLastClickTime[0] = SystemClock.elapsedRealtime();
-                if (view == singin) {
-                    if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                        checkmail();
-                    }else{
-                        Toast.makeText(getApplicationContext(),"Invalid email address!",Toast.LENGTH_LONG).show();
-                    }
-                }
-
 
             }
         });
     }
 
-    private void checkmail(){
+    private void checkmail() {
         email = nameET.getText().toString();
         auth.fetchSignInMethodsForEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
                     @Override
                     public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                        singin.setEnabled(true);
                         boolean check = !task.getResult().getSignInMethods().isEmpty();
-                        if(!check){
+                        if (!check) {
                             //Toast.makeText(getApplicationContext(),"Email not found",Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignIn.this,SignUp.class).putExtra("email",email));
-                            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
-                        }else {
+                            startActivity(new Intent(SignIn.this, SignUp.class).putExtra("email", email));
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        } else {
                             //Toast.makeText(getApplicationContext(),"Email found",Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignIn.this,SignInGrantAccess.class).putExtra("email",email));
-                            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                            startActivity(new Intent(SignIn.this, SignInGrantAccess.class).putExtra("email", email));
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
                     }
                 });
@@ -113,15 +106,14 @@ public class SignIn extends AppCompatActivity {
 
     private void animation() {
 
-        topAnim= AnimationUtils.loadAnimation(this,R.anim.top_animation);
-        bottomAnim= AnimationUtils.loadAnimation(this,R.anim.bottom_animation);
-        leftAnim= AnimationUtils.loadAnimation(this,R.anim.left_animation);
-        rightAnim= AnimationUtils.loadAnimation(this,R.anim.right_animation);
-        ball1Anim=AnimationUtils.loadAnimation(this,R.anim.ball1_animation);
-        ball2Anim=AnimationUtils.loadAnimation(this,R.anim.ball2_animation);
-        ball3Anim=AnimationUtils.loadAnimation(this,R.anim.ball3_animation);
-        edittext_anim=AnimationUtils.loadAnimation(this,R.anim.edittext_anim);
-
+        topAnim = AnimationUtils.loadAnimation(this, R.anim.top_animation);
+        bottomAnim = AnimationUtils.loadAnimation(this, R.anim.bottom_animation);
+        leftAnim = AnimationUtils.loadAnimation(this, R.anim.left_animation);
+        rightAnim = AnimationUtils.loadAnimation(this, R.anim.right_animation);
+        ball1Anim = AnimationUtils.loadAnimation(this, R.anim.ball1_animation);
+        ball2Anim = AnimationUtils.loadAnimation(this, R.anim.ball2_animation);
+        ball3Anim = AnimationUtils.loadAnimation(this, R.anim.ball3_animation);
+        edittext_anim = AnimationUtils.loadAnimation(this, R.anim.edittext_anim);
 
 
         logo.setAnimation(leftAnim);
@@ -132,28 +124,32 @@ public class SignIn extends AppCompatActivity {
     }
 
     @Override
-    public void finish() {
-        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
-        super.finish();
-    }
-
-    @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
             return;
         }
-
         this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-
+        toast.setText("Press again to exit");
+        toast.show();
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                doubleBackToExitPressedOnce=false;
+                doubleBackToExitPressedOnce = false;
             }
         }, 2000);
     }
 
+    @Override
+    protected void onStop() {
+        toast.cancel();
+        super.onStop();
+    }
+
+    @Override
+    public void finish() {
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        super.finish();
+    }
 }

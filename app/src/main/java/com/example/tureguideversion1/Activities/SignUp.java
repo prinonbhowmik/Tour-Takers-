@@ -31,14 +31,15 @@ import java.util.HashMap;
 
 public class SignUp extends AppCompatActivity {
 
-    private EditText emailEt,nameEt,phoneNoEt,passwordEt,addressEt;
+    private EditText emailEt, nameEt, phoneNoEt, passwordEt, addressEt;
     private Button signupBtn;
     private ImageButton backBtn;
     private TextView txt1;
     private FirebaseAuth auth;
     private DatabaseReference reference;
-    private String email,name,phone,password,address;
-    Animation topAnim,bottomAnim,leftAnim,rightAnim,ball1Anim,ball2Anim,ball3Anim,edittext_anim;
+    private String email, name, phone, password, address;
+    Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +47,6 @@ public class SignUp extends AppCompatActivity {
         txt1 = findViewById(R.id.txt1);
         emailEt = findViewById(R.id.email_ET);
         signupBtn = findViewById(R.id.signup_BTN);
-        final long[] mLastClickTime = {0};
         animation();
         init();
         Intent intent = getIntent();
@@ -55,7 +55,7 @@ public class SignUp extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(SignUp.this,SignIn.class));
+                startActivity(new Intent(SignUp.this, SignIn.class));
             }
         });
 
@@ -69,52 +69,45 @@ public class SignUp extends AppCompatActivity {
                 password = passwordEt.getText().toString();
                 address = addressEt.getText().toString();
 
-                if (SystemClock.elapsedRealtime() - mLastClickTime[0] < 2000) {
-                    return;
+                if (TextUtils.isEmpty(email)) {
+                    emailEt.setError("Enter email");
+                } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    emailEt.setError("Enter valid email");
+                    emailEt.requestFocus();
+                } else if (TextUtils.isEmpty(name)) {
+                    nameEt.setError("Enter User name");
+                } else if (TextUtils.isEmpty(phone)) {
+                    phoneNoEt.setError("Enter phone No.");
+                } else if (TextUtils.isEmpty(password)) {
+                    passwordEt.setError("Enter Password!");
+                } else if (passwordEt.length() < 6) {
+                    passwordEt.setError("At least 6 characters!", null);
+                    passwordEt.requestFocus();
+                } else if (TextUtils.isEmpty(address)) {
+                    addressEt.setError("Address is required!");
+                } else {
+                    signupBtn.setEnabled(false);
+                    checkmail();
                 }
-                mLastClickTime[0] = SystemClock.elapsedRealtime();
-                if (view == signupBtn) {
-                    if (TextUtils.isEmpty(email)){
-                        emailEt.setError("Enter email");
-                    }else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                        emailEt.setError("Enter valid email");
-                        emailEt.requestFocus();
-                    }else if (TextUtils.isEmpty(name)){
-                        nameEt.setError("Enter User name");
-                    }else if (TextUtils.isEmpty(phone)){
-                        phoneNoEt.setError("Enter phone No.");
-                    }
-                    else if (TextUtils.isEmpty(password)){
-                        passwordEt.setError("Enter Password!");
-                    }
-                    else if (passwordEt.length()<6){
-                        passwordEt.setError("At least 6 characters!",null);
-                        passwordEt.requestFocus();
-                    }
-                    else if (TextUtils.isEmpty(address)){
-                        addressEt.setError("Address is required!");
-                    }
-                    else {
-                        checkmail();
-                    }
-                }
+
             }
         });
 
     }
 
-    private void checkmail(){
+    private void checkmail() {
         email = emailEt.getText().toString();
         auth.fetchSignInMethodsForEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
                     @Override
                     public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
                         boolean check = !task.getResult().getSignInMethods().isEmpty();
-                        if(!check){
+                        if (!check) {
                             //Toast.makeText(getApplicationContext(),"Email not found",Toast.LENGTH_SHORT).show();
-                            signup(email,name,phone,password,address);
-                        }else {
-                            Toast.makeText(getApplicationContext(),"The email address is already in use by another account",Toast.LENGTH_LONG).show();
+                            signup(email, name, phone, password, address);
+                        } else {
+                            signupBtn.setEnabled(true);
+                            Toast.makeText(getApplicationContext(), "The email address is already in use by another account", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -122,14 +115,14 @@ public class SignUp extends AppCompatActivity {
 
     private void animation() {
 
-        topAnim= AnimationUtils.loadAnimation(this,R.anim.top_animation);
-        bottomAnim= AnimationUtils.loadAnimation(this,R.anim.bottom_animation);
-        leftAnim= AnimationUtils.loadAnimation(this,R.anim.left_animation);
-        rightAnim= AnimationUtils.loadAnimation(this,R.anim.right_animation);
-        ball1Anim=AnimationUtils.loadAnimation(this,R.anim.ball1_animation);
-        ball2Anim=AnimationUtils.loadAnimation(this,R.anim.ball2_animation);
-        ball3Anim=AnimationUtils.loadAnimation(this,R.anim.ball3_animation);
-        edittext_anim=AnimationUtils.loadAnimation(this,R.anim.edittext_anim);
+        topAnim = AnimationUtils.loadAnimation(this, R.anim.top_animation);
+        bottomAnim = AnimationUtils.loadAnimation(this, R.anim.bottom_animation);
+        leftAnim = AnimationUtils.loadAnimation(this, R.anim.left_animation);
+        rightAnim = AnimationUtils.loadAnimation(this, R.anim.right_animation);
+        ball1Anim = AnimationUtils.loadAnimation(this, R.anim.ball1_animation);
+        ball2Anim = AnimationUtils.loadAnimation(this, R.anim.ball2_animation);
+        ball3Anim = AnimationUtils.loadAnimation(this, R.anim.ball3_animation);
+        edittext_anim = AnimationUtils.loadAnimation(this, R.anim.edittext_anim);
 
         txt1.setAnimation(topAnim);
         signupBtn.setAnimation(bottomAnim);
@@ -139,36 +132,36 @@ public class SignUp extends AppCompatActivity {
 
     private void signup(final String email, final String name, final String phone, final String password, final String address) {
 
-        auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-
-                if (task.isSuccessful()){
+                signupBtn.setEnabled(true);
+                if (task.isSuccessful()) {
                     String userId = auth.getCurrentUser().getUid();
                     DatabaseReference dataref = reference.child("profile").child(userId);
 
-                    HashMap<String,Object> userInfo = new HashMap<>();
+                    HashMap<String, Object> userInfo = new HashMap<>();
 
-                    userInfo.put("name",name);
-                    userInfo.put("email",email);
-                    userInfo.put("phone",phone);
-                    userInfo.put("password",password);
-                    userInfo.put("Id",userId);
-                    userInfo.put("address",address);
+                    userInfo.put("name", name);
+                    userInfo.put("email", email);
+                    userInfo.put("phone", phone);
+                    userInfo.put("password", password);
+                    userInfo.put("Id", userId);
+                    userInfo.put("address", address);
 
                     dataref.setValue(userInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()){
+                                        if (task.isSuccessful()) {
                                             Toast.makeText(SignUp.this, "Successfully Sign Up. Please check your email for verification", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(SignUp.this,SignIn.class).putExtra("email",email));
-                                            overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
-                                        }else{
-                                            Toast.makeText(getApplicationContext(),task.getException().toString(),Toast.LENGTH_LONG).show();
+                                            startActivity(new Intent(SignUp.this, SignIn.class).putExtra("email", email));
+                                            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), task.getException().toString(), Toast.LENGTH_LONG).show();
                                         }
                                     }
                                 });
@@ -204,7 +197,7 @@ public class SignUp extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
     }
 

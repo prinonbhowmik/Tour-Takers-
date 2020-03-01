@@ -29,11 +29,11 @@ public class SignInGrantAccess extends AppCompatActivity {
 
     private EditText passEt;
     private Button singin;
-    private String email,password;
+    private String email, password;
     private TextView txt1;
     private ImageView logo;
     private FirebaseAuth auth;
-    Animation topAnim,bottomAnim,leftAnim,rightAnim,ball1Anim,ball2Anim,ball3Anim,edittext_anim;
+    Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +41,11 @@ public class SignInGrantAccess extends AppCompatActivity {
         setContentView(R.layout.activity_signin_grant_access);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        singin=findViewById(R.id.signin_BTN);
+        singin = findViewById(R.id.signin_BTN);
         passEt = findViewById(R.id.password_ET);
         auth = FirebaseAuth.getInstance();
         txt1 = findViewById(R.id.txt1);
         logo = findViewById(R.id.logoG);
-        final long[] mLastClickTime = {0};
         animation();
 
         singin.setOnClickListener(new View.OnClickListener() {
@@ -55,35 +54,29 @@ public class SignInGrantAccess extends AppCompatActivity {
                 Intent intent = getIntent();
                 email = intent.getExtras().getString("email");
                 password = passEt.getText().toString();
-                if (SystemClock.elapsedRealtime() - mLastClickTime[0] < 2000) {
-                    return;
+                if (TextUtils.isEmpty(password)) {
+                    Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                } else if (passEt.length() < 6) {
+                    Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                } else {
+                    singin.setEnabled(false);
+                    signinuser(email, password);
                 }
-                mLastClickTime[0] = SystemClock.elapsedRealtime();
-                if (view == singin) {
-                    if (TextUtils.isEmpty(password)){
-                        Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
-                    }
-                    else if (passEt.length()<6){
-                        Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        signinuser(email,password);
-                    }
-                }
+
             }
         });
     }
 
     private void animation() {
 
-        topAnim= AnimationUtils.loadAnimation(this,R.anim.top_animation);
-        bottomAnim= AnimationUtils.loadAnimation(this,R.anim.bottom_animation);
-        leftAnim= AnimationUtils.loadAnimation(this,R.anim.left_animation);
-        rightAnim= AnimationUtils.loadAnimation(this,R.anim.right_animation);
-        ball1Anim=AnimationUtils.loadAnimation(this,R.anim.ball1_animation);
-        ball2Anim=AnimationUtils.loadAnimation(this,R.anim.ball2_animation);
-        ball3Anim=AnimationUtils.loadAnimation(this,R.anim.ball3_animation);
-        edittext_anim=AnimationUtils.loadAnimation(this,R.anim.edittext_anim);
+        topAnim = AnimationUtils.loadAnimation(this, R.anim.top_animation);
+        bottomAnim = AnimationUtils.loadAnimation(this, R.anim.bottom_animation);
+        leftAnim = AnimationUtils.loadAnimation(this, R.anim.left_animation);
+        rightAnim = AnimationUtils.loadAnimation(this, R.anim.right_animation);
+        ball1Anim = AnimationUtils.loadAnimation(this, R.anim.ball1_animation);
+        ball2Anim = AnimationUtils.loadAnimation(this, R.anim.ball2_animation);
+        ball3Anim = AnimationUtils.loadAnimation(this, R.anim.ball3_animation);
+        edittext_anim = AnimationUtils.loadAnimation(this, R.anim.edittext_anim);
 
         logo.setAnimation(leftAnim);
         txt1.setAnimation(topAnim);
@@ -93,18 +86,19 @@ public class SignInGrantAccess extends AppCompatActivity {
     }
 
     private void signinuser(final String email, final String password) {
-        auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    if(auth.getCurrentUser().isEmailVerified()){
-                        Intent intent = new Intent(SignInGrantAccess.this,MainActivity.class);
+                singin.setEnabled(true);
+                if (task.isSuccessful()) {
+                    if (auth.getCurrentUser().isEmailVerified()) {
+                        Intent intent = new Intent(SignInGrantAccess.this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         finish();
-                        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         startActivity(intent);
-                    }else{
-                        Toast.makeText(getApplicationContext(),"Please verify your email address!",Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Please verify your email address!", Toast.LENGTH_LONG).show();
                     }
 
                 }
@@ -112,17 +106,16 @@ public class SignInGrantAccess extends AppCompatActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(SignInGrantAccess.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignInGrantAccess.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
 
-
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
     }
 

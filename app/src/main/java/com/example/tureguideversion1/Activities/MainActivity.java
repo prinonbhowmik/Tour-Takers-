@@ -19,23 +19,24 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     boolean doubleBackToExitPressedOnce = false;
+    private Toast toast = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         init();
     }
 
     private void init() {
-
+        toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
         toolbar = findViewById(R.id.toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -65,9 +66,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case R.id.profile:
-               startActivity(new Intent(MainActivity.this,UserProfile.class));
+                startActivity(new Intent(MainActivity.this, UserProfile.class));
                 drawerLayout.closeDrawers();
                 break;
 
@@ -110,16 +111,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
             return;
         }
-
         this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-
+        toast.setText("Press again to exit");
+        toast.show();
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                doubleBackToExitPressedOnce=false;
+                doubleBackToExitPressedOnce = false;
             }
         }, 2000);
+    }
+
+    @Override
+    protected void onStop() {
+        toast.cancel();
+        super.onStop();
     }
 }
