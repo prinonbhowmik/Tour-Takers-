@@ -107,7 +107,8 @@ public class SignUp extends AppCompatActivity {
                             signup(email, name, phone, password, address);
                         } else {
                             signupBtn.setEnabled(true);
-                            Toast.makeText(getApplicationContext(), "The email address is already in use by another account", Toast.LENGTH_LONG).show();
+                            emailEt.setError("This email address is already in use by another account!");
+                            emailEt.requestFocus();
                         }
                     }
                 });
@@ -123,6 +124,7 @@ public class SignUp extends AppCompatActivity {
         ball2Anim = AnimationUtils.loadAnimation(this, R.anim.ball2_animation);
         ball3Anim = AnimationUtils.loadAnimation(this, R.anim.ball3_animation);
         edittext_anim = AnimationUtils.loadAnimation(this, R.anim.edittext_anim);
+
 
         txt1.setAnimation(topAnim);
         signupBtn.setAnimation(bottomAnim);

@@ -39,7 +39,7 @@ public class SignIn extends AppCompatActivity {
     boolean doubleBackToExitPressedOnce = false;
     private Toast toast = null;
     FirebaseAuth auth;
-    Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim;
+    Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim, blink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,9 +74,10 @@ public class SignIn extends AppCompatActivity {
 
                 if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     singin.setEnabled(false);
+                    logo.startAnimation(blink);
                     checkmail();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Invalid email address!", Toast.LENGTH_LONG).show();
+                    nameET.setError("Invalid email address!");
                 }
 
             }
@@ -90,6 +91,7 @@ public class SignIn extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
                         singin.setEnabled(true);
+                        logo.clearAnimation();
                         boolean check = !task.getResult().getSignInMethods().isEmpty();
                         if (!check) {
                             //Toast.makeText(getApplicationContext(),"Email not found",Toast.LENGTH_SHORT).show();
@@ -114,6 +116,7 @@ public class SignIn extends AppCompatActivity {
         ball2Anim = AnimationUtils.loadAnimation(this, R.anim.ball2_animation);
         ball3Anim = AnimationUtils.loadAnimation(this, R.anim.ball3_animation);
         edittext_anim = AnimationUtils.loadAnimation(this, R.anim.edittext_anim);
+        blink = AnimationUtils.loadAnimation(this, R.anim.blink_anim);
 
 
         logo.setAnimation(leftAnim);

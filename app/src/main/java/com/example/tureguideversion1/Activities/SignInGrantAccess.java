@@ -33,7 +33,7 @@ public class SignInGrantAccess extends AppCompatActivity {
     private TextView txt1;
     private ImageView logo;
     private FirebaseAuth auth;
-    Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim;
+    Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim,blink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +55,11 @@ public class SignInGrantAccess extends AppCompatActivity {
                 email = intent.getExtras().getString("email");
                 password = passEt.getText().toString();
                 if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                    passEt.setError("Please enter password!",null);
                 } else if (passEt.length() < 6) {
-                    Toast.makeText(SignInGrantAccess.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                    passEt.setError("At least 6 characters!",null);
                 } else {
+                    logo.startAnimation(blink);
                     singin.setEnabled(false);
                     signinuser(email, password);
                 }
@@ -77,6 +78,7 @@ public class SignInGrantAccess extends AppCompatActivity {
         ball2Anim = AnimationUtils.loadAnimation(this, R.anim.ball2_animation);
         ball3Anim = AnimationUtils.loadAnimation(this, R.anim.ball3_animation);
         edittext_anim = AnimationUtils.loadAnimation(this, R.anim.edittext_anim);
+        blink = AnimationUtils.loadAnimation(this, R.anim.blink_anim);
 
         logo.setAnimation(leftAnim);
         txt1.setAnimation(topAnim);
@@ -91,6 +93,7 @@ public class SignInGrantAccess extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 singin.setEnabled(true);
                 if (task.isSuccessful()) {
+                    logo.clearAnimation();
                     if (auth.getCurrentUser().isEmailVerified()) {
                         Intent intent = new Intent(SignInGrantAccess.this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
