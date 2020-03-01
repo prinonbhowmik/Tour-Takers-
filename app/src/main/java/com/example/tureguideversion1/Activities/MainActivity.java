@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.tureguideversion1.R;
@@ -23,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Toolbar toolbar;
+    private ImageView nav_icon;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
@@ -38,14 +41,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void init() {
         toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
-        toolbar = findViewById(R.id.toolbar);
+       // toolbar = findViewById(R.id.toolbar);
+        nav_icon = findViewById(R.id.nav_icon);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawerOpen, R.string.drawerClose);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+
         navigationView.setNavigationItemSelectedListener(this);
-        toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
+
+        nav_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
 
     }
 
