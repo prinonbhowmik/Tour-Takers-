@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
-    tools:context=".Activities.SignInGrantAccess"
-    >
-
+    tools:context=".Activities.SignInGrantAccess">
 
     <TextView
         android:id="@+id/txt1"
