@@ -4,28 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fff"
     tools:context=".Activities.Term_And_Condition">
 
     <TextView
         android:id="@+id/txt3"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
-        android:textColor="@color/colorAccent"
-        android:textSize="21sp"
         android:text="This is term and condition page, Update is coming soon...."
-        />
+        android:textColor="@color/colorBlack"
+        android:textSize="21sp" />
 
 
     <Button
         android:id="@+id/next_BTN4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Next"
-        android:textSize="25dp"
         android:layout_below="@+id/txt3"
+        android:layout_marginLeft="250dp"
         android:layout_marginTop="150dp"
-        android:layout_marginLeft="250dp"/>
+        android:text="Next"
+        android:textSize="25dp" />
 
 </RelativeLayout>

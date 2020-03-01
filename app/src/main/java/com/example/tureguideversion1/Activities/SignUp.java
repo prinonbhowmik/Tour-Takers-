@@ -133,6 +133,7 @@ public class SignUp extends AppCompatActivity {
 
         txt1.setAnimation(topAnim);
         signupBtn.setAnimation(bottomAnim);
+        emailEt.setAnimation(edittext_anim);
 
     }
 
@@ -164,7 +165,7 @@ public class SignUp extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful()){
                                             Toast.makeText(SignUp.this, "Successfully Sign Up. Please check your email for verification", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(SignUp.this,SignIn.class));
+                                            startActivity(new Intent(SignUp.this,SignIn.class).putExtra("email",email));
                                             overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                                         }else{
                                             Toast.makeText(getApplicationContext(),task.getException().toString(),Toast.LENGTH_LONG).show();

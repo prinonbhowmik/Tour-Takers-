@@ -3,8 +3,10 @@ package com.example.tureguideversion1.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
@@ -23,6 +25,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DatabaseReference;
 
@@ -33,6 +36,7 @@ public class SignIn extends AppCompatActivity {
     private TextView txt1;
     private String email;
     private ImageView logo;
+    boolean doubleBackToExitPressedOnce = false;
     FirebaseAuth auth;
     Animation topAnim,bottomAnim,leftAnim,rightAnim,ball1Anim,ball2Anim,ball3Anim,edittext_anim;
 
@@ -49,11 +53,27 @@ public class SignIn extends AppCompatActivity {
         logo = findViewById(R.id.logoS);
         final long[] mLastClickTime = {0};
         animation();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Intent intent = getIntent();
+        if(intent.getExtras() != null) {
+            nameET.setText(intent.getExtras().getString("email"));
+        }
+        if (user != null && user.isEmailVerified()) {
+            // User is signed in
+            intent = new Intent(SignIn.this,MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            finish();
+            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+            startActivity(intent);
+        }
 
         singin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 email = nameET.getText().toString();
+
+
+
                 if (SystemClock.elapsedRealtime() - mLastClickTime[0] < 2000) {
                     return;
                 }
@@ -102,6 +122,8 @@ public class SignIn extends AppCompatActivity {
         ball3Anim=AnimationUtils.loadAnimation(this,R.anim.ball3_animation);
         edittext_anim=AnimationUtils.loadAnimation(this,R.anim.edittext_anim);
 
+
+
         logo.setAnimation(leftAnim);
         txt1.setAnimation(topAnim);
         nameET.setAnimation(edittext_anim);
@@ -109,34 +131,29 @@ public class SignIn extends AppCompatActivity {
 
     }
 
-    private void signinuser(final String email, final String password) {
-        auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    Toast.makeText(SignIn.this, "Sign in successful!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(SignIn.this,MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    finish();
-                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
-                    startActivity(intent);
-
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(SignIn.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
     @Override
     public void finish() {
         overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
         super.finish();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
+    }
 
 }
