@@ -23,12 +23,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
-    private Toolbar toolbar;
+    
     private ImageView nav_icon;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle toggle;
     boolean doubleBackToExitPressedOnce = false;
     private Toast toast = null;
 
@@ -41,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void init() {
         toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
-       // toolbar = findViewById(R.id.toolbar);
         nav_icon = findViewById(R.id.nav_icon);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
