@@ -49,6 +49,7 @@ public class SignIn extends AppCompatActivity {
         toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
         singin = findViewById(R.id.continue_BTN);
         nameET = findViewById(R.id.name_ET);
+        nameET.setSelected(false);
         auth = FirebaseAuth.getInstance();
         txt1 = findViewById(R.id.txt1);
         logo = findViewById(R.id.logoS);

@@ -43,6 +43,7 @@ public class SignInGrantAccess extends AppCompatActivity {
 
         singin = findViewById(R.id.signin_BTN);
         passEt = findViewById(R.id.password_ET);
+        passEt.setSelected(false);
         auth = FirebaseAuth.getInstance();
         txt1 = findViewById(R.id.txt1);
         logo = findViewById(R.id.logoG);
