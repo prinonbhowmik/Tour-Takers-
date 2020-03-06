@@ -33,7 +33,7 @@ public class SignUp extends AppCompatActivity {
 
     private EditText emailEt, nameEt, phoneNoEt, passwordEt, addressEt;
     private Button signupBtn;
-    private ImageButton backBtn;
+    private ImageButton imageIV;
     private TextView txt1;
     private FirebaseAuth auth;
     private DatabaseReference reference;
@@ -52,12 +52,7 @@ public class SignUp extends AppCompatActivity {
         Intent intent = getIntent();
         email = intent.getExtras().getString("email");
         emailEt.setText(email);
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(SignUp.this, SignIn.class));
-            }
-        });
+
 
 
         signupBtn.setOnClickListener(new View.OnClickListener() {
@@ -190,7 +185,7 @@ public class SignUp extends AppCompatActivity {
         passwordEt = findViewById(R.id.password_ET);
         addressEt = findViewById(R.id.address_ET);
         signupBtn = findViewById(R.id.signup_BTN);
-        backBtn = findViewById(R.id.backBtn);
+        imageIV = findViewById(R.id.imageIV);
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference();
 
