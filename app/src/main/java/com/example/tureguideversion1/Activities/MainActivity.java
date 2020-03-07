@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         init();
 
+        FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+        tour.replace(R.id.fragment_container,new TourFragment());
+        tour.commit();
 
     }
 
