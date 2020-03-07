@@ -54,6 +54,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         connectivityReceiver = new ConnectivityReceiver();
         registerReceiver(connectivityReceiver, intentFilter);
 
+        FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+        tour.replace(R.id.fragment_container,new TourFragment());
+        tour.commit();
+
     }
 
     private void init() {
