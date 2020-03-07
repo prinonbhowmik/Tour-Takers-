@@ -37,11 +37,6 @@
                     android:layout_margin="10dp"
                     app:srcCompat="@drawable/ic_edit_black_24dp" />
             </RelativeLayout>
-            <!--   <LinearLayout
-                   android:background="@android:color/white"
-                   android:layout_marginTop="5dp"
-                   android:layout_width="match_parent"
-                   android:layout_height="300dp">      -->
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -97,8 +92,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginTop="20dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 android:weightSum="2">
 
@@ -112,7 +107,11 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:backgroundTint="@android:color/holo_blue_dark"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="@android:color/white"
                         app:cardCornerRadius="5dp">
 
                         <RelativeLayout
@@ -126,7 +125,7 @@
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginTop="10dp"
                                 android:text="Phone"
-                                android:textColor="@android:color/white"
+                                android:textColor="@android:color/black"
                                 android:textSize="21sp" />
 
                             <TextView
@@ -140,9 +139,57 @@
                                 android:padding="10dp"
                                 android:text="...."
                                 android:textAlignment="center"
-                                android:textColor="@android:color/white"
+                                android:textColor="@android:color/black"
                                 android:textSize="18sp" />
 
+                        </RelativeLayout>
+
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="@android:color/white"
+                        app:cardCornerRadius="5dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/atxt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginTop="10dp"
+                                android:text="Address"
+                                android:textColor="@android:color/black"
+                                android:textSize="21sp" />
+
+                            <TextView
+                                android:id="@+id/profileaddress"
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/atxt"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginTop="10dp"
+                                android:padding="10dp"
+                                android:text="....."
+                                android:textAlignment="center"
+                                android:textColor="@android:color/black"
+                                android:textSize="18sp" />
                         </RelativeLayout>
 
                     </androidx.cardview.widget.CardView>
@@ -152,8 +199,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:layout_marginTop="20dp"
+                android:layout_height="170dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
                 android:orientation="horizontal"
                 android:weightSum="2">
@@ -168,7 +215,11 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:backgroundTint="@android:color/holo_blue_dark"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="@android:color/white"
                         app:cardCornerRadius="5dp">
 
                         <RelativeLayout
@@ -180,9 +231,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerHorizontal="true"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="20dp"
                                 android:text="Number of Event"
-                                android:textColor="@android:color/white"
+                                android:textColor="@android:color/black"
                                 android:textSize="21sp" />
 
                             <TextView
@@ -193,10 +244,9 @@
                                 android:layout_centerHorizontal="true"
                                 android:layout_margin="10dp"
                                 android:layout_marginTop="10dp"
-                                android:padding="10dp"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@android:color/white"
+                                android:textColor="@android:color/black"
                                 android:textSize="55sp" />
 
                         </RelativeLayout>
@@ -214,8 +264,11 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:backgroundTint="@android:color/holo_blue_dark"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="@android:color/white"
                         app:cardCornerRadius="5dp">
 
                         <RelativeLayout
@@ -227,9 +280,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerHorizontal="true"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="20dp"
                                 android:text="Number of Tour"
-                                android:textColor="@android:color/white"
+                                android:textColor="@android:color/black"
                                 android:textSize="21sp" />
 
                             <TextView
@@ -239,10 +292,9 @@
                                 android:layout_below="@id/ttxt"
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginTop="10dp"
-                                android:padding="10dp"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@android:color/white"
+                                android:textColor="@android:color/black"
                                 android:textSize="55sp" />
                         </RelativeLayout>
 

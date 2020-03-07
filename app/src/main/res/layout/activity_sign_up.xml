@@ -8,6 +8,14 @@
     android:background="#fff"
     tools:context=".Activities.SignUp">
 
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
 
     <TextView
         android:id="@+id/txt1"
@@ -15,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="25dp"
         android:layout_marginBottom="10dp"
         android:fontFamily="@font/amarante"
         android:text="Sign Up"
@@ -23,23 +31,40 @@
         android:textSize="35sp"
         android:textStyle="bold" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:layout_below="@+id/txt1"
+        android:id="@+id/relativelayout2">
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageIV"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        app:civ_border_color="@color/colorBlack"
-        app:civ_border_width="1dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:civ_border_color="@android:color/holo_blue_dark"
+        app:civ_border_width="2dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/txt1"
         android:src="@drawable/icon" />
 
+        <ImageView
+            android:id="@+id/cameraIV"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="155dp"
+            android:layout_marginBottom="3dp"
+            android:background="@drawable/custom_round"
+            android:padding="10dp"
+            android:src="@drawable/ic_photo_camera_black_24dp" />
+    </RelativeLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/username_TIL"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imageIV"
+        android:layout_below="@+id/relativelayout2"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
@@ -165,10 +190,17 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginBottom="100dp"
         android:background="@drawable/custom_btn"
         android:text="Sign Up"
         android:textAllCaps="false"
         android:textColor="@color/colorYellow" />
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
 
 
 </RelativeLayout>
