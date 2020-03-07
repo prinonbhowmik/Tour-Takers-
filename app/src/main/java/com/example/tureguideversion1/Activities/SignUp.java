@@ -44,7 +44,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
 
 
     CircleImageView imageIV;
-    private EditText emailEt, nameEt, phoneNoEt, passwordEt, addressEt;
+    private EditText emailEt, nameEt, phoneNoEt, passwordEt;
     private Button signupBtn;
     private TextView txt1;
     private FirebaseAuth auth;
@@ -81,7 +81,6 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                 name = nameEt.getText().toString();
                 phone = phoneNoEt.getText().toString();
                 password = passwordEt.getText().toString();
-                address = addressEt.getText().toString();
 
                 if (TextUtils.isEmpty(email)) {
                     emailEt.setError("Enter email");
@@ -90,16 +89,17 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                     emailEt.requestFocus();
                 } else if (TextUtils.isEmpty(name)) {
                     nameEt.setError("Enter User name");
+                    nameEt.requestFocus();
                 } else if (TextUtils.isEmpty(phone)) {
                     phoneNoEt.setError("Enter phone No.");
+                    phoneNoEt.requestFocus();
                 } else if (TextUtils.isEmpty(password)) {
                     passwordEt.setError("Enter Password!");
+                    passwordEt.requestFocus();
                 } else if (passwordEt.length() < 6) {
                     passwordEt.setError("At least 6 characters!", null);
                     passwordEt.requestFocus();
-                } else if (TextUtils.isEmpty(address)) {
-                    addressEt.setError("Address is required!");
-                } else {
+                }else {
                     signupBtn.setEnabled(false);
                     checkmail();
                 }
@@ -163,7 +163,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                     userInfo.put("phone", phone);
                     userInfo.put("password", password);
                     userInfo.put("Id", userId);
-                    userInfo.put("address", address);
+
 
                     dataref.setValue(userInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -274,7 +274,6 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
         nameEt = findViewById(R.id.name_ET);
         phoneNoEt = findViewById(R.id.phoneEt);
         passwordEt = findViewById(R.id.password_ET);
-        addressEt = findViewById(R.id.address_ET);
         signupBtn = findViewById(R.id.signup_BTN);
         imageIV = findViewById(R.id.imageIV);
         auth = FirebaseAuth.getInstance();

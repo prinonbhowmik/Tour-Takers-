@@ -89,6 +89,7 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
                 email = nameET.getText().toString();
                 if (email.isEmpty()) {
                     nameET.setError("Enter email address!");
+                    nameET.requestFocus();
                 } else if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     singin.setEnabled(false);
                     logo.startAnimation(blink);
@@ -99,6 +100,7 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
                     checkmail();
                 } else {
                     nameET.setError("Invalid email address!");
+                    nameET.requestFocus();
                 }
 
             }

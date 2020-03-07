@@ -29,7 +29,7 @@ public class UserProfile extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference reference;
-    private String userId, name, email, phone, address, image;
+    private String userId, name, email, phone, image;
     private FloatingActionButton editBtn;
     ProgressBar progressBar;
 
@@ -56,13 +56,12 @@ public class UserProfile extends AppCompatActivity {
                 name = profile.getName();
                 email = profile.getEmail();
                 phone = profile.getPhone();
-                address = profile.getAddress();
                 image = profile.getImage();
 
                 profilename.setText(name);
                 profileemail.setText(email);
                 profilephoneno.setText(phone);
-                profileaddress.setText(address);
+
 
             }
 
@@ -80,7 +79,6 @@ public class UserProfile extends AppCompatActivity {
         profilename = findViewById(R.id.profileusername);
         profileemail = findViewById(R.id.profileemail);
         profilephoneno = findViewById(R.id.profilephoneNo);
-        profileaddress = findViewById(R.id.profileaddress);
         progressBar = findViewById(R.id.progressBar);
         editBtn = findViewById(R.id.editBtn);
         auth = FirebaseAuth.getInstance();

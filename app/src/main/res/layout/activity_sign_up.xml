@@ -156,40 +156,11 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/address_TIL"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/phone_TIL"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
-        android:hint="Address"
-        android:fontFamily="@font/amarante"
-        android:textColorHint="@color/colorYellow">
-
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/address_ET"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edit_text_design"
-            android:inputType="text"
-            android:fontFamily="@font/amarante"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:textColor="@color/colorBlack"
-            android:textSize="21sp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
     <Button
         android:id="@+id/signup_BTN"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/address_TIL"
+        android:layout_below="@+id/phone_TIL"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
