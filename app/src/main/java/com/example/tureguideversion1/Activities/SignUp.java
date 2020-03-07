@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,11 +30,14 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class SignUp extends AppCompatActivity {
 
+
+    CircleImageView imageIV;
     private EditText emailEt, nameEt, phoneNoEt, passwordEt, addressEt;
     private Button signupBtn;
-    private ImageButton imageIV;
     private TextView txt1;
     private FirebaseAuth auth;
     private DatabaseReference reference;
