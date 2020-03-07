@@ -194,12 +194,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPause() {
         super.onPause();
-        try{
-            if(connectivityReceiver!=null)
-                unregisterReceiver(connectivityReceiver);
-
-        }catch(Exception e){}
-
+        unregisterReceiver(connectivityReceiver);
     }
 
     @Override
