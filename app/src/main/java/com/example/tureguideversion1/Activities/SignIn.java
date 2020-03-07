@@ -2,13 +2,19 @@ package com.example.tureguideversion1.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.animation.Animator;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -19,18 +25,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tureguideversion1.Connection;
+import com.example.tureguideversion1.ConnectivityReceiver;
 import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DatabaseReference;
 
-public class SignIn extends AppCompatActivity {
-
+public class SignIn extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
     private EditText nameET;
     private Button singin;
     private TextView txt1;
@@ -40,6 +48,9 @@ public class SignIn extends AppCompatActivity {
     private Toast toast = null;
     FirebaseAuth auth;
     Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim, blink;
+    private Snackbar snackbar;
+    private ConnectivityReceiver connectivityReceiver;
+    private IntentFilter intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +64,10 @@ public class SignIn extends AppCompatActivity {
         txt1 = findViewById(R.id.txt1);
         logo = findViewById(R.id.logoS);
         animation();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        connectivityReceiver = new ConnectivityReceiver();
+        registerReceiver(connectivityReceiver, intentFilter);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
@@ -60,6 +75,7 @@ public class SignIn extends AppCompatActivity {
         }
         if (user != null && user.isEmailVerified()) {
             // User is signed in
+            unregisterReceiver(connectivityReceiver);
             intent = new Intent(SignIn.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             finish();
@@ -71,10 +87,15 @@ public class SignIn extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 email = nameET.getText().toString();
-
-                if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                if (email.isEmpty()) {
+                    nameET.setError("Enter email address!");
+                } else if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     singin.setEnabled(false);
                     logo.startAnimation(blink);
+                    singin.setText("Connecting");
+                    if (snackbar != null) {
+                        snackbar.dismiss();
+                    }
                     checkmail();
                 } else {
                     nameET.setError("Invalid email address!");
@@ -92,18 +113,59 @@ public class SignIn extends AppCompatActivity {
                     public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
                         singin.setEnabled(true);
                         logo.clearAnimation();
-                        boolean check = !task.getResult().getSignInMethods().isEmpty();
-                        if (!check) {
-                            //Toast.makeText(getApplicationContext(),"Email not found",Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignIn.this, SignUp.class).putExtra("email", email));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        } else {
-                            //Toast.makeText(getApplicationContext(),"Email found",Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignIn.this, SignInGrantAccess.class).putExtra("email", email));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        singin.setText("Continue");
+                        try {
+                            boolean check = !task.getResult().getSignInMethods().isEmpty();
+                            if (!check) {
+                                //Toast.makeText(getApplicationContext(),"Email not found",Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SignIn.this, SignUp.class).putExtra("email", email));
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                            } else {
+                                //Toast.makeText(getApplicationContext(),"Email found",Toast.LENGTH_SHORT).show();
+                                unregisterReceiver(connectivityReceiver);
+                                startActivity(new Intent(SignIn.this, SignInGrantAccess.class).putExtra("email", email));
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            String message = "Couldn't reach to the server! Try again leter.";
+                            snackbar(message);
                         }
                     }
                 });
+    }
+
+    // Showing the status in Snackbar
+    private void showSnack(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            //message = "Connected to Internet";
+            if (snackbar != null) {
+                snackbar.dismiss();
+                singin.setEnabled(true);
+            }
+        } else {
+            message = "No internet! Please connect to network.";
+            snackbar(message);
+            singin.setEnabled(false);
+        }
+
+
+    }
+
+    private void snackbar(String text) {
+        snackbar = Snackbar
+                .make(findViewById(R.id.logoS), text, Snackbar.LENGTH_INDEFINITE);
+
+        View sbView = snackbar.getView();
+        sbView.setBackgroundColor(Color.RED);
+        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        } else {
+            textView.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        snackbar.show();
     }
 
     private void animation() {
@@ -127,6 +189,39 @@ public class SignIn extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(connectivityReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /*register connection status listener*/
+        Connection.getInstance().setConnectivityListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try{
+            if(connectivityReceiver!=null)
+                unregisterReceiver(connectivityReceiver);
+
+        }catch(Exception e){}
+
+    }
+
+    /**
+     * Callback will be triggered when there is change in
+     * network connection
+     */
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
+    }
+
+    @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
@@ -146,6 +241,12 @@ public class SignIn extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        try{
+            if(connectivityReceiver!=null)
+                unregisterReceiver(connectivityReceiver);
+
+        }catch(Exception e){}
+
         toast.cancel();
         super.onStop();
     }

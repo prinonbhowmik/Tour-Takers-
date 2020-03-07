@@ -45,6 +45,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
         android:hint="Full Name"
+        android:fontFamily="@font/amarante"
         android:textColorHint="@color/colorYellow">
 
 
@@ -75,6 +76,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:hint="Email"
+        android:fontFamily="@font/amarante"
         android:textColorHint="@color/colorYellow">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -103,6 +105,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:hint="@string/password"
+        android:fontFamily="@font/amarante"
         android:textColorHint="@color/colorYellow"
         app:passwordToggleEnabled="true"
         app:passwordToggleTint="@android:color/holo_orange_light">
@@ -134,6 +137,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:hint="Phone No"
+        android:fontFamily="@font/amarante"
         android:textColorHint="@color/colorYellow">
 
 
@@ -163,6 +167,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:hint="Address"
+        android:fontFamily="@font/amarante"
         android:textColorHint="@color/colorYellow">
 
 

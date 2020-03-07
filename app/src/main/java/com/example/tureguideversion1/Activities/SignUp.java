@@ -4,9 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -17,11 +22,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tureguideversion1.Connection;
+import com.example.tureguideversion1.ConnectivityReceiver;
 import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.SignInMethodQueryResult;
@@ -32,7 +40,7 @@ import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SignUp extends AppCompatActivity {
+public class SignUp extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
 
 
     CircleImageView imageIV;
@@ -43,6 +51,9 @@ public class SignUp extends AppCompatActivity {
     private DatabaseReference reference;
     private String email, name, phone, password, address;
     Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim;
+    private Snackbar snackbar;
+    private ConnectivityReceiver connectivityReceiver;
+    private IntentFilter intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +63,10 @@ public class SignUp extends AppCompatActivity {
         emailEt = findViewById(R.id.email_ET);
         signupBtn = findViewById(R.id.signup_BTN);
         animation();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        connectivityReceiver = new ConnectivityReceiver();
+        registerReceiver(connectivityReceiver, intentFilter);
         init();
         Intent intent = getIntent();
         email = intent.getExtras().getString("email");
@@ -179,6 +194,78 @@ public class SignUp extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    // Showing the status in Snackbar
+    private void showSnack(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            //message = "Connected to Internet";
+            if (snackbar != null) {
+                snackbar.dismiss();
+                signupBtn.setEnabled(true);
+            }
+        } else {
+            message = "No internet! Please connect to network.";
+            snackbar(message);
+            signupBtn.setEnabled(false);
+        }
+
+
+    }
+
+    private void snackbar(String text) {
+        snackbar = Snackbar
+                .make(findViewById(R.id.signup_BTN), text, Snackbar.LENGTH_INDEFINITE);
+
+        View sbView = snackbar.getView();
+        sbView.setBackgroundColor(Color.RED);
+        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        } else {
+            textView.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        snackbar.show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(connectivityReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /*register connection status listener*/
+        Connection.getInstance().setConnectivityListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try{
+            if(connectivityReceiver!=null)
+                unregisterReceiver(connectivityReceiver);
+
+        }catch(Exception e){}
+
+    }
+
+    /**
+     * Callback will be triggered when there is change in
+     * network connection
+     */
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        unregisterReceiver(connectivityReceiver);
     }
 
     private void init() {
