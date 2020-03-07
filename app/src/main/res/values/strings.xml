@@ -8,4 +8,7 @@
     <string name="sign_up"><u>sign_up</u></string>
     <string name="drawerOpen" />
     <string name="drawerClose" />
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

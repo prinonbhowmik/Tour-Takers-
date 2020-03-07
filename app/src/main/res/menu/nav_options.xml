@@ -8,13 +8,15 @@
             android:title="Profile" />
 
         <item
+            android:id="@+id/tour"
+            android:icon="@drawable/ic_event_black_24dp"
+            android:title="Tour" />
+
+        <item
             android:id="@+id/guide"
             android:icon="@drawable/ic_map_black_24dp"
             android:title="Guide" />
-        <item
-            android:id="@+id/event"
-            android:icon="@drawable/ic_event_black_24dp"
-            android:title="Event" />
+
         <item
             android:id="@+id/map"
             android:icon="@drawable/ic_location_on_black_24dp"

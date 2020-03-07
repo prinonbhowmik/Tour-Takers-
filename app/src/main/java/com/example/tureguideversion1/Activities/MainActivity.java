@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -35,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
+
+
     }
 
     private void init() {
@@ -79,8 +82,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 drawerLayout.closeDrawers();
                 break;
 
-            case R.id.event:
-                Toast.makeText(this, "Event", Toast.LENGTH_SHORT).show();
+            case R.id.tour:
+                FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+                tour.replace(R.id.fragment_container,new TourFragment());
+                tour.commit();
                 drawerLayout.closeDrawers();
                 return true;
 
