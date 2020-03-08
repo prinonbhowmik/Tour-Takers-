@@ -67,6 +67,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
     private IntentFilter intentFilter;
     private Uri userImage;
     private String userId;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +87,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
         Intent intent = getIntent();
         email = intent.getExtras().getString("email");
         emailEt.setText(email);
-
+        progressDialog = new ProgressDialog(this);
         imageIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -186,7 +187,8 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
     }
 
     private void signup(final String email, final String name, final String phone, final String password) {
-
+        progressDialog.setTitle("Signing up...");
+        progressDialog.show();
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -213,6 +215,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             uploadImage();
+                                            progressDialog.dismiss();
                                             Toast.makeText(SignUp.this, "Successfully Sign Up. Please check your email for verification", Toast.LENGTH_SHORT).show();
                                             startActivity(new Intent(SignUp.this, SignIn.class).putExtra("email", email));
                                             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
@@ -240,24 +243,20 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
 
         if(userImage != null)
         {
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-
             StorageReference ref = storageReference.child("userProfileImage/"+userId );
             ref.putFile(userImage)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             progressDialog.dismiss();
-                            Toast.makeText(SignUp.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(SignUp.this, "Uploaded", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             progressDialog.dismiss();
-                            Toast.makeText(SignUp.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUp.this, "Image upload failed!"+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
