@@ -3,10 +3,12 @@ package com.example.tureguideversion1.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -28,6 +30,7 @@ import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
@@ -35,6 +38,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.HashMap;
 
@@ -49,16 +58,22 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
     private TextView txt1;
     private FirebaseAuth auth;
     private DatabaseReference reference;
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
     private String email, name, phone, password, address;
     Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim;
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
+    private Uri userImage;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
         txt1 = findViewById(R.id.txt1);
         emailEt = findViewById(R.id.email_ET);
         signupBtn = findViewById(R.id.signup_BTN);
@@ -72,6 +87,15 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
         email = intent.getExtras().getString("email");
         emailEt.setText(email);
 
+        imageIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CropImage.activity()
+                        .setGuidelines(CropImageView.Guidelines.ON)
+                        .setCropShape(CropImageView.CropShape.OVAL)
+                        .start(SignUp.this);
+            }
+        });
 
 
         signupBtn.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +133,21 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                userImage = resultUri;
+                imageIV.setImageURI(resultUri);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
+    }
+
     private void checkmail() {
         email = emailEt.getText().toString();
         auth.fetchSignInMethodsForEmail(email)
@@ -118,7 +157,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                         boolean check = !task.getResult().getSignInMethods().isEmpty();
                         if (!check) {
                             //Toast.makeText(getApplicationContext(),"Email not found",Toast.LENGTH_SHORT).show();
-                            signup(email, name, phone, password, address);
+                            signup(email, name, phone, password);
                         } else {
                             signupBtn.setEnabled(true);
                             emailEt.setError("This email address is already in use by another account!");
@@ -146,14 +185,14 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
 
     }
 
-    private void signup(final String email, final String name, final String phone, final String password, final String address) {
+    private void signup(final String email, final String name, final String phone, final String password) {
 
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 signupBtn.setEnabled(true);
                 if (task.isSuccessful()) {
-                    String userId = auth.getCurrentUser().getUid();
+                    userId = auth.getCurrentUser().getUid();
                     DatabaseReference dataref = reference.child("profile").child(userId);
 
                     HashMap<String, Object> userInfo = new HashMap<>();
@@ -173,6 +212,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
+                                            uploadImage();
                                             Toast.makeText(SignUp.this, "Successfully Sign Up. Please check your email for verification", Toast.LENGTH_SHORT).show();
                                             startActivity(new Intent(SignUp.this, SignIn.class).putExtra("email", email));
                                             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
@@ -194,6 +234,41 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                 }
             }
         });
+    }
+
+    private void uploadImage() {
+
+        if(userImage != null)
+        {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            StorageReference ref = storageReference.child("userProfileImage/"+userId );
+            ref.putFile(userImage)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            Toast.makeText(SignUp.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(SignUp.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        }
+                    });
+        }
     }
 
     // Showing the status in Snackbar
