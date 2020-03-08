@@ -78,21 +78,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-/*
-    @Override
-    public void finish() {
-        super.finish();
-       // overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
-        return super.onOptionsItemSelected(item);
-
-    }
-    */
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
@@ -100,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.profile:
                 startActivity(new Intent(MainActivity.this, UserProfile.class));
                 drawerLayout.closeDrawers();
-                break;
+                return true;
 
             case R.id.tour:
                 FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
@@ -116,12 +101,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.weather:
                 Toast.makeText(this, "Weather", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
-                break;
+                return true;
 
             case R.id.guide:
                 Toast.makeText(this, "Guide", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
-                break;
+                return true;
 
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();
