@@ -33,7 +33,6 @@ import com.google.firebase.storage.StorageReference;
 public class UserProfile extends AppCompatActivity {
 
     private TextView profilename, profileemail, profilephoneno, profileaddress;
-
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference reference;
@@ -50,6 +49,15 @@ public class UserProfile extends AppCompatActivity {
         setContentView(R.layout.activity_user_profile);
         storageReference = FirebaseStorage.getInstance().getReference();
         init();
+
+        editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(UserProfile.this,EditUserProfile.class);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                startActivity(intent);
+            }
+        });
 
 
         userId = auth.getUid();
