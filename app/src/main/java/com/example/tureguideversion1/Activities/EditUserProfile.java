@@ -20,6 +20,7 @@ public class EditUserProfile extends AppCompatActivity {
         nameEdit = findViewById(R.id.nameEdit);
         emailEdit = findViewById(R.id.emailEdit);
         phoneEdit = findViewById(R.id.phoneEdit);
+        passEdit = findViewById(R.id.passEdit);
 
         Intent intent = getIntent();
 
