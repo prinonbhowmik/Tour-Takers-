@@ -21,8 +21,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.tureguideversion1.Connection;
-import com.example.tureguideversion1.ConnectivityReceiver;
+import com.example.tureguideversion1.Internet.Connection;
+import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

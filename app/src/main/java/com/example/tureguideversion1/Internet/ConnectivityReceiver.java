@@ -1,10 +1,12 @@
-package com.example.tureguideversion1;
+package com.example.tureguideversion1.Internet;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import com.example.tureguideversion1.Internet.Connection;
 
 public class ConnectivityReceiver
         extends BroadcastReceiver {

@@ -1,4 +1,4 @@
-package com.example.tureguideversion1;
+package com.example.tureguideversion1.Internet;
 
 import android.app.Application;
 
