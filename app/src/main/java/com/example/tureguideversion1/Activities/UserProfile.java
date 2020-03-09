@@ -2,6 +2,7 @@ package com.example.tureguideversion1.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.tureguideversion1.Model.Profile;
+import com.example.tureguideversion1.Profile_bottom_sheet;
 import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,9 +32,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class UserProfile extends AppCompatActivity {
+public class UserProfile extends AppCompatActivity{
 
-    private TextView profilename, profileemail, profilephoneno, profileaddress;
+    private TextView profilename, profileemail, profilephoneno;
+    private CardView phoneUpdate;
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference reference;
@@ -49,21 +52,19 @@ public class UserProfile extends AppCompatActivity {
         setContentView(R.layout.activity_user_profile);
         storageReference = FirebaseStorage.getInstance().getReference();
         init();
-
-        editBtn.setOnClickListener(new View.OnClickListener() {
+        userId = auth.getUid();
+        phoneUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(UserProfile.this,EditUserProfile.class);
-                intent.putExtra("name",name);
-                intent.putExtra("email",email);
-                intent.putExtra("phone",phone);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                startActivity(intent);
+            public void onClick(View view) {
+                Bundle args = new Bundle();
+                args.putString("phone", "phone");
+                args.putString("id", userId);
+                Profile_bottom_sheet bottom_sheet = new Profile_bottom_sheet();
+                bottom_sheet.setArguments(args);
+                bottom_sheet.show(getSupportFragmentManager(),"bottomSheet");
             }
         });
 
-
-        userId = auth.getUid();
         storageReference.child("userProfileImage/"+userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -110,7 +111,7 @@ public class UserProfile extends AppCompatActivity {
     }
 
     private void init() {
-
+        phoneUpdate = findViewById(R.id.phoneUpdate);
         profilename = findViewById(R.id.profileusername);
         profileemail = findViewById(R.id.profileemail);
         profilephoneno = findViewById(R.id.profilephoneNo);
@@ -137,4 +138,6 @@ public class UserProfile extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
 
     }
+
+
 }

@@ -44,4 +44,7 @@ dependencies {
     //image crop api
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
 
+    //for bottom sheet
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+
 }

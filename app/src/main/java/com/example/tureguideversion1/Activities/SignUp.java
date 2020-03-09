@@ -88,6 +88,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
             @Override
             public void onClick(View view) {
                 CropImage.activity()
+                        .setFixAspectRatio(true)
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .setCropShape(CropImageView.CropShape.OVAL)
                         .start(SignUp.this);
