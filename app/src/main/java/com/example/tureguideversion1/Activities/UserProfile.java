@@ -54,6 +54,9 @@ public class UserProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(UserProfile.this,EditUserProfile.class);
+                intent.putExtra("name",name);
+                intent.putExtra("email",email);
+                intent.putExtra("phone",phone);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 startActivity(intent);
             }
