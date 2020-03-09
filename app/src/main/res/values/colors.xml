@@ -6,5 +6,7 @@
 
     <color name="colorYellow">#face2f</color>
     <color name="colorBlack">#000</color>
+    <color name="colorBlue">#176bef</color>
+    <color name="colorGreen">#179c52</color>
 
 </resources>

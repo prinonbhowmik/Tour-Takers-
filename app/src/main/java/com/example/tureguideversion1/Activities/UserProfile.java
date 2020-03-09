@@ -40,7 +40,6 @@ public class UserProfile extends AppCompatActivity{
     private FirebaseDatabase database;
     private DatabaseReference reference;
     private String userId, name, email, phone;
-    private FloatingActionButton editBtn;
     private StorageReference storageReference;
     private Uri image;
     private ImageView profileImage;
@@ -116,7 +115,6 @@ public class UserProfile extends AppCompatActivity{
         profileemail = findViewById(R.id.profileemail);
         profilephoneno = findViewById(R.id.profilephoneNo);
         progressBar = findViewById(R.id.progressBar);
-        editBtn = findViewById(R.id.editBtn);
         profileImage = findViewById(R.id.profileIV);
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("profile");
