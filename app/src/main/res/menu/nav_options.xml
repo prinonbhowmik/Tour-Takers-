@@ -2,10 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
 
-        <item
-            android:id="@+id/profile"
-            android:icon="@drawable/ic_account_circle_black_24dp"
-            android:title="Profile" />
 
         <item
             android:id="@+id/tour"
@@ -25,6 +21,11 @@
             android:id="@+id/weather"
             android:icon="@drawable/ic_wb_incandescent_black_24dp"
             android:title="Weather" />
+
+        <item
+            android:id="@+id/profile"
+            android:icon="@drawable/ic_account_circle_black_24dp"
+            android:title="Profile" />
 
     </group>
     <group

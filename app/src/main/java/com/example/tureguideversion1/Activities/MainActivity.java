@@ -20,6 +20,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tureguideversion1.Fragments.GuideFragment;
+import com.example.tureguideversion1.Fragments.MapFragment;
+import com.example.tureguideversion1.Fragments.WeatherFragment;
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.Fragments.TourFragment;
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tour.replace(R.id.fragment_container,new TourFragment());
         tour.commit();
 
+
     }
 
     private void init() {
@@ -81,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.profile:
                 startActivity(new Intent(MainActivity.this, UserProfile.class));
                 drawerLayout.closeDrawers();
-                return true;
+                break;
 
             case R.id.tour:
                 FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
@@ -91,15 +95,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
 
             case R.id.map:
+                FragmentTransaction map = getSupportFragmentManager().beginTransaction();
+                map.replace(R.id.fragment_container,new MapFragment());
+                map.commit();
                 Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
                 return true;
+
             case R.id.weather:
+
+                FragmentTransaction weather = getSupportFragmentManager().beginTransaction();
+                weather.replace(R.id.fragment_container,new WeatherFragment());
+                weather.commit();
                 Toast.makeText(this, "Weather", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
                 return true;
 
             case R.id.guide:
+
+                FragmentTransaction guide = getSupportFragmentManager().beginTransaction();
+                guide.replace(R.id.fragment_container,new GuideFragment());
+                guide.commit();
                 Toast.makeText(this, "Guide", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
                 return true;

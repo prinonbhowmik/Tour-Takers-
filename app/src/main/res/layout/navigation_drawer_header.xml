@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="160dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/holo_blue_dark"
     android:orientation="vertical">
@@ -17,7 +17,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginTop="5dp"
             app:civ_border_color="@android:color/white"
-            app:civ_border_width="1dp"
+            app:civ_border_width="2dp"
             android:layout_marginBottom="5dp"
             android:src="@drawable/ic_person_black_24dp" />
     </LinearLayout>
@@ -40,17 +40,32 @@
                 android:textColor="@android:color/black"
                 android:textSize="21sp" />
 
-            <TextView
-                android:layout_width="100dp"
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
+                android:layout_marginBottom="5dp">
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                android:backgroundTint="@android:color/white">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_star_black_24dp"
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="4.1"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
-        </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            </RelativeLayout>
+    </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
