@@ -1,5 +1,6 @@
 package com.example.tureguideversion1.Activities;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -10,26 +11,40 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.tureguideversion1.Fragments.GuideFragment;
 import com.example.tureguideversion1.Fragments.MapFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.Fragments.TourFragment;
+import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
@@ -41,7 +56,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
-
+    private DatabaseReference reference;
+    private StorageReference storageReference;
+    private FirebaseAuth auth;
+    private String userId, name;
+    private Uri image;
+    private ImageView circularImageView;
+    private TextView UserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +73,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         connectivityReceiver = new ConnectivityReceiver();
         registerReceiver(connectivityReceiver, intentFilter);
-
+        storageReference = FirebaseStorage.getInstance().getReference();
         FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
         tour.replace(R.id.fragment_container,new TourFragment());
         tour.commit();
 
+        userId = auth.getUid();
+        storageReference.child("userProfileImage/"+userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                // Got the download URL for 'userProfileImage/"+userId'
+                image = uri;
+                Glide.with(MainActivity.this)
+                        .load(image)
+                        .into(circularImageView);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+            }
+        });
 
+        DatabaseReference showref = reference.child(userId);
+
+        showref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Profile profile = dataSnapshot.getValue(Profile.class);
+
+
+
+                name = profile.getName();
+                UserName.setText(name);
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        circularImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, UserProfile.class));
+                drawerLayout.closeDrawers();
+            }
+        });
     }
 
     private void init() {
@@ -65,18 +132,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nav_icon = findViewById(R.id.nav_icon);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-
+        reference = FirebaseDatabase.getInstance().getReference("profile");
         navigationView.setNavigationItemSelectedListener(this);
-
+        auth = FirebaseAuth.getInstance();
         nav_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-
-
+        circularImageView = navigationView.getHeaderView(0).findViewById(R.id.navImageView);
+        UserName = navigationView.getHeaderView(0).findViewById(R.id.namefromNavigation);
     }
+
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {

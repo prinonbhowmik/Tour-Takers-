@@ -33,7 +33,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.navigation:navigation-fragment:2.0.0'
     implementation 'androidx.navigation:navigation-ui:2.0.0'
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
 
     //firebase
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
@@ -44,7 +43,10 @@ dependencies {
     //image crop api
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
 
-    //for bottom sheet
+    //bottom sheet
     implementation 'androidx.appcompat:appcompat:1.1.0'
+
+    //circle image
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 
 }

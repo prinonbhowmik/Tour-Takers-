@@ -22,3 +22,5 @@
 
 # Image crop API
 -keep class androidx.appcompat.widget.** { *; }
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep class com.bumptech.glide.GeneratedAppGlideModuleImpl
