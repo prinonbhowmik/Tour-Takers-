@@ -8,15 +8,14 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp">
+        android:layout_height="match_parent">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/navImageView"
-            android:layout_width="110dp"
-            android:layout_height="118dp"
+            android:layout_width="100dp"
+            android:layout_height="108dp"
+            android:layout_gravity="center"
             android:layout_marginStart="15dp"
-            android:layout_marginTop="20dp"
             android:foreground="@drawable/ripple"
             android:src="@drawable/ic_person_black_24dp"
             app:civ_border_color="@color/colorPrimary"
@@ -24,50 +23,64 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="92dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="40dp">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
 
-            <LinearLayout
+
+            <TextView
+                android:id="@+id/namefromNavigation"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:fontFamily="@font/amarante"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/namefromNavigation"
-                    android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/email_fromNavigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/amarante"
+                android:text="emailaddress@gmail.com"
+                android:layout_marginBottom="5dp"
+                android:textColor="@android:color/white"
+                android:textSize="15sp" />
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/white"
+                app:cardCornerRadius="10dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/amarante"
-                    android:textColor="@android:color/white"
-                    android:textSize="21sp" />
+                    android:orientation="horizontal">
 
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="3dp"
+                        android:src="@drawable/ic_star_black_24dp"
+                        android:textColor="@android:color/black" />
 
-                <RelativeLayout
-                    android:layout_width="81dp"
-                    android:layout_height="35dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp">
+                    <TextView
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginEnd="5dp"
+                        android:text="4.5"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:backgroundTint="@android:color/white"
-                        app:cardCornerRadius="20dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:drawableStart="@drawable/ic_star_black_24dp"
-                            android:gravity="center"
-                            android:padding="8dp"
-                            android:text="4.1"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp" />
-
-                    </androidx.cardview.widget.CardView>
-
-                </RelativeLayout>
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

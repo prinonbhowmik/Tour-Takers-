@@ -46,36 +46,59 @@
                 app:cardCornerRadius="15dp">
 
 
-                <RelativeLayout
-                    android:id="@+id/r_layout1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp">
-
+                <FrameLayout
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/profileIV"
                         android:layout_width="150dp"
                         android:layout_height="150dp"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_person_black_24dp"
                         app:civ_border_color="@color/colorBlue"
-                        app:civ_border_width="4dp" />
-
+                        app:civ_border_width="5dp"
+                        android:src="@drawable/ic_person_black_24dp"
+                        android:layout_gravity="bottom|center_horizontal" />
 
                     <ImageView
                         android:id="@+id/cameraIV"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginEnd="110dp"
-                        android:layout_marginBottom="20dp"
-                        android:background="@drawable/custom_round"
                         android:padding="12dp"
-                        android:src="@drawable/ic_photo_camera_black_24dp" />
-                </RelativeLayout>
+                        android:background="@drawable/custom_round"
+                        android:src="@drawable/ic_photo_camera_black_24dp"
+                        android:layout_gravity="bottom|end" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="160dp"
+                    android:layout_marginTop="200dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="3dp"
+                        android:src="@drawable/ic_star_black_24dp"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginEnd="5dp"
+                        android:text="4.5"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
 
             </androidx.cardview.widget.CardView>
 
@@ -135,6 +158,7 @@
                 </androidx.cardview.widget.CardView>
 
             </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -196,6 +220,7 @@
 
             </LinearLayout>
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -252,115 +277,96 @@
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
 
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="170dp"
-                android:layout_marginBottom="20dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/eventCV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="1">
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:backgroundTint="@android:color/white"
+                    app:cardCornerRadius="5dp">
 
-                    <androidx.cardview.widget.CardView
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginBottom="10dp"
-                        android:backgroundTint="@android:color/white"
-                        app:cardCornerRadius="5dp">
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/eventTV"
+                            android:layout_width="180dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/amarante"
+                            android:padding="20dp"
+                            android:text="Number of Event"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp" />
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
 
-                            <TextView
-                                android:id="@+id/etxt"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerHorizontal="true"
-                                android:layout_marginTop="20dp"
-                                android:fontFamily="@font/amarante"
-                                android:text="Number of Event"
-                                android:textColor="@android:color/black"
-                                android:textSize="21sp" />
+                        <TextView
+                            android:id="@+id/number_of_event"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/amarante"
+                            android:layout_marginStart="10dp"
+                            android:text="0"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="21sp" />
 
-                            <TextView
-                                android:id="@+id/eventNo"
-                                android:layout_width="150dp"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@+id/etxt"
-                                android:layout_centerHorizontal="true"
-                                android:layout_marginStart="10dp"
-                                android:layout_marginTop="10dp"
-                                android:layout_marginEnd="10dp"
-                                android:layout_marginBottom="10dp"
-                                android:fontFamily="@font/amarante"
-                                android:text="0"
-                                android:textAlignment="center"
-                                android:textColor="@android:color/black"
-                                android:textSize="55sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
-                        </RelativeLayout>
 
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/tourCV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="1">
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:backgroundTint="@android:color/white"
+                    app:cardCornerRadius="5dp">
 
-                    <androidx.cardview.widget.CardView
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:backgroundTint="@android:color/white"
-                        app:cardCornerRadius="5dp">
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/tourTV"
+                            android:layout_width="180dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/amarante"
+                            android:padding="20dp"
+                            android:text="Number of Tour"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp" />
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
 
-                            <TextView
-                                android:id="@+id/ttxt"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerHorizontal="true"
-                                android:layout_marginTop="20dp"
-                                android:fontFamily="@font/amarante"
-                                android:text="Number of Tour"
-                                android:textColor="@android:color/black"
-                                android:textSize="21sp" />
+                        <TextView
+                            android:id="@+id/number_of_tour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/amarante"
+                            android:text="0"
+                            android:layout_marginStart="10dp"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="21sp" />
 
-                            <TextView
-                                android:id="@+id/tourNo"
-                                android:layout_width="150dp"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@id/ttxt"
-                                android:layout_centerHorizontal="true"
-                                android:layout_marginTop="10dp"
-                                android:fontFamily="@font/amarante"
-                                android:text="0"
-                                android:textAlignment="center"
-                                android:textColor="@android:color/black"
-                                android:textSize="55sp" />
-                        </RelativeLayout>
-
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
-
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
 
         </LinearLayout>
