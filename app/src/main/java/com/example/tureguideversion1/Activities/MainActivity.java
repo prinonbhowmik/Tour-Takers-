@@ -14,6 +14,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -45,6 +46,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.skyfishjy.library.RippleBackground;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
@@ -59,10 +61,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DatabaseReference reference;
     private StorageReference storageReference;
     private FirebaseAuth auth;
-    private String userId, name;
+    private String userId, name, email;
     private Uri image;
     private ImageView circularImageView;
-    private TextView UserName;
+    private TextView UserName, userEmail;
+    private RippleBackground rippleBackground;
+    private int left, right, top, bottom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +81,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
         tour.replace(R.id.fragment_container,new TourFragment());
         tour.commit();
-
+        left = circularImageView.getPaddingLeft();
+        top = circularImageView.getPaddingTop();
+        right = circularImageView.getPaddingRight();
+        bottom = circularImageView.getPaddingBottom();
         userId = auth.getUid();
         storageReference.child("userProfileImage/"+userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -106,8 +113,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
                 name = profile.getName();
+                email = profile.getEmail();
                 UserName.setText(name);
-
+                userEmail.setText(email);
 
 
             }
@@ -121,8 +129,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         circularImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, UserProfile.class));
-                drawerLayout.closeDrawers();
+                circularImageView.setEnabled(false);
+                circularImageView.setPadding(left+10,top+10,right+10,bottom+10);
+                rippleBackground.startRippleAnimation();
+                new CountDownTimer(722, 1) {
+
+                    public void onTick(long millisUntilFinished) {
+                        //mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+                    }
+
+                    public void onFinish() {
+                        rippleBackground.stopRippleAnimation();
+                        circularImageView.setPadding(left,top,right,bottom);
+                        circularImageView.setEnabled(true);
+                        drawerLayout.closeDrawers();
+                        new CountDownTimer(300, 1) {
+
+                            public void onTick(long millisUntilFinished) {
+
+                            }
+
+                            public void onFinish() {
+                                startActivity(new Intent(MainActivity.this, UserProfile.class));
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                            }
+                        }.start();
+
+
+                    }
+                }.start();
+
+
             }
         });
     }
@@ -143,6 +180,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         circularImageView = navigationView.getHeaderView(0).findViewById(R.id.navImageView);
         UserName = navigationView.getHeaderView(0).findViewById(R.id.namefromNavigation);
+        rippleBackground=navigationView.getHeaderView(0).findViewById(R.id.content);
+        userEmail = navigationView.getHeaderView(0).findViewById(R.id.email_fromNavigation);
     }
 
 

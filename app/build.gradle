@@ -49,4 +49,7 @@ dependencies {
     //circle image
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 
+    //ripple effect
+    implementation 'com.skyfishjy.ripplebackground:library:1.0.1'
+
 }
