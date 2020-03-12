@@ -33,30 +33,38 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="110dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/txt1"
         android:id="@+id/relativelayout2">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imageIV"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        app:civ_border_color="@android:color/holo_blue_dark"
-        app:civ_border_width="2dp"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/icon" />
+        <FrameLayout
+            android:id="@+id/frame_layout1"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
 
-        <ImageView
-            android:id="@+id/cameraIV"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="155dp"
-            android:layout_marginBottom="3dp"
-            android:background="@drawable/custom_round"
-            android:padding="10dp"
-            android:src="@drawable/ic_photo_camera_black_24dp" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imageIV"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:src="@drawable/ic_person_black_24dp"
+                app:civ_border_color="@color/colorYellow"
+                app:civ_border_width="3dp" />
+
+            <ImageView
+                android:id="@+id/cameraIV"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="bottom|end"
+                android:background="@drawable/custom_round"
+                android:padding="10dp"
+                android:src="@drawable/ic_photo_camera_black_24dp" />
+        </FrameLayout>
+
     </RelativeLayout>
 
     <com.google.android.material.textfield.TextInputLayout

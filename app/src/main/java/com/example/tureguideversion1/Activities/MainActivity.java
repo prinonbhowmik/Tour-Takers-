@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
         tour.replace(R.id.fragment_container,new TourFragment());
         tour.commit();
+
         left = circularImageView.getPaddingLeft();
         top = circularImageView.getPaddingTop();
         right = circularImageView.getPaddingRight();
