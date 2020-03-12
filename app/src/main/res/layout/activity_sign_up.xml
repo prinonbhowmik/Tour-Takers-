@@ -80,8 +80,6 @@
         android:hint="Full Name"
         android:fontFamily="@font/amarante"
         android:textColorHint="@color/colorYellow">
-
-
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/name_ET"
             android:layout_width="match_parent"

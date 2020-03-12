@@ -95,7 +95,6 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
             }
         });
 
-
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

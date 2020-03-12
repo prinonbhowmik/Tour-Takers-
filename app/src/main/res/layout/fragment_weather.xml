@@ -14,5 +14,13 @@
         android:textSize="35sp"
         android:textColor="@android:color/white"
         android:text="Weather Fragment" />
+    <ImageView
+        android:id="@+id/nav_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:src="@drawable/ic_menu_black_24dp" />
 
 </RelativeLayout>
