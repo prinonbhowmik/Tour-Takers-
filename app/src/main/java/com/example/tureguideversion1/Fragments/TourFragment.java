@@ -38,8 +38,7 @@ public class TourFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_tour, container, false);
 
-        locationEt = view.findViewById(R.id.location_Et);
-        tourDateEt = view.findViewById(R.id.tourDate_Et);
+        init(view);
 
         tourDateEt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +49,11 @@ public class TourFragment extends Fragment {
 
 
         return  view;
+    }
+
+    private void init(View view) {
+        locationEt = view.findViewById(R.id.location_Et);
+        tourDateEt = view.findViewById(R.id.tourDate_Et);
     }
 
     private void getDate() {

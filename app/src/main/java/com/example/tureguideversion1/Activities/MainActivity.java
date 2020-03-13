@@ -84,9 +84,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         connectivityReceiver = new ConnectivityReceiver();
         registerReceiver(connectivityReceiver, intentFilter);
         storageReference = FirebaseStorage.getInstance().getReference();
-        FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
-        tour.replace(R.id.fragment_container,new TourFragment());
-        tour.commit();
+        if(savedInstanceState==null) {
+            FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+            tour.replace(R.id.fragment_container, new TourFragment());
+            tour.commit();
+        }
 
         left = circularImageView.getPaddingLeft();
         top = circularImageView.getPaddingTop();
