@@ -7,6 +7,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -16,12 +17,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.transition.AutoTransition;
+import android.transition.Explode;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView UserName, userEmail;
     private RippleBackground rippleBackground;
     private int left, right, top, bottom;
+    private LinearLayout ratingLaout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         rippleBackground.stopRippleAnimation();
                         circularImageView.setPadding(left,top,right,bottom);
                         circularImageView.setEnabled(true);
-                        drawerLayout.closeDrawers();
+                        //drawerLayout.closeDrawers();
                         new CountDownTimer(300, 1) {
 
                             public void onTick(long millisUntilFinished) {
@@ -151,8 +157,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
 
                             public void onFinish() {
-                                startActivity(new Intent(MainActivity.this, UserProfile.class));
-                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                                // Check if we're running on Android 5.0 or higher
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    // Apply activity transition
+                                    Pair[] pairs = new Pair[4];
+                                    pairs[0] = new Pair<View,String>(circularImageView,"imageTransition");
+                                    pairs[1] = new Pair<View,String>(userEmail,"emailTransition");
+                                    pairs[2] = new Pair<View,String>(UserName,"nameTransition");
+                                    pairs[3] = new Pair<View,String>(ratingLaout,"ratingTransition");
+                                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this,pairs);
+                                    startActivity(new Intent(MainActivity.this, UserProfile.class),options.toBundle());
+                                } else {
+                                    // Swap without transition
+                                    startActivity(new Intent(MainActivity.this, UserProfile.class));
+                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                                }
                             }
                         }.start();
 
@@ -183,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         UserName = navigationView.getHeaderView(0).findViewById(R.id.namefromNavigation);
         rippleBackground=navigationView.getHeaderView(0).findViewById(R.id.content);
         userEmail = navigationView.getHeaderView(0).findViewById(R.id.email_fromNavigation);
+        ratingLaout = navigationView.getHeaderView(0).findViewById(R.id.ratingLayout);
     }
 
 

@@ -64,9 +64,14 @@ public class UserProfile extends AppCompatActivity{
             public void onSuccess(Uri uri) {
                 // Got the download URL for 'userProfileImage/"+userId'
                 image = uri;
-                Glide.with(UserProfile.this)
-                        .load(image)
-                        .into(profileImage);
+                try {
+                    Glide.with(UserProfile.this)
+                            .load(image)
+                            .into(profileImage);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),"Can't load profile image!",Toast.LENGTH_LONG).show();
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

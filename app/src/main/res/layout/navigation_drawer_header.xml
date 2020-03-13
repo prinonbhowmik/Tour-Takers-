@@ -25,7 +25,8 @@
             android:padding="15dp"
             android:src="@drawable/ic_person_black_24dp"
             app:civ_border_color="@color/colorPrimary"
-            app:civ_border_width="4dp" />
+            app:civ_border_width="4dp"
+            android:transitionName="imageTransition"/>
     </com.skyfishjy.library.RippleBackground>
 
     <LinearLayout
@@ -44,7 +45,8 @@
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/amarante"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:transitionName="nameTransition"/>
 
         <TextView
             android:id="@+id/email_fromNavigation"
@@ -53,7 +55,8 @@
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/amarante"
             android:textColor="@android:color/darker_gray"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:transitionName="emailTransition"/>
 
 
         <androidx.cardview.widget.CardView
@@ -63,9 +66,11 @@
             app:cardCornerRadius="10dp">
 
             <LinearLayout
+                android:id="@+id/ratingLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:transitionName="ratingTransition">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -79,9 +84,9 @@
                     android:layout_width="25dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:layout_marginStart="3dp"
                     android:layout_marginEnd="5dp"
+                    android:gravity="center"
                     android:text="4.5"
                     android:textColor="@android:color/black"
                     android:textSize="18sp" />
