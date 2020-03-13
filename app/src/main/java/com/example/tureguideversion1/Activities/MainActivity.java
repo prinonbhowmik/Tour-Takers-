@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         connectivityReceiver = new ConnectivityReceiver();
         registerReceiver(connectivityReceiver, intentFilter);
         storageReference = FirebaseStorage.getInstance().getReference();
-        if(savedInstanceState==null) {
+        if (savedInstanceState == null) {
             FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
             tour.replace(R.id.fragment_container, new TourFragment());
             tour.commit();
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         right = circularImageView.getPaddingRight();
         bottom = circularImageView.getPaddingBottom();
         userId = auth.getUid();
-        storageReference.child("userProfileImage/"+userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageReference.child("userProfileImage/" + userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 // Got the download URL for 'userProfileImage/"+userId'
@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Profile profile = dataSnapshot.getValue(Profile.class);
 
 
-
                 name = profile.getName();
                 email = profile.getEmail();
                 UserName.setText(name);
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 circularImageView.setEnabled(false);
-                circularImageView.setPadding(left+10,top+10,right+10,bottom+10);
+                circularImageView.setPadding(left + 10, top + 10, right + 10, bottom + 10);
                 rippleBackground.startRippleAnimation();
                 new CountDownTimer(722, 1) {
 
@@ -149,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     public void onFinish() {
                         rippleBackground.stopRippleAnimation();
-                        circularImageView.setPadding(left,top,right,bottom);
+                        circularImageView.setPadding(left, top, right, bottom);
                         circularImageView.setEnabled(true);
                         //drawerLayout.closeDrawers();
                         new CountDownTimer(300, 1) {
@@ -163,12 +162,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                     // Apply activity transition
                                     Pair[] pairs = new Pair[4];
-                                    pairs[0] = new Pair<View,String>(circularImageView,"imageTransition");
-                                    pairs[1] = new Pair<View,String>(userEmail,"emailTransition");
-                                    pairs[2] = new Pair<View,String>(UserName,"nameTransition");
-                                    pairs[3] = new Pair<View,String>(ratingLaout,"ratingTransition");
-                                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this,pairs);
-                                    startActivity(new Intent(MainActivity.this, UserProfile.class),options.toBundle());
+                                    pairs[0] = new Pair<View, String>(circularImageView, "imageTransition");
+                                    pairs[1] = new Pair<View, String>(userEmail, "emailTransition");
+                                    pairs[2] = new Pair<View, String>(UserName, "nameTransition");
+                                    pairs[3] = new Pair<View, String>(ratingLaout, "ratingTransition");
+                                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
+                                    startActivity(new Intent(MainActivity.this, UserProfile.class), options.toBundle());
                                 } else {
                                     // Swap without transition
                                     startActivity(new Intent(MainActivity.this, UserProfile.class));
@@ -202,32 +201,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         circularImageView = navigationView.getHeaderView(0).findViewById(R.id.navImageView);
         UserName = navigationView.getHeaderView(0).findViewById(R.id.namefromNavigation);
-        rippleBackground=navigationView.getHeaderView(0).findViewById(R.id.content);
+        rippleBackground = navigationView.getHeaderView(0).findViewById(R.id.content);
         userEmail = navigationView.getHeaderView(0).findViewById(R.id.email_fromNavigation);
         ratingLaout = navigationView.getHeaderView(0).findViewById(R.id.ratingLayout);
     }
-
 
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
         switch (menuItem.getItemId()) {
-            case R.id.profile:
-                startActivity(new Intent(MainActivity.this, UserProfile.class));
-                drawerLayout.closeDrawers();
-                break;
 
             case R.id.tour:
                 FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
-                tour.replace(R.id.fragment_container,new TourFragment());
+                tour.replace(R.id.fragment_container, new TourFragment());
                 tour.commit();
                 drawerLayout.closeDrawers();
                 return true;
 
             case R.id.map:
                 FragmentTransaction map = getSupportFragmentManager().beginTransaction();
-                map.replace(R.id.fragment_container,new MapFragment());
+                map.replace(R.id.fragment_container, new MapFragment());
                 map.commit();
                 Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
@@ -236,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.weather:
 
                 FragmentTransaction weather = getSupportFragmentManager().beginTransaction();
-                weather.replace(R.id.fragment_container,new WeatherFragment());
+                weather.replace(R.id.fragment_container, new WeatherFragment());
                 weather.commit();
                 Toast.makeText(this, "Weather", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
@@ -245,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.guide:
 
                 FragmentTransaction guide = getSupportFragmentManager().beginTransaction();
-                guide.replace(R.id.fragment_container,new GuideFragment());
+                guide.replace(R.id.fragment_container, new GuideFragment());
                 guide.commit();
                 Toast.makeText(this, "Guide", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
@@ -327,10 +321,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        else {
+        } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
                 return;

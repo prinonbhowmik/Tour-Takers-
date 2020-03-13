@@ -15,17 +15,13 @@
 
         <item
             android:id="@+id/map"
-            android:icon="@drawable/ic_location_on_black_24dp"
+            android:icon="@drawable/ic_pin"
             android:title="Map" />
         <item
             android:id="@+id/weather"
-            android:icon="@drawable/ic_wb_incandescent_black_24dp"
+            android:icon="@drawable/ic_sun"
             android:title="Weather" />
 
-        <item
-            android:id="@+id/profile"
-            android:icon="@drawable/ic_account_circle_black_24dp"
-            android:title="Profile" />
 
     </group>
     <group
@@ -35,11 +31,11 @@
         <item
             android:id="@+id/terms"
             android:title="T &amp; C"
-            android:icon="@drawable/ic_note_black_24dp"/>
+            android:icon="@drawable/ic_term"/>
         <item
             android:id="@+id/logout"
             android:title="logout"
-            android:icon="@drawable/ic_power_settings_new_black_24dp"/>
+            android:icon="@drawable/ic_logout"/>
 
     </group>
 
