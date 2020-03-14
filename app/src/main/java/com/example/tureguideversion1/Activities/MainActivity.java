@@ -104,29 +104,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 Profile profile = dataSnapshot.getValue(Profile.class);
 
-            try {
-                name = profile.getName();
-                email = profile.getEmail();
-                image = profile.getImage();
-
-                UserName.setText(name);
-                userEmail.setText(email);
-
                 try {
-                    Glide.with(MainActivity.this)
-                            .load(image)
-                            .into(circularImageView);
-                    } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(),"Can't load profile image!",Toast.LENGTH_LONG).show();
+                    name = profile.getName();
+                    email = profile.getEmail();
+                    image = profile.getImage();
+
+                    UserName.setText(name);
+                    userEmail.setText(email);
+                    if (!image.isEmpty()) {
+                        try {
+                            Glide.with(MainActivity.this)
+                                    .load(image)
+                                    .into(circularImageView);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                        }
                     }
                 } catch (NullPointerException e) {
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(),"Data has changed!",Toast.LENGTH_LONG).show();
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MainActivity.this, SignIn.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            }
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Data has changed!", Toast.LENGTH_LONG).show();
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(MainActivity.this, SignIn.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                }
                 //Toast.makeText(getApplicationContext(),image,Toast.LENGTH_LONG).show();
 
             }

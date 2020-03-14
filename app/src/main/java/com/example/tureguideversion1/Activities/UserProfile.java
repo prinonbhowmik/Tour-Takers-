@@ -77,13 +77,15 @@ public class UserProfile extends AppCompatActivity{
                 profilename.setText(name);
                 profileemail.setText(email);
                 profilephoneno.setText(phone);
-                try {
-                    Glide.with(UserProfile.this)
-                            .load(image)
-                            .into(profileImage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    //Toast.makeText(getApplicationContext(),"Can't load profile image!",Toast.LENGTH_LONG).show();
+                if (!image.isEmpty()) {
+                    try {
+                        Glide.with(UserProfile.this)
+                                .load(image)
+                                .into(profileImage);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                    }
                 }
 
             }
@@ -169,10 +171,16 @@ public class UserProfile extends AppCompatActivity{
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("profile").child(userId).child("image");
-                            databaseReference.setValue(imageUri.toString());
-                            progressBar.setVisibility(View.GONE);
-                            //Toast.makeText(SignUp.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                            storageReference.child("userProfileImage/"+userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    imageUri = uri;
+                                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("profile").child(userId).child("image");
+                                    databaseReference.setValue(imageUri.toString());
+                                    progressBar.setVisibility(View.GONE);
+                                }
+                            });
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
