@@ -48,7 +48,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class SignUp extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
 
 
-    CircleImageView imageIV;
     private EditText emailEt, nameEt, phoneNoEt, passwordEt;
     private Button signupBtn;
     private TextView txt1;
@@ -56,7 +55,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
     private DatabaseReference reference;
     private FirebaseStorage storage;
     private StorageReference storageReference;
-    private String email, name, phone, password, address;
+    private String email, name, phone, password, image, rating;
     Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim;
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
@@ -84,16 +83,6 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
         email = intent.getExtras().getString("email");
         emailEt.setText(email);
         progressDialog = new ProgressDialog(this);
-        imageIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CropImage.activity()
-                        .setFixAspectRatio(true)
-                        .setGuidelines(CropImageView.Guidelines.ON)
-                        .setCropShape(CropImageView.CropShape.OVAL)
-                        .start(SignUp.this);
-            }
-        });
 
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,21 +117,6 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
             }
         });
 
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == RESULT_OK) {
-                Uri resultUri = result.getUri();
-                userImage = resultUri;
-                imageIV.setImageURI(resultUri);
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
-            }
-        }
     }
 
     private void checkmail() {
@@ -199,6 +173,8 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                     userInfo.put("email", email);
                     userInfo.put("phone", phone);
                     userInfo.put("password", password);
+                    userInfo.put("image", "");
+                    userInfo.put("rating", "");
                     userInfo.put("Id", userId);
 
 
@@ -210,7 +186,6 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
-                                            uploadImage();
                                             progressDialog.dismiss();
                                             Toast.makeText(SignUp.this, "Successfully Sign Up. Please check your email for verification", Toast.LENGTH_SHORT).show();
                                             startActivity(new Intent(SignUp.this, SignIn.class).putExtra("email", email));
@@ -233,37 +208,6 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                 }
             }
         });
-    }
-
-    private void uploadImage() {
-
-        if(userImage != null)
-        {
-            StorageReference ref = storageReference.child("userProfileImage/"+userId );
-            ref.putFile(userImage)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
-                            //Toast.makeText(SignUp.this, "Uploaded", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(SignUp.this, "Image upload failed!"+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
-                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
-                        }
-                    });
-        }
     }
 
     // Showing the status in Snackbar
@@ -345,7 +289,6 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
         phoneNoEt = findViewById(R.id.phoneEt);
         passwordEt = findViewById(R.id.password_ET);
         signupBtn = findViewById(R.id.signup_BTN);
-        imageIV = findViewById(R.id.imageIV);
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference();
 

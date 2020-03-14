@@ -44,9 +44,9 @@ public class UserProfile extends AppCompatActivity{
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference reference;
-    private String userId, name, email, phone, url;
+    private String userId, name, email, phone, image, rating;
     private StorageReference storageReference;
-    private Uri image;
+    private Uri imageUri;
     private ImageView profileImage;
     ProgressBar progressBar;
 
@@ -58,27 +58,6 @@ public class UserProfile extends AppCompatActivity{
         storageReference = FirebaseStorage.getInstance().getReference();
         init();
         userId = auth.getUid();
-
-        storageReference.child("userProfileImage/"+userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                // Got the download URL for 'userProfileImage/"+userId'
-                image = uri;
-                try {
-                    Glide.with(UserProfile.this)
-                            .load(image)
-                            .into(profileImage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(),"Can't load profile image!",Toast.LENGTH_LONG).show();
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
 
         DatabaseReference showref = reference.child(userId);
 
@@ -93,11 +72,19 @@ public class UserProfile extends AppCompatActivity{
                 name = profile.getName();
                 email = profile.getEmail();
                 phone = profile.getPhone();
+                image = profile.getImage();
 
                 profilename.setText(name);
                 profileemail.setText(email);
                 profilephoneno.setText(phone);
-
+                try {
+                    Glide.with(UserProfile.this)
+                            .load(image)
+                            .into(profileImage);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //Toast.makeText(getApplicationContext(),"Can't load profile image!",Toast.LENGTH_LONG).show();
+                }
 
             }
 
@@ -159,9 +146,13 @@ public class UserProfile extends AppCompatActivity{
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri resultUri = result.getUri();
-                image = resultUri;
+                imageUri = resultUri;
                 progressBar.setVisibility(View.VISIBLE);
-                deleteImage();
+                if(!image.isEmpty()) {
+                    deleteImage();
+                }else{
+                    uploadImage();
+                }
                 //imageIV.setImageURI(resultUri);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
@@ -171,22 +162,15 @@ public class UserProfile extends AppCompatActivity{
 
     private void uploadImage() {
 
-        if(image != null)
+        if(imageUri != null)
         {
             StorageReference ref = storageReference.child("userProfileImage/"+userId );
-            ref.putFile(image)
+            ref.putFile(imageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            storageReference.child("userProfileImage/"+userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    image = uri;
-                                    Glide.with(UserProfile.this)
-                                            .load(image)
-                                            .into(profileImage);
-                                }
-                            });
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("profile").child(userId).child("image");
+                            databaseReference.setValue(imageUri.toString());
                             progressBar.setVisibility(View.GONE);
                             //Toast.makeText(SignUp.this, "Uploaded", Toast.LENGTH_SHORT).show();
                         }

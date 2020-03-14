@@ -12,13 +12,13 @@ public class Profile {
     public Profile() {
     }
 
-    public Profile(String name, String email, String password, String address, String phone) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.address = address;
-        this.phone = phone;
-    }
+//    public Profile(String name, String email, String password, String address, String phone) {
+//        this.name = name;
+//        this.email = email;
+//        this.password = password;
+//        this.address = address;
+//        this.phone = phone;
+//    }
 
     public Profile(String name, String email, String password, String address, String phone, String image) {
         this.name = name;

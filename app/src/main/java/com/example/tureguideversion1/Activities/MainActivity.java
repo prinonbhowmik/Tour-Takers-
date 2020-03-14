@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DatabaseReference reference;
     private StorageReference storageReference;
     private FirebaseAuth auth;
-    private String userId, name, email;
-    private Uri image;
+    private String userId, name, email, image, phone;
+    private Uri imageUri;
     private ImageView circularImageView;
     private TextView UserName, userEmail;
     private RippleBackground rippleBackground;
@@ -95,21 +95,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         right = circularImageView.getPaddingRight();
         bottom = circularImageView.getPaddingBottom();
         userId = auth.getUid();
-        storageReference.child("userProfileImage/" + userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                // Got the download URL for 'userProfileImage/"+userId'
-                image = uri;
-                Glide.with(MainActivity.this)
-                        .load(image)
-                        .into(circularImageView);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
 
         DatabaseReference showref = reference.child(userId);
 
@@ -119,12 +104,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 Profile profile = dataSnapshot.getValue(Profile.class);
 
-
+            try {
                 name = profile.getName();
                 email = profile.getEmail();
+                image = profile.getImage();
+
                 UserName.setText(name);
                 userEmail.setText(email);
 
+                try {
+                    Glide.with(MainActivity.this)
+                            .load(image)
+                            .into(circularImageView);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),"Can't load profile image!",Toast.LENGTH_LONG).show();
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(),"Data has changed!",Toast.LENGTH_LONG).show();
+                startActivity(new Intent(MainActivity.this, SignIn.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+                //Toast.makeText(getApplicationContext(),image,Toast.LENGTH_LONG).show();
 
             }
 
@@ -137,48 +139,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         circularImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                circularImageView.setEnabled(false);
-                circularImageView.setPadding(left + 10, top + 10, right + 10, bottom + 10);
-                rippleBackground.startRippleAnimation();
-                new CountDownTimer(722, 1) {
-
-                    public void onTick(long millisUntilFinished) {
-                        //mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
-                    }
-
-                    public void onFinish() {
-                        rippleBackground.stopRippleAnimation();
-                        circularImageView.setPadding(left, top, right, bottom);
-                        circularImageView.setEnabled(true);
-                        //drawerLayout.closeDrawers();
-                        new CountDownTimer(300, 1) {
-
-                            public void onTick(long millisUntilFinished) {
-
-                            }
-
-                            public void onFinish() {
-                                // Check if we're running on Android 5.0 or higher
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    // Apply activity transition
-                                    Pair[] pairs = new Pair[4];
-                                    pairs[0] = new Pair<View, String>(circularImageView, "imageTransition");
-                                    pairs[1] = new Pair<View, String>(userEmail, "emailTransition");
-                                    pairs[2] = new Pair<View, String>(UserName, "nameTransition");
-                                    pairs[3] = new Pair<View, String>(ratingLaout, "ratingTransition");
-                                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
-                                    startActivity(new Intent(MainActivity.this, UserProfile.class), options.toBundle());
-                                } else {
-                                    // Swap without transition
-                                    startActivity(new Intent(MainActivity.this, UserProfile.class));
-                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                                }
-                            }
-                        }.start();
-
-
-                    }
-                }.start();
+                // Check if we're running on Android 5.0 or higher
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    // Apply activity transition
+                    Pair[] pairs = new Pair[4];
+                    pairs[0] = new Pair<View, String>(circularImageView, "imageTransition");
+                    pairs[1] = new Pair<View, String>(userEmail, "emailTransition");
+                    pairs[2] = new Pair<View, String>(UserName, "nameTransition");
+                    pairs[3] = new Pair<View, String>(ratingLaout, "ratingTransition");
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
+                    startActivity(new Intent(MainActivity.this, UserProfile.class), options.toBundle());
+                } else {
+                    // Swap without transition
+                    startActivity(new Intent(MainActivity.this, UserProfile.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                }
 
 
             }

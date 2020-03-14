@@ -17,83 +17,48 @@
             android:layout_height="wrap_content">
 
 
-    <TextView
-        android:id="@+id/txt1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
-        android:layout_marginBottom="10dp"
-        android:fontFamily="@font/amarante"
-        android:text="Sign Up"
-        android:textColor="@android:color/black"
-        android:textSize="35sp"
-        android:textStyle="bold" />
+            <TextView
+                android:id="@+id/txt1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/amarante"
+                android:text="Sign Up"
+                android:textColor="@android:color/black"
+                android:textSize="35sp"
+                android:textStyle="bold" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txt1"
-        android:id="@+id/relativelayout2">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/username_TIL"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txt1"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/amarante"
+                android:hint="Full Name"
+                android:textColorHint="@color/colorYellow">
 
-        <FrameLayout
-            android:id="@+id/frame_layout1"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/name_ET"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_design"
+                    android:fontFamily="@font/amarante"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:textColor="#000"
+                    android:textSize="21sp" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/imageIV"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="bottom|center_horizontal"
-                android:src="@drawable/ic_person_black_24dp"
-                app:civ_border_color="@color/colorYellow"
-                app:civ_border_width="3dp" />
-
-            <ImageView
-                android:id="@+id/cameraIV"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_gravity="bottom|end"
-                android:background="@drawable/custom_round"
-                android:padding="10dp"
-                android:src="@drawable/ic_photo_camera_black_24dp" />
-        </FrameLayout>
-
-    </RelativeLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/username_TIL"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/relativelayout2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="20dp"
-        android:hint="Full Name"
-        android:fontFamily="@font/amarante"
-        android:textColorHint="@color/colorYellow">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/name_ET"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edit_text_design"
-            android:inputType="text"
-            android:fontFamily="@font/amarante"
-            android:maxLines="1"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:textColor="#000"
-            android:textSize="21sp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
     <com.google.android.material.textfield.TextInputLayout
