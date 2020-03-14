@@ -116,13 +116,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Glide.with(MainActivity.this)
                             .load(image)
                             .into(circularImageView);
-                } catch (Exception e) {
+                    } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(getApplicationContext(),"Can't load profile image!",Toast.LENGTH_LONG).show();
-                }
-            } catch (NullPointerException e) {
+                    }
+                } catch (NullPointerException e) {
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(),"Data has changed!",Toast.LENGTH_LONG).show();
+                FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(MainActivity.this, SignIn.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
