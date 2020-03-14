@@ -187,7 +187,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             progressDialog.dismiss();
-                                            Toast.makeText(SignUp.this, "Successfully Sign Up. Please check your email for verification", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(SignUp.this, "Successfully Sign Up. Please check your email for verification", Toast.LENGTH_LONG).show();
                                             startActivity(new Intent(SignUp.this, SignIn.class).putExtra("email", email));
                                             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                                         } else {
