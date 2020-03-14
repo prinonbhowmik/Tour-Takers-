@@ -84,7 +84,7 @@ public class UserProfile extends AppCompatActivity{
                                 .into(profileImage);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
                     }
                 }
 
