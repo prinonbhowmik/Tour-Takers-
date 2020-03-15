@@ -3,6 +3,7 @@ package com.example.tureguideversion1.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -10,6 +11,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -18,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.Profile_bottom_sheet;
 import com.example.tureguideversion1.R;
@@ -39,7 +44,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 public class UserProfile extends AppCompatActivity{
 
-    private TextView profilename, profileemail, profilephoneno;
+    private TextView profilename, profileemail, profilephoneno, n2, p2 ;
     private CardView phoneUpdate,nameUpdate;
     private FirebaseAuth auth;
     private FirebaseDatabase database;
@@ -47,9 +52,9 @@ public class UserProfile extends AppCompatActivity{
     private String userId, name, email, phone, image, rating;
     private StorageReference storageReference;
     private Uri imageUri;
-    private ImageView profileImage;
+    private ImageView profileImage, n1, e2, e1, p1;
     ProgressBar progressBar;
-
+    Animation topAnim, bottomAnim, leftAnim, rightAnim, fadeIn, scaleAnim, ball3Anim, edittext_anim, blink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +63,7 @@ public class UserProfile extends AppCompatActivity{
         storageReference = FirebaseStorage.getInstance().getReference();
         init();
         userId = auth.getUid();
-
+        animation();
         DatabaseReference showref = reference.child(userId);
 
         showref.addValueEventListener(new ValueEventListener() {
@@ -95,6 +100,21 @@ public class UserProfile extends AppCompatActivity{
 
             }
         });
+
+        YoYo.with(Techniques.FadeIn)
+                .duration(1700)
+                .repeat(0)
+                .playOn(profilename);
+
+        YoYo.with(Techniques.FadeIn)
+                .duration(1700)
+                .repeat(0)
+                .playOn(profileemail);
+
+        YoYo.with(Techniques.FadeIn)
+                .duration(1700)
+                .repeat(0)
+                .playOn(profilephoneno);
 
         nameUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +175,6 @@ public class UserProfile extends AppCompatActivity{
                 }else{
                     uploadImage();
                 }
-                //imageIV.setImageURI(resultUri);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
@@ -193,8 +212,8 @@ public class UserProfile extends AppCompatActivity{
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
+                            double progress = (100.0*taskSnapshot.getBytesTransferred())/taskSnapshot
+                                    .getTotalByteCount();
                             Toast.makeText(UserProfile.this, "Uploaded "+(int)progress+"%", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -227,6 +246,30 @@ public class UserProfile extends AppCompatActivity{
 
     }
 
+    private void animation() {
+
+        topAnim = AnimationUtils.loadAnimation(this, R.anim.top_animation);
+        bottomAnim = AnimationUtils.loadAnimation(this, R.anim.bottom_animation);
+        leftAnim = AnimationUtils.loadAnimation(this, R.anim.left_animation);
+        rightAnim = AnimationUtils.loadAnimation(this, R.anim.right_animation);
+        fadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
+        scaleAnim = AnimationUtils.loadAnimation(this, R.anim.scale_anim);
+        ball3Anim = AnimationUtils.loadAnimation(this, R.anim.ball3_animation);
+        edittext_anim = AnimationUtils.loadAnimation(this, R.anim.edittext_anim);
+        blink = AnimationUtils.loadAnimation(this, R.anim.blink_anim);
+
+//        profilename.setAnimation(scaleAnim);
+//        profileemail.setAnimation(scaleAnim);
+//        profilephoneno.setAnimation(scaleAnim);
+        e1.setAnimation(leftAnim);
+        e2.setAnimation(rightAnim);
+        n1.setAnimation(leftAnim);
+        n2.setAnimation(rightAnim);
+        p1.setAnimation(leftAnim);
+        p2.setAnimation(rightAnim);
+
+    }
+
     private void init() {
         nameUpdate = findViewById(R.id.nameUpdate);
         phoneUpdate = findViewById(R.id.phoneUpdate);
@@ -237,11 +280,20 @@ public class UserProfile extends AppCompatActivity{
         profileImage = findViewById(R.id.profileIV);
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("profile");
-
+        n1 = findViewById(R.id.n1);
+        n2 = findViewById(R.id.n2);
+        e1 = findViewById(R.id.e1);
+        e2 = findViewById(R.id.e2);
+        p1 = findViewById(R.id.p1);
+        p2 = findViewById(R.id.p2);
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        ActivityCompat.finishAfterTransition(UserProfile.this);
+    }
 
     @Override
     public void finish() {

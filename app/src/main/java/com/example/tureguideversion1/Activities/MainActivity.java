@@ -18,11 +18,18 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.transition.AutoTransition;
+import android.transition.ChangeBounds;
+import android.transition.ChangeImageTransform;
+import android.transition.ChangeTransform;
 import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.TransitionSet;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -118,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     .into(circularImageView);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
                         }
                     }
                 } catch (NullPointerException e) {
@@ -143,12 +150,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View view) {
                 // Check if we're running on Android 5.0 or higher
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    // Apply activity transition
-                    Pair[] pairs = new Pair[4];
+                    Pair[] pairs = new Pair[2];
                     pairs[0] = new Pair<View, String>(circularImageView, "imageTransition");
-                    pairs[1] = new Pair<View, String>(userEmail, "emailTransition");
-                    pairs[2] = new Pair<View, String>(UserName, "nameTransition");
-                    pairs[3] = new Pair<View, String>(ratingLaout, "ratingTransition");
+                    pairs[1] = new Pair<View, String>(ratingLaout, "ratingTransition");
                     ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
                     startActivity(new Intent(MainActivity.this, UserProfile.class), options.toBundle());
                 } else {

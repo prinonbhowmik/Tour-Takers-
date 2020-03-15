@@ -45,8 +45,7 @@
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/amarante"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:transitionName="nameTransition"/>
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/email_fromNavigation"
@@ -55,8 +54,7 @@
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/amarante"
             android:textColor="@android:color/darker_gray"
-            android:textSize="15sp"
-            android:transitionName="emailTransition"/>
+            android:textSize="15sp"/>
 
 
         <androidx.cardview.widget.CardView

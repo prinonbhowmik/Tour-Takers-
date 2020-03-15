@@ -15,6 +15,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,8 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.view.Gravity.CENTER_HORIZONTAL;
 
 public class SignUp extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
 
@@ -187,7 +190,14 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             progressDialog.dismiss();
-                                            Toast.makeText(SignUp.this, "Successfully Sign Up. Please check your email for verification", Toast.LENGTH_LONG).show();
+                                            Toast toast = Toast.makeText(getApplicationContext(), "Successfully Sign Up.\nPlease check your email for verification", Toast.LENGTH_LONG);
+                                            LinearLayout layout = (LinearLayout) toast.getView();
+                                            if (layout.getChildCount() > 0) {
+                                                TextView tv = (TextView) layout.getChildAt(0);
+                                                tv.setGravity(Gravity.CENTER_VERTICAL | CENTER_HORIZONTAL);
+                                            }
+                                            toast.show();
+
                                             startActivity(new Intent(SignUp.this, SignIn.class).putExtra("email", email));
                                             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                                         } else {
@@ -238,7 +248,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         } else {
-            textView.setGravity(Gravity.CENTER_HORIZONTAL);
+            textView.setGravity(CENTER_HORIZONTAL);
         }
         snackbar.show();
     }

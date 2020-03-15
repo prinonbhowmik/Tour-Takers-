@@ -52,4 +52,12 @@ dependencies {
     //ripple effect
     implementation 'com.skyfishjy.ripplebackground:library:1.0.1'
 
+    //yoyo animation
+    implementation 'androidx.core:core:1.2.0'
+    implementation 'com.daimajia.easing:library:2.0@aar'
+    implementation 'com.daimajia.androidanimations:library:2.3@aar'
+
+    //transition everywhere
+    implementation "com.andkulikov:transitionseverywhere:2.1.0"
+
 }
