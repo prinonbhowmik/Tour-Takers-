@@ -3,17 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_orange_dark"
+    android:background="@color/rippelColor"
     tools:context=".Fragments.GuideFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:textSize="35sp"
-        android:textColor="@android:color/white"
-        android:text="Weather Fragment" />
+
     <ImageView
         android:id="@+id/nav_icon"
         android:layout_width="wrap_content"
@@ -22,5 +16,55 @@
         android:layout_alignParentTop="true"
         android:layout_margin="10dp"
         android:src="@drawable/ic_menu_black_24dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/weather_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dhaka"
+            android:textStyle="bold"
+            android:textSize="45sp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/weather_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sunny Day"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_below="@id/weather_place"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"/>
+
+        <ImageView
+            android:id="@+id/weather_image"
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/weather_type"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_wb_sunny_black_24dp"/>
+
+
+        <TextView
+            android:id="@+id/temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="18"
+            android:textStyle="bold"
+            android:textSize="90sp"
+            android:layout_below="@id/weather_image"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"/>
+
+    </RelativeLayout>
+
 
 </RelativeLayout>
