@@ -213,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 FragmentTransaction weather = getSupportFragmentManager().beginTransaction();
                 weather.replace(R.id.fragment_container, new WeatherFragment());
                 weather.commit();
-                Toast.makeText(this, "Weather", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
                 return true;
 
