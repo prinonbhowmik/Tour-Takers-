@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".Fragments.EventFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+        android:id="@+id/rl1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/nav_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:src="@drawable/ic_menu_black_24dp" />
+
+        <EditText
+            android:id="@+id/event_searchET"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:hint="Search"
+            android:textColorHint="@android:color/darker_gray"
+            android:textColor="@android:color/black"
+            android:gravity="center"
+            android:textSize="21sp"
+            android:layout_toEndOf="@+id/nav_icon"/>
+        <Button
+            android:id="@+id/searchBtn"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:layout_centerInParent="true"
+            android:textAllCaps="false"
+            android:layout_toEndOf="@+id/event_searchET"/>
+
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_below="@+id/rl1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recyclerview"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/create_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/ic_add_white_24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="20dp"/>
+
+</RelativeLayout>

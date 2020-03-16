@@ -14,6 +14,11 @@
             android:title="Guide" />
 
         <item
+            android:id="@+id/event"
+            android:icon="@drawable/ic_event_black_24dp"
+            android:title="Event" />
+
+        <item
             android:id="@+id/map"
             android:icon="@drawable/ic_pin"
             android:title="Map" />

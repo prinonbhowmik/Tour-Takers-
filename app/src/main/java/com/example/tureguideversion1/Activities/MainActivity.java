@@ -38,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.tureguideversion1.Fragments.EventFragment;
 import com.example.tureguideversion1.Fragments.GuideFragment;
 import com.example.tureguideversion1.Fragments.MapFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
@@ -205,6 +206,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 map.replace(R.id.fragment_container, new MapFragment());
                 map.commit();
                 Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
+                drawerLayout.closeDrawers();
+                return true;
+
+            case R.id.event:
+                FragmentTransaction event = getSupportFragmentManager().beginTransaction();
+                event.replace(R.id.fragment_container, new EventFragment());
+                event.commit();
+                Toast.makeText(this, "event", Toast.LENGTH_SHORT).show();
                 drawerLayout.closeDrawers();
                 return true;
 
