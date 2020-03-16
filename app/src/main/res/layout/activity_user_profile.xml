@@ -77,34 +77,35 @@
                         android:src="@drawable/ic_photo_camera_black_24dp" />
                 </FrameLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@+id/frame_layout1"
-                    android:layout_marginBottom="10dp"
-                    android:orientation="horizontal"
-                    android:transitionName="ratingTransition">
-
-                    <ImageView
+                    <LinearLayout
+                        android:id="@+id/ratingLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="3dp"
-                        android:src="@drawable/ic_star_black_24dp"
-                        android:textColor="@android:color/black" />
+                        android:layout_below="@+id/frame_layout1"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="horizontal"
+                        android:transitionName="ratingTransition">
 
-                    <TextView
-                        android:layout_width="25dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginEnd="5dp"
-                        android:text="4.5"
-                        android:textColor="@android:color/black"
-                        android:textSize="18sp" />
-                </LinearLayout>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="3dp"
+                            android:src="@drawable/ic_star_black_24dp"
+                            android:textColor="@android:color/black" />
+
+                        <TextView
+                            android:layout_width="25dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="3dp"
+                            android:layout_marginEnd="5dp"
+                            android:gravity="center"
+                            android:text="4.5"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp" />
+                    </LinearLayout>
 
                 </RelativeLayout>
 
@@ -292,6 +293,7 @@
 
 
             <LinearLayout
+                android:id="@+id/totalEventLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -339,6 +341,7 @@
 
 
             <LinearLayout
+                android:id="@+id/totalTourLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"

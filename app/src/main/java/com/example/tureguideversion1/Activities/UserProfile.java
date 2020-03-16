@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -16,6 +17,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,10 +44,11 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-public class UserProfile extends AppCompatActivity{
+public class UserProfile extends AppCompatActivity {
 
-    private TextView profilename, profileemail, profilephoneno, n2, p2 ;
-    private CardView phoneUpdate,nameUpdate;
+    private LinearLayout ratingLayout, totalTourLayout, totalEventLayout;
+    private TextView profilename, profileemail, profilephoneno, n2, p2;
+    private CardView phoneUpdate, nameUpdate;
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference reference;
@@ -101,6 +104,20 @@ public class UserProfile extends AppCompatActivity{
             }
         });
 
+        new CountDownTimer(300, 1) {
+
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                YoYo.with(Techniques.StandUp)
+                        .duration(1700)
+                        .repeat(0)
+                        .playOn(ratingLayout);
+            }
+        }.start();
+
         YoYo.with(Techniques.FadeIn)
                 .duration(1700)
                 .repeat(0)
@@ -125,7 +142,7 @@ public class UserProfile extends AppCompatActivity{
                 args.putString("nameForHint", name);
                 Profile_bottom_sheet bottom_sheet = new Profile_bottom_sheet();
                 bottom_sheet.setArguments(args);
-                bottom_sheet.show(getSupportFragmentManager(),"bottomSheet");
+                bottom_sheet.show(getSupportFragmentManager(), "bottomSheet");
             }
         });
 
@@ -138,10 +155,9 @@ public class UserProfile extends AppCompatActivity{
                 args.putString("phoneForHint", phone);
                 Profile_bottom_sheet bottom_sheet = new Profile_bottom_sheet();
                 bottom_sheet.setArguments(args);
-                bottom_sheet.show(getSupportFragmentManager(),"bottomSheet");
+                bottom_sheet.show(getSupportFragmentManager(), "bottomSheet");
             }
         });
-
 
 
         profileImage.setOnClickListener(new View.OnClickListener() {
@@ -156,9 +172,6 @@ public class UserProfile extends AppCompatActivity{
         });
 
 
-
-
-
     }
 
     @Override
@@ -170,9 +183,9 @@ public class UserProfile extends AppCompatActivity{
                 Uri resultUri = result.getUri();
                 imageUri = resultUri;
                 progressBar.setVisibility(View.VISIBLE);
-                if(!image.isEmpty()) {
+                if (!image.isEmpty()) {
                     deleteImage();
-                }else{
+                } else {
                     uploadImage();
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
@@ -183,14 +196,13 @@ public class UserProfile extends AppCompatActivity{
 
     private void uploadImage() {
 
-        if(imageUri != null)
-        {
-            StorageReference ref = storageReference.child("userProfileImage/"+userId );
+        if (imageUri != null) {
+            StorageReference ref = storageReference.child("userProfileImage/" + userId);
             ref.putFile(imageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            storageReference.child("userProfileImage/"+userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            storageReference.child("userProfileImage/" + userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     imageUri = uri;
@@ -206,22 +218,22 @@ public class UserProfile extends AppCompatActivity{
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(UserProfile.this, "Image upload failed!"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserProfile.this, "Image upload failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred())/taskSnapshot
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot
                                     .getTotalByteCount();
-                            Toast.makeText(UserProfile.this, "Uploaded "+(int)progress+"%", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserProfile.this, "Uploaded " + (int) progress + "%", Toast.LENGTH_SHORT).show();
                         }
                     });
         }
     }
 
-    private void deleteImage(){
-        storageReference.child("userProfileImage/"+userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+    private void deleteImage() {
+        storageReference.child("userProfileImage/" + userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 StorageReference photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(uri.toString());
@@ -238,7 +250,7 @@ public class UserProfile extends AppCompatActivity{
                         // Uh-oh, an error occurred!
                         //Log.d(TAG, "onFailure: did not delete file");
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getApplicationContext(),"Faild",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Faild", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -267,10 +279,14 @@ public class UserProfile extends AppCompatActivity{
         n2.setAnimation(rightAnim);
         p1.setAnimation(leftAnim);
         p2.setAnimation(rightAnim);
-
+        totalEventLayout.setAnimation(bottomAnim);
+        totalTourLayout.setAnimation(bottomAnim);
     }
 
     private void init() {
+        ratingLayout = findViewById(R.id.ratingLayout);
+        totalTourLayout = findViewById(R.id.totalTourLayout);
+        totalEventLayout = findViewById(R.id.totalEventLayout);
         nameUpdate = findViewById(R.id.nameUpdate);
         phoneUpdate = findViewById(R.id.phoneUpdate);
         profilename = findViewById(R.id.profileusername);
@@ -298,9 +314,10 @@ public class UserProfile extends AppCompatActivity{
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         finish();
