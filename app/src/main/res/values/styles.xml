@@ -9,6 +9,8 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
 
+        <item name="android:windowBackground">@android:color/white</item>
+
         <!-- enable window content transitions -->
         <item name="android:windowActivityTransitions">true</item>
 
@@ -25,7 +27,14 @@
         <item name="colorPrimaryDark">@android:color/transparent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
 
+
+    //made by Imran (not use yet)
+    <style name="Theme.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
 

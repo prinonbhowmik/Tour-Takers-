@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.example.tureguideversion1.Activities.CreateEvent;
 import com.example.tureguideversion1.Activities.MainActivity;

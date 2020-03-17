@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:id="@+id/rootLayout"
+    android:background="@color/colorGreen"
     tools:context=".Activities.CreateEvent">
 
     <RelativeLayout
