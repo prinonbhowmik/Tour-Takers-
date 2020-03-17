@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
             tour.replace(R.id.fragment_container, new TourFragment());
             tour.commit();
+            navigationView.getMenu().getItem(0).setChecked(true);
         }
 
         left = circularImageView.getPaddingLeft();
