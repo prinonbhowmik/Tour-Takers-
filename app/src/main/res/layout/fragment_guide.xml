@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBlue"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimary"
     tools:context=".Fragments.GuideFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -15,12 +16,57 @@
         android:layout_alignParentTop="true"
         android:layout_margin="10dp"
         android:src="@drawable/ic_menu_black_24dp" />
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie1"
+        android:layout_width="350dp"
+        android:layout_height="190dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        app:lottie_loop="true"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="loading_anim.json"/>
+
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie3"
+        android:layout_width="350dp"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        app:lottie_loop="true"
+        android:layout_below="@+id/lottie1"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="material-wave-loading.json"/>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie4"
+        android:layout_width="350dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        app:lottie_loop="true"
+        android:layout_below="@+id/lottie3"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="continuous-wave-loader.json"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/lottie4"
         android:layout_centerInParent="true"
-        android:textSize="35sp"
-        android:textColor="@android:color/white"
-        android:text="Guide Fragment" />
+        android:layout_marginTop="10dp"
+        android:textSize="21sp"
+        android:text="loading animation test"
+        android:textColor="@android:color/black"/>
 
+    <Button
+        android:id="@+id/internet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:text="No Internet Connection"
+        android:textAllCaps="false"
+        android:textSize="21sp"/>
 </RelativeLayout>
