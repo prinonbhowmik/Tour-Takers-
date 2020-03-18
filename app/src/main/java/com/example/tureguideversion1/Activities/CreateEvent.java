@@ -55,8 +55,8 @@ public class CreateEvent extends AppCompatActivity {
 
     private void circularRevealActivity() {
 
-        int cx = rootLayout.getWidth() -getDips(38);
-        int cy = rootLayout.getHeight() -getDips(38);
+        int cx = rootLayout.getWidth() -getDips(48);
+        int cy = rootLayout.getHeight() -getDips(48);
 
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
 
@@ -79,8 +79,8 @@ public class CreateEvent extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        int cx = rootLayout.getWidth()-getDips(38);
-        int cy = rootLayout.getBottom()-getDips(38);
+        int cx = rootLayout.getWidth()-getDips(48);
+        int cy = rootLayout.getBottom()-getDips(48);
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
         Animator circularReveal = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, finalRadius, 0);
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBlue"
+    android:background="@color/colorPrimary"
 
     tools:context=".Activities.NoInternetConnection">
 
@@ -18,7 +18,7 @@
         app:lottie_loop="true"
         android:layout_below="@+id/lottie3"
         app:lottie_autoPlay="true"
-        app:lottie_fileName="no-internet-connection.json"/>
+        app:lottie_fileName="no-internet.json"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,7 +28,7 @@
         android:textColor="@android:color/black"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="100dp"/>
+        android:layout_marginBottom="70dp"/>
 
 
 </RelativeLayout>
