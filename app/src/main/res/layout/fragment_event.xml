@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,51 +9,68 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <RelativeLayout
-        android:id="@+id/rl1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    <ImageView
-        android:id="@+id/nav_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="10dp"
-        android:src="@drawable/ic_menu_black_24dp" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/event_searchCV"
+        android:layout_width="370dp"
+        android:layout_height="45dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@android:color/white"
+        app:cardCornerRadius="5dp">
 
-        <EditText
-            android:id="@+id/event_searchET"
-            android:layout_width="280dp"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:hint="Search"
-            android:textColorHint="@android:color/darker_gray"
-            android:textColor="@android:color/black"
-            android:gravity="center"
-            android:textSize="21sp"
-            android:layout_toEndOf="@+id/nav_icon"/>
-        <Button
-            android:id="@+id/searchBtn"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:text="Search"
-            android:layout_centerInParent="true"
-            android:textAllCaps="false"
-            android:layout_toEndOf="@+id/event_searchET"/>
+        <RelativeLayout
+            android:id="@+id/rl1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/event_nav_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:padding="10dp"
+                android:src="@drawable/ic_menu_black_24dp" />
+
+            <EditText
+                android:id="@+id/event_searchET"
+                android:layout_width="280dp"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/nav_icon"
+                android:background="@null"
+                android:cursorVisible="false"
+                android:hint="Search Events"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray"
+                android:textSize="21sp" />
+
+            <ImageView
+                android:id="@+id/searchIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/custom_round"
+                android:padding="8dp"
+                android:src="@drawable/ic_search" />
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
     <LinearLayout
         android:id="@+id/ll1"
-        android:layout_below="@+id/rl1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/event_searchCV"
         android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/recyclerview"/>
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
@@ -60,11 +78,11 @@
         android:id="@+id/create_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:src="@drawable/ic_add_white_24dp"
-        android:backgroundTint="@color/colorGreen"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:layout_marginEnd="20dp"/>
+        android:backgroundTint="@color/colorGreen"
+        android:src="@drawable/ic_add_white_24dp" />
 
 </RelativeLayout>

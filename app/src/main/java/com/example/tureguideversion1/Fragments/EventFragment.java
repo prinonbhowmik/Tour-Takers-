@@ -3,12 +3,15 @@ package com.example.tureguideversion1.Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.example.tureguideversion1.Activities.CreateEvent;
 import com.example.tureguideversion1.Activities.MainActivity;
@@ -22,6 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class EventFragment extends Fragment {
 
     FloatingActionButton createEvent;
+    private EditText eventSearch;
 
     public EventFragment() {
         // Required empty public constructor
@@ -43,12 +47,19 @@ public class EventFragment extends Fragment {
             }
         });
 
-
+        eventSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    eventSearch.setCursorVisible(true);
+            }
+        });
 
         return view;
     }
 
     private void init(View view) {
+
         createEvent=view.findViewById(R.id.create_event);
+        eventSearch=view.findViewById(R.id.event_searchET);
     }
 }
