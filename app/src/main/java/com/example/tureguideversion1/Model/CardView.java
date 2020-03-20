@@ -1,11 +1,11 @@
 package com.example.tureguideversion1.Model;
 
-public class ImageSliderCardView {
+public class CardView {
     private String image;
     private String title;
     private String desc;
 
-    public ImageSliderCardView(String image, String title, String desc) {
+    public CardView(String image, String title, String desc) {
         this.image = image;
         this.title = title;
         this.desc = desc;

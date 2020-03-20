@@ -9,20 +9,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
-import com.example.tureguideversion1.Model.ImageSliderCardView;
+import com.example.tureguideversion1.Model.CardView;
 import com.example.tureguideversion1.R;
 import com.squareup.picasso.Picasso;
 
 
 import java.util.List;
 
-public class SliderAdapter extends PagerAdapter {
+public class Adapter extends PagerAdapter {
 
-    private List<ImageSliderCardView> models;
+    private List<CardView> models;
     private LayoutInflater layoutInflater;
     private Context context;
 
-    public SliderAdapter(List<ImageSliderCardView> models, Context context) {
+    public Adapter(List<CardView> models, Context context) {
         this.models = models;
         this.context = context;
     }
