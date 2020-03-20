@@ -11,10 +11,12 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/event_searchCV"
-        android:layout_width="370dp"
+        android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
         android:backgroundTint="@android:color/white"
         app:cardCornerRadius="5dp">
 
@@ -33,12 +35,12 @@
 
             <EditText
                 android:id="@+id/event_searchET"
-                android:layout_width="280dp"
+                android:layout_width="275dp"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/nav_icon"
                 android:background="@null"
                 android:cursorVisible="false"
+                android:gravity="center_vertical"
                 android:hint="Search Events"
                 android:paddingStart="15dp"
                 android:paddingEnd="15dp"
@@ -52,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="5dp"
                 android:background="@drawable/custom_round"
                 android:padding="8dp"
                 android:src="@drawable/ic_search" />
