@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class Common {
     public static String API_KEY = "618e3a096dcd96b86ffa64b35ef140e1";
-    public static String API_LINK = "http://api.openweathermap.org/data/2.5/weather";
+    public static String API_LINK = "http://api.openweathermap.org/data/2.5/weather?q=dhaka&units=metric&appid=";
 
     @NonNull
     public static String apiRequest(String lat, String lng){

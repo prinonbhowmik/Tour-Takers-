@@ -1,4 +1,4 @@
-package com.example.tureguideversion1;
+package com.example.tureguideversion1.Adapters;
 
 import android.content.Context;
 import android.text.method.ScrollingMovementMethod;
@@ -9,19 +9,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
-import com.example.tureguideversion1.Model.CardView;
+import com.example.tureguideversion1.Model.ImageSliderCardView;
+import com.example.tureguideversion1.R;
 import com.squareup.picasso.Picasso;
 
 
 import java.util.List;
 
-public class Adapter extends PagerAdapter {
+public class SliderAdapter extends PagerAdapter {
 
-    private List<CardView> models;
+    private List<ImageSliderCardView> models;
     private LayoutInflater layoutInflater;
     private Context context;
 
-    public Adapter(List<CardView> models, Context context) {
+    public SliderAdapter(List<ImageSliderCardView> models, Context context) {
         this.models = models;
         this.context = context;
     }
