@@ -8,25 +8,30 @@
     tools:context=".Fragments.TourFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
+        android:id="@id/rl1"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp">
 
-    <ImageView
-        android:id="@+id/nav_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:src="@drawable/ic_menu_black_24dp" />
+        <ImageView
+            android:id="@+id/nav_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:src="@drawable/ic_menu_black_24dp" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/sliderLayout"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_below="@+id/nav_icon"
+        android:layout_below="@+id/rl1"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp">
 
         <ImageView
@@ -85,8 +90,8 @@
         android:layout_below="@+id/location_TIL"
         android:orientation="horizontal"
         android:weightSum="2">
+
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_weight="1"
             android:id="@+id/date1_TIL"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
@@ -96,18 +101,20 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:hint="Start Date"
+            android:layout_weight="1"
             android:fontFamily="@font/amarante"
+            android:hint="Start Date"
             android:textColorHint="@color/colorYellow">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/startDate_Et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_design"
-                android:inputType="text"
-                android:fontFamily="@font/amarante"
-                android:maxLines="1"
                 android:focusable="false"
+                android:fontFamily="@font/amarante"
+                android:inputType="text"
+                android:maxLines="1"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
                 android:textColor="#000"
@@ -119,14 +126,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="To"
             android:layout_gravity="center"
-            android:fontFamily="@font/amarante"
             android:layout_marginTop="6dp"
-            android:textSize="21sp"
-            android:textColor="#000"/>
+            android:fontFamily="@font/amarante"
+            android:text="To"
+            android:textColor="#000"
+            android:textSize="21sp" />
+
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_weight="1"
             android:id="@+id/date2_TIL"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
@@ -136,18 +143,20 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:hint="Return Date"
+            android:layout_weight="1"
             android:fontFamily="@font/amarante"
+            android:hint="Return Date"
             android:textColorHint="@color/colorYellow">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/endDate_Et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_design"
-                android:inputType="text"
-                android:fontFamily="@font/amarante"
-                android:maxLines="1"
                 android:focusable="false"
+                android:fontFamily="@font/amarante"
+                android:inputType="text"
+                android:maxLines="1"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
                 android:textColor="#000"

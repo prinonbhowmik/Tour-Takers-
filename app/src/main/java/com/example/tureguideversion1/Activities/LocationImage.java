@@ -15,14 +15,19 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.tureguideversion1.Adapters.SliderAdapter;
-import com.example.tureguideversion1.Model.ImageSliderCardView;
+import com.example.tureguideversion1.Adapter;
+import com.example.tureguideversion1.Model.CardView;
 import com.example.tureguideversion1.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+/*
+import com.glide.slider.library.SliderLayout;
+import com.glide.slider.library.animations.DescriptionAnimation;
+import com.glide.slider.library.slidertypes.TextSliderView;
+ */
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +38,8 @@ public class LocationImage extends AppCompatActivity {
     private View rootLayout;
     ArrayList<String> location;
     ViewPager viewPager;
-    SliderAdapter sliderAdapter;
-    List<ImageSliderCardView> models;
+    Adapter adapter;
+    List<CardView> models;
     Integer[] colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
@@ -85,8 +90,8 @@ public class LocationImage extends AppCompatActivity {
 
     private void circularRevealActivity() {
 
-        int cx = rootLayout.getWidth() - getDips(48);
-        int cy = rootLayout.getHeight() - getDips(48);
+        int cx = rootLayout.getWidth() - getDips(200);
+        int cy = rootLayout.getHeight() - getDips(400);
 
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
 
@@ -124,13 +129,13 @@ public class LocationImage extends AppCompatActivity {
 //            image.add((String) singleUser.get("image"));
 //            description.add((String) singleUser.get("description"));
 
-            models.add(new ImageSliderCardView(singleUser.get("image").toString(), singleUser.get("locationName").toString(), singleUser.get("description").toString()));
+            models.add(new CardView(singleUser.get("image").toString(), singleUser.get("locationName").toString(), singleUser.get("description").toString()));
         }
 
-        sliderAdapter = new SliderAdapter(models, this);
+        adapter = new Adapter(models, this);
 
         viewPager = findViewById(R.id.viewPager);
-        viewPager.setAdapter(sliderAdapter);
+        viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0, 130, 0);
         Intent intent = getIntent();
         String slide = intent.getExtras().getString("slide");
@@ -148,7 +153,7 @@ public class LocationImage extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-                if (position < (sliderAdapter.getCount() - 1) && position < (colors.length - 1)) {
+                if (position < (adapter.getCount() - 1) && position < (colors.length - 1)) {
                     viewPager.setBackgroundColor(
 
                             (Integer) argbEvaluator.evaluate(
@@ -179,8 +184,8 @@ public class LocationImage extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        int cx = rootLayout.getWidth() - getDips(48);
-        int cy = rootLayout.getBottom() - getDips(48);
+        int cx = rootLayout.getWidth() - getDips(200);
+        int cy = rootLayout.getBottom() - getDips(400);
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
         Animator circularReveal = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, finalRadius, 0);
 
