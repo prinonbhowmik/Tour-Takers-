@@ -89,7 +89,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //Get map of users in datasnapshot
 
-                        loading.setVisibility(View.VISIBLE);
+                        //loading.setVisibility(View.VISIBLE);
                         collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
                     }
 
@@ -143,6 +143,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             sliderView.bundle(new Bundle());
             sliderView.getBundle().putString("extra", location.get(i));
             imageSlider.addSlider(sliderView);
+            loading.setVisibility(View.INVISIBLE);
         }
 
         // set Slider Transition Animation

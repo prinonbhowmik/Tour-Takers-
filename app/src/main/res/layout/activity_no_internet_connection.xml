@@ -10,25 +10,26 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottie4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         app:lottie_loop="true"
-        android:layout_below="@+id/lottie3"
+
         app:lottie_autoPlay="true"
         app:lottie_fileName="no-internet.json"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:text="No Internet Connection"
-        android:textColor="@android:color/black"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="70dp"/>
+        android:layout_marginBottom="70dp"
+        android:fontFamily="@font/amarante"
+        android:text="No Internet Connection!"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="24sp" />
 
 
 </RelativeLayout>

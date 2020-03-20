@@ -259,9 +259,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         } else {
-            message = "No internet! Please connect to network.";
-            snackbar(message);
-
+//            message = "No internet! Please connect to network.";
+//            snackbar(message);
+            //unregisterReceiver(connectivityReceiver);
+            startActivity(new Intent(MainActivity.this, NoInternetConnection.class));
         }
 
 
@@ -307,7 +308,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(connectivityReceiver);
+        try{
+            if(connectivityReceiver!=null)
+                unregisterReceiver(connectivityReceiver);
+
+        }catch(Exception e){}
     }
 
     @Override
