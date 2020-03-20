@@ -27,6 +27,10 @@ import com.example.tureguideversion1.R;
 import com.example.tureguideversion1.Weather.Common;
 import com.example.tureguideversion1.Weather.Helper;
 import com.example.tureguideversion1.Weather.OpenWeatherMap;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
@@ -43,6 +47,8 @@ public class WeatherFragment extends Fragment {
 
     String CITY = "dhaka,bd";
     String API = "618e3a096dcd96b86ffa64b35ef140e1";
+
+    FusedLocationProviderClient mFusedLocationClient;
 
     TextView addressTxt, updated_atTxt, statusTxt, tempTxt, temp_minTxt, temp_maxTxt, sunriseTxt,
             sunsetTxt, windTxt, pressureTxt, humidityTxt;
@@ -77,6 +83,8 @@ public class WeatherFragment extends Fragment {
         humidityTxt = view.findViewById(R.id.humidity);
 
 
+
+
         class weatherTask extends AsyncTask<String, Void, String> {
 
             @Override
@@ -90,8 +98,9 @@ public class WeatherFragment extends Fragment {
             }
 
             protected String doInBackground(String... args) {
-                String response = HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=" + CITY + "&units=metric&appid=" + API);
+                String response = HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q="+CITY+ "&units=metric&appid=" + API);
                 return response;
+
             }
 
             @Override
@@ -150,6 +159,5 @@ public class WeatherFragment extends Fragment {
 
         return view;
     }
-
 
 }

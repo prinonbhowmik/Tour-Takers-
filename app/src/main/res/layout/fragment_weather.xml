@@ -7,6 +7,20 @@
     android:padding="25dp">
 
     <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/nav_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/menu_white"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            />
+    </RelativeLayout>
+
+
+    <RelativeLayout
         android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
