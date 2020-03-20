@@ -28,11 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/*
-import com.glide.slider.library.SliderLayout;
-import com.glide.slider.library.animations.DescriptionAnimation;
-import com.glide.slider.library.slidertypes.TextSliderView;
- */
 
 public class LocationImage extends AppCompatActivity {
 
@@ -91,8 +86,8 @@ public class LocationImage extends AppCompatActivity {
 
     private void circularRevealActivity() {
 
-        int cx = rootLayout.getWidth() - getDips(200);
-        int cy = rootLayout.getHeight() - getDips(400);
+        int cx = rootLayout.getWidth() - getDips(210);
+        int cy = rootLayout.getHeight() - getDips(650);
 
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
 
@@ -185,8 +180,8 @@ public class LocationImage extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        int cx = rootLayout.getWidth() - getDips(200);
-        int cy = rootLayout.getBottom() - getDips(400);
+        int cx = rootLayout.getWidth() - getDips(210);
+        int cy = rootLayout.getBottom() - getDips(650);
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
         Animator circularReveal = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, finalRadius, 0);
 

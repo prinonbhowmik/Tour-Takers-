@@ -8,28 +8,53 @@
     android:background="#fff"
     tools:context=".Fragments.TourFragment">
 
-    <RelativeLayout
-        android:id="@id/rl1"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/tour_searchCV"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:layout_marginStart="05dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp">
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@android:color/white"
+        app:cardCornerRadius="5dp">
 
-        <ImageView
-            android:id="@+id/nav_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:padding="10dp"
-            android:src="@drawable/ic_menu_black_24dp" />
-    </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/rl1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/nav_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:padding="10dp"
+                android:src="@drawable/ic_menu_black_24dp" />
+
+            <EditText
+                android:id="@+id/location_searchET"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/nav_icon"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:cursorVisible="false"
+                android:text="Tour"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="21sp" />
+
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
 
     <RelativeLayout
         android:id="@+id/sliderLayout"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_below="@+id/rl1"
+        android:layout_below="@+id/tour_searchCV"
         android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp">
