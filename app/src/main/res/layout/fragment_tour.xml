@@ -38,13 +38,16 @@
                 android:layout_centerInParent="true"
                 android:layout_toEndOf="@+id/nav_icon"
                 android:background="@null"
-                android:gravity="center_vertical"
                 android:cursorVisible="false"
-                android:text="Tour"
+                android:fontFamily="@font/amarante"
+                android:gravity="center_vertical"
                 android:paddingStart="15dp"
                 android:paddingEnd="15dp"
+                android:text="Tour"
+                android:textAlignment="center"
                 android:textColor="@android:color/darker_gray"
-                android:textSize="21sp" />
+                android:textSize="21sp"
+                android:textStyle="bold" />
 
 
         </RelativeLayout>

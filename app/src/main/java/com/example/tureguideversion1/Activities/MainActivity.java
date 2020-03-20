@@ -63,10 +63,10 @@ import com.skyfishjy.library.RippleBackground;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
+    boolean doubleBackToExitPressedOnce = false;
     private ImageView nav_icon;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
-    boolean doubleBackToExitPressedOnce = false;
     private Toast toast = null;
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageView circularImageView;
     private TextView UserName, userEmail;
     private RippleBackground rippleBackground;
-    private int left, right, top, bottom;
     private LinearLayout ratingLaout;
 
     @Override
@@ -91,79 +90,85 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         connectivityReceiver = new ConnectivityReceiver();
         registerReceiver(connectivityReceiver, intentFilter);
-        storageReference = FirebaseStorage.getInstance().getReference();
-        if (savedInstanceState == null) {
-            FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
-            tour.replace(R.id.fragment_container, new TourFragment());
-            tour.commit();
-            navigationView.getMenu().getItem(0).setChecked(true);
-        }
+        if (checkConnection()) {
+            storageReference = FirebaseStorage.getInstance().getReference();
+            if (savedInstanceState == null) {
+                FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+                tour.replace(R.id.fragment_container, new TourFragment());
+                tour.commit();
+                navigationView.getMenu().getItem(0).setChecked(true);
+            }
 
-        left = circularImageView.getPaddingLeft();
-        top = circularImageView.getPaddingTop();
-        right = circularImageView.getPaddingRight();
-        bottom = circularImageView.getPaddingBottom();
-        userId = auth.getUid();
+            userId = auth.getUid();
 
-        DatabaseReference showref = reference.child(userId);
+            DatabaseReference showref = reference.child(userId);
 
-        showref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            showref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                Profile profile = dataSnapshot.getValue(Profile.class);
+                    Profile profile = dataSnapshot.getValue(Profile.class);
 
-                try {
-                    name = profile.getName();
-                    email = profile.getEmail();
-                    image = profile.getImage();
+                    try {
+                        name = profile.getName();
+                        email = profile.getEmail();
+                        image = profile.getImage();
 
-                    UserName.setText(name);
-                    userEmail.setText(email);
-                    if (!image.isEmpty()) {
-                        try {
-                            Glide.with(MainActivity.this)
-                                    .load(image)
-                                    .into(circularImageView);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                        UserName.setText(name);
+                        userEmail.setText(email);
+                        if (!image.isEmpty()) {
+                            try {
+                                Glide.with(MainActivity.this)
+                                        .load(image)
+                                        .into(circularImageView);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                            }
                         }
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Data has changed!", Toast.LENGTH_LONG).show();
+                        FirebaseAuth.getInstance().signOut();
+                        startActivity(new Intent(MainActivity.this, SignIn.class));
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Data has changed!", Toast.LENGTH_LONG).show();
-                    FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(MainActivity.this, SignIn.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    //Toast.makeText(getApplicationContext(),image,Toast.LENGTH_LONG).show();
+
                 }
-                //Toast.makeText(getApplicationContext(),image,Toast.LENGTH_LONG).show();
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        circularImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Check if we're running on Android 5.0 or higher
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Pair[] pairs = new Pair[2];
-                    pairs[0] = new Pair<View, String>(circularImageView, "imageTransition");
-                    pairs[1] = new Pair<View, String>(ratingLaout, "ratingTransition");
-                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
-                    startActivity(new Intent(MainActivity.this, UserProfile.class), options.toBundle());
-                } else {
-                    // Swap without transition
-                    startActivity(new Intent(MainActivity.this, UserProfile.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
-            }
-        });
+            });
+
+            circularImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (checkConnection()) {
+                        // Check if we're running on Android 5.0 or higher
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            Pair[] pairs = new Pair[2];
+                            pairs[0] = new Pair<View, String>(circularImageView, "imageTransition");
+                            pairs[1] = new Pair<View, String>(ratingLaout, "ratingTransition");
+                            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
+                            startActivity(new Intent(MainActivity.this, UserProfile.class), options.toBundle());
+                        } else {
+                            // Swap without transition
+                            startActivity(new Intent(MainActivity.this, UserProfile.class));
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                    } else {
+                        startActivity(new Intent(MainActivity.this, NoInternetConnection.class));
+                    }
+
+                }
+            });
+        } else {
+            startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+            finish();
+        }
     }
 
     private void init() {
@@ -194,43 +199,61 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItem.getItemId()) {
 
             case R.id.tour:
-                FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
-                tour.replace(R.id.fragment_container, new TourFragment());
-                tour.commit();
-                drawerLayout.closeDrawers();
+                if (checkConnection()) {
+                    FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+                    tour.replace(R.id.fragment_container, new TourFragment());
+                    tour.commit();
+                    drawerLayout.closeDrawers();
+                } else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
                 return true;
 
             case R.id.map:
-                FragmentTransaction map = getSupportFragmentManager().beginTransaction();
-                map.replace(R.id.fragment_container, new MapFragment());
-                map.commit();
-                Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
-                drawerLayout.closeDrawers();
+                if (checkConnection()) {
+                    FragmentTransaction map = getSupportFragmentManager().beginTransaction();
+                    map.replace(R.id.fragment_container, new MapFragment());
+                    map.commit();
+                    Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
+                    drawerLayout.closeDrawers();
+                } else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
                 return true;
 
             case R.id.event:
-                FragmentTransaction event = getSupportFragmentManager().beginTransaction();
-                event.replace(R.id.fragment_container, new EventFragment());
-                event.commit();
-                Toast.makeText(this, "event", Toast.LENGTH_SHORT).show();
-                drawerLayout.closeDrawers();
+                if (checkConnection()) {
+                    FragmentTransaction event = getSupportFragmentManager().beginTransaction();
+                    event.replace(R.id.fragment_container, new EventFragment());
+                    event.commit();
+                    Toast.makeText(this, "event", Toast.LENGTH_SHORT).show();
+                    drawerLayout.closeDrawers();
+                } else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
                 return true;
 
             case R.id.weather:
-
-                FragmentTransaction weather = getSupportFragmentManager().beginTransaction();
-                weather.replace(R.id.fragment_container, new WeatherFragment());
-                weather.commit();
-                drawerLayout.closeDrawers();
+                if (checkConnection()) {
+                    FragmentTransaction weather = getSupportFragmentManager().beginTransaction();
+                    weather.replace(R.id.fragment_container, new WeatherFragment());
+                    weather.commit();
+                    drawerLayout.closeDrawers();
+                } else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
                 return true;
 
             case R.id.guide:
-
-                FragmentTransaction guide = getSupportFragmentManager().beginTransaction();
-                guide.replace(R.id.fragment_container, new GuideFragment());
-                guide.commit();
-                Toast.makeText(this, "Guide", Toast.LENGTH_SHORT).show();
-                drawerLayout.closeDrawers();
+                if (checkConnection()) {
+                    FragmentTransaction guide = getSupportFragmentManager().beginTransaction();
+                    guide.replace(R.id.fragment_container, new GuideFragment());
+                    guide.commit();
+                    Toast.makeText(this, "Guide", Toast.LENGTH_SHORT).show();
+                    drawerLayout.closeDrawers();
+                } else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
                 return true;
 
             case R.id.logout:
@@ -241,12 +264,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 finish();
                 break;
             case R.id.terms:
-                startActivity(new Intent(MainActivity.this,Term_And_Condition.class));
-              //  overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                startActivity(new Intent(MainActivity.this, Term_And_Condition.class));
+                //  overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                 break;
         }
 
         return false;
+    }
+
+    public boolean checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        return isConnected;
     }
 
     // Showing the status in Snackbar
@@ -293,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         /*register connection status listener*/
+
         Connection.getInstance().setConnectivityListener(this);
     }
 
@@ -302,17 +331,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
-        showSnack(isConnected);
+        //showSnack(isConnected);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        try{
-            if(connectivityReceiver!=null)
+        try {
+            if (connectivityReceiver != null)
                 unregisterReceiver(connectivityReceiver);
 
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
     }
 
     @Override

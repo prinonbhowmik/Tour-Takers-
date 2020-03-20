@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.widget.Toast;
 
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
@@ -15,12 +17,14 @@ public class NoInternetConnection extends AppCompatActivity implements Connectiv
 
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
+    boolean doubleBackToExitPressedOnce = false;
+    private Toast toast = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_no_internet_connection);
-
+        toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
         intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         connectivityReceiver = new ConnectivityReceiver();
@@ -39,8 +43,9 @@ public class NoInternetConnection extends AppCompatActivity implements Connectiv
         String message;
         if (isConnected) {
             //message = "Connected to Internet";
-            unregisterReceiver(connectivityReceiver);
-            startActivity(new Intent(NoInternetConnection.this, MainActivity.class));
+            //unregisterReceiver(connectivityReceiver);
+            //startActivity(new Intent(NoInternetConnection.this, MainActivity.class));
+            onBackPressed();
         } else {
 //            message = "No internet! Please connect to network.";
 //            snackbar(message);
@@ -75,5 +80,21 @@ public class NoInternetConnection extends AppCompatActivity implements Connectiv
         }catch(Exception e){}
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onStop() {
+        try{
+            if(connectivityReceiver!=null)
+                unregisterReceiver(connectivityReceiver);
+
+        }catch(Exception e){}
+
+        toast.cancel();
+        super.onStop();
+    }
 
 }

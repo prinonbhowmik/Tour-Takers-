@@ -24,6 +24,8 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.example.tureguideversion1.Activities.CreateEvent;
 import com.example.tureguideversion1.Activities.LocationImage;
+import com.example.tureguideversion1.Activities.MainActivity;
+import com.example.tureguideversion1.Activities.NoInternetConnection;
 import com.example.tureguideversion1.R;
 import com.glide.slider.library.SliderLayout;
 import com.glide.slider.library.animations.DescriptionAnimation;
@@ -108,7 +110,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
         ArrayList<String> location = new ArrayList<>();
         ArrayList<String> image = new ArrayList<>();
-        ArrayList<String> description = new ArrayList<>();
+        //ArrayList<String> description = new ArrayList<>();
 
         //iterate through each user, ignoring their UID
         for (Map.Entry<String, Object> entry : users.entrySet()){
@@ -118,7 +120,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             //Get phone field and append to list
             location.add((String) singleUser.get("locationName"));
             image.add((String) singleUser.get("image"));
-            description.add((String) singleUser.get("description"));
+            //description.add((String) singleUser.get("description"));
         }
 
         RequestOptions requestOptions = new RequestOptions();
@@ -143,7 +145,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             sliderView.bundle(new Bundle());
             sliderView.getBundle().putString("extra", location.get(i));
             imageSlider.addSlider(sliderView);
-            loading.setVisibility(View.INVISIBLE);
+            //loading.setVisibility(View.INVISIBLE);
         }
 
         // set Slider Transition Animation
@@ -232,9 +234,14 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
     @Override
     public void onSliderClick(BaseSliderView slider) {
+        MainActivity main = new MainActivity();
+        if(main.checkConnection()){
         //Toast.makeText(getActivity(), slider.getBundle().getString("extra") + "", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")));
-    }
+        } else {
+            startActivity(new Intent(getContext(), NoInternetConnection.class));
+        }
+        }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
