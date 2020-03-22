@@ -86,8 +86,9 @@ public class LocationImage extends AppCompatActivity {
 
     private void circularRevealActivity() {
 
-        int cx = rootLayout.getWidth() - getDips(210);
-        int cy = rootLayout.getHeight() - getDips(650);
+        int cx = rootLayout.getWidth() - getDips(205);
+        // int cy = rootLayout.getHeight() - getDips(650);
+        int cy = rootLayout.getTop() + getDips(170);
 
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
 
@@ -180,8 +181,9 @@ public class LocationImage extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        int cx = rootLayout.getWidth() - getDips(210);
-        int cy = rootLayout.getBottom() - getDips(650);
+        int cx = rootLayout.getWidth() - getDips(205);
+        //int cy = rootLayout.getBottom() - getDips(650);
+        int cy = rootLayout.getTop() + getDips(170);
         float finalRadius = Math.max(rootLayout.getWidth(), rootLayout.getHeight());
         Animator circularReveal = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, finalRadius, 0);
 

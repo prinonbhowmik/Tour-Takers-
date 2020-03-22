@@ -13,7 +13,6 @@
 
         <!-- enable window content transitions -->
         <item name="android:windowActivityTransitions">true</item>
-
     </style>
 
     <style name="ProgressBarTheme" parent="ThemeOverlay.AppCompat.Light">

@@ -1,12 +1,5 @@
 package com.example.tureguideversion1.Activities;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -15,40 +8,32 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.transition.AutoTransition;
-import android.transition.ChangeBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.ChangeTransform;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionSet;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.bumptech.glide.Glide;
 import com.example.tureguideversion1.Fragments.EventFragment;
 import com.example.tureguideversion1.Fragments.GuideFragment;
 import com.example.tureguideversion1.Fragments.MapFragment;
+import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
-import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -204,34 +189,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     tour.replace(R.id.fragment_container, new TourFragment());
                     tour.commit();
                     drawerLayout.closeDrawers();
+                    navigationView.getMenu().getItem(0).setChecked(true);
+
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
-                return true;
+                break;
 
             case R.id.map:
                 if (checkConnection()) {
                     FragmentTransaction map = getSupportFragmentManager().beginTransaction();
                     map.replace(R.id.fragment_container, new MapFragment());
                     map.commit();
-                    Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
                     drawerLayout.closeDrawers();
+                    navigationView.getMenu().getItem(3).setChecked(true);
+
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
-                return true;
+                break;
 
             case R.id.event:
                 if (checkConnection()) {
                     FragmentTransaction event = getSupportFragmentManager().beginTransaction();
                     event.replace(R.id.fragment_container, new EventFragment());
                     event.commit();
-                    Toast.makeText(this, "event", Toast.LENGTH_SHORT).show();
                     drawerLayout.closeDrawers();
+                    navigationView.getMenu().getItem(2).setChecked(true);
+
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
-                return true;
+                break;
 
             case R.id.weather:
                 if (checkConnection()) {
@@ -239,22 +228,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     weather.replace(R.id.fragment_container, new WeatherFragment());
                     weather.commit();
                     drawerLayout.closeDrawers();
+                    navigationView.getMenu().getItem(4).setChecked(true);
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
-                return true;
+                break;
 
             case R.id.guide:
                 if (checkConnection()) {
                     FragmentTransaction guide = getSupportFragmentManager().beginTransaction();
                     guide.replace(R.id.fragment_container, new GuideFragment());
                     guide.commit();
-                    Toast.makeText(this, "Guide", Toast.LENGTH_SHORT).show();
                     drawerLayout.closeDrawers();
+                    navigationView.getMenu().getItem(1).setChecked(true);
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
-                return true;
+                break;
 
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();

@@ -61,59 +61,5 @@
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/lottie1"
-        android:layout_width="350dp"
-        android:layout_height="190dp"
-        android:layout_below="@+id/guide_searchCV"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        app:lottie_autoPlay="true"
-        app:lottie_fileName="loading_anim.json"
-        app:lottie_loop="true" />
 
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/lottie3"
-        android:layout_width="350dp"
-        android:layout_height="150dp"
-        android:layout_below="@+id/lottie1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        app:lottie_autoPlay="true"
-        app:lottie_fileName="material-wave-loading.json"
-        app:lottie_loop="true" />
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/lottie4"
-        android:layout_width="350dp"
-        android:layout_height="150dp"
-        android:layout_below="@+id/lottie3"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        app:lottie_autoPlay="true"
-        app:lottie_fileName="continuous-wave-loader.json"
-        app:lottie_loop="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/lottie4"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="10dp"
-        android:text="loading animation test"
-        android:textColor="@android:color/black"
-        android:textSize="21sp" />
-
-    <Button
-        android:id="@+id/internet"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:text="No Internet Connection"
-        android:textAllCaps="false"
-        android:textColor="@android:color/black"
-        android:textSize="21sp" />
 </RelativeLayout>
