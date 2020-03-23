@@ -1,65 +1,63 @@
 package com.example.tureguideversion1.Fragments;
 
 import android.Manifest;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.androdocs.httprequest.HttpRequest;
+import com.example.tureguideversion1.ForApi.ApiInterFace;
+import com.example.tureguideversion1.ForApi.ApiUtils;
 import com.example.tureguideversion1.R;
-import com.example.tureguideversion1.Weather.Common;
-import com.example.tureguideversion1.Weather.Helper;
-import com.example.tureguideversion1.Weather.OpenWeatherMap;
+import com.example.tureguideversion1.Weather.WeatherResponse;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static androidx.core.content.PermissionChecker.checkSelfPermission;
+
 public class WeatherFragment extends Fragment {
 
-    String CITY = "dhaka,bd";
     String API = "618e3a096dcd96b86ffa64b35ef140e1";
 
-    FusedLocationProviderClient mFusedLocationClient;
+    FusedLocationProviderClient providerClient;
 
     TextView addressTxt, updated_atTxt, statusTxt, tempTxt, temp_minTxt, temp_maxTxt, sunriseTxt,
             sunsetTxt, windTxt, pressureTxt, humidityTxt;
 
 
-    LocationManager locationManager;
-    String provider;
-    static double lat, lng;
-    OpenWeatherMap openWeatherMap = new OpenWeatherMap();
+    private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+
+    double lat, lon;
 
     int MY_PERMISSION ;
+    ApiInterFace api;
 
     public WeatherFragment() {
         // Required empty public constructor
@@ -81,83 +79,90 @@ public class WeatherFragment extends Fragment {
         windTxt = view.findViewById(R.id.wind);
         pressureTxt = view.findViewById(R.id.pressure);
         humidityTxt = view.findViewById(R.id.humidity);
+        api = ApiUtils.getUserService();
 
-
-
-
-        class weatherTask extends AsyncTask<String, Void, String> {
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-
-                /* Showing the ProgressBar, Making the main design GONE */
-                view.findViewById(R.id.loader).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.mainContainer).setVisibility(View.GONE);
-                view.findViewById(R.id.errorText).setVisibility(View.GONE);
-            }
-
-            protected String doInBackground(String... args) {
-                String response = HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q="+CITY+ "&units=metric&appid=" + API);
-                return response;
-
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-
-
-                try {
-                    JSONObject jsonObj = new JSONObject(result);
-                    JSONObject main = jsonObj.getJSONObject("main");
-                    JSONObject sys = jsonObj.getJSONObject("sys");
-                    JSONObject wind = jsonObj.getJSONObject("wind");
-                    JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
-
-                    Long updatedAt = jsonObj.getLong("dt");
-                    String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000));
-                    String temp = main.getString("temp") + "°C";
-                    String tempMin = "Min Temp: " + main.getString("temp_min") + "°C";
-                    String tempMax = "Max Temp: " + main.getString("temp_max") + "°C";
-                    String pressure = main.getString("pressure");
-                    String humidity = main.getString("humidity");
-
-                    Long sunrise = sys.getLong("sunrise");
-                    Long sunset = sys.getLong("sunset");
-                    String windSpeed = wind.getString("speed");
-                    String weatherDescription = weather.getString("description");
-
-                    String address = jsonObj.getString("name") + ", " + sys.getString("country");
-
-
-                    /* Populating extracted data into our views */
-                    addressTxt.setText(address);
-                    updated_atTxt.setText(updatedAtText);
-                    statusTxt.setText(weatherDescription.toUpperCase());
-                    tempTxt.setText(temp);
-                    temp_minTxt.setText(tempMin);
-                    temp_maxTxt.setText(tempMax);
-                    sunriseTxt.setText(new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunrise * 1000)));
-                    sunsetTxt.setText(new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunset * 1000)));
-                    windTxt.setText(windSpeed);
-                    pressureTxt.setText(pressure);
-                    humidityTxt.setText(humidity);
-
-                    /* Views populated, Hiding the loader, Showing the main design */
-                    view.findViewById(R.id.loader).setVisibility(View.GONE);
-                    view.findViewById(R.id.mainContainer).setVisibility(View.VISIBLE);
-
-
-                } catch (JSONException e) {
-                    view.findViewById(R.id.loader).setVisibility(View.GONE);
-                    view.findViewById(R.id.errorText).setVisibility(View.VISIBLE);
-                }
-
-            }
+        if(ActivityCompat.checkSelfPermission(getContext(),ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            return view;
         }
-        new weatherTask().execute();
 
         return view;
     }
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
+        getLocation();
+
+        findweather();
+    }
+
+    private void findweather() {
+        Call<WeatherResponse> call = api.getWeather(lat,lon,API);
+        call.enqueue(new Callback<WeatherResponse>() {
+            @Override
+            public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                if (response.isSuccessful()){
+                    if (response.body()==null){
+                        return;
+                    }else{
+                        WeatherResponse weatherResponse = response.body();
+
+                        addressTxt.setText(weatherResponse.name);
+
+                        Float updatedAt = weatherResponse.dt;
+                        // Date time  = new Date(updatedAt.longValue());
+                        String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt.longValue() *1000));
+                        updated_atTxt.setText(updatedAtText);
+                        statusTxt.setText(weatherResponse.weather.get(0).description);
+                        int temp = (int) weatherResponse.main.temp;
+                        tempTxt.setText(String.valueOf(temp)+"°C");
+                        temp_minTxt.setText("Min Temp: "+String.valueOf(weatherResponse.main.temp_min)+"°C");
+                        temp_maxTxt.setText("Max Temp: "+String.valueOf(weatherResponse.main.temp_max)+"°C");
+
+                        long sunrise = weatherResponse.sys.sunrise;
+                        String sunrisetime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunrise*1000));
+                        sunriseTxt.setText(sunrisetime);
+                        long sunset = weatherResponse.sys.sunset;
+                        String sunsettime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunset*1000));
+                        sunsetTxt.setText(sunsettime);
+                        windTxt.setText(String.valueOf(weatherResponse.wind.speed));
+                        pressureTxt.setText(String.valueOf(weatherResponse.main.pressure));
+                        humidityTxt.setText(String.valueOf(weatherResponse.main.humidity));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeatherResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void getLocation() {
+        if (checkLocationPermission()){
+            providerClient = new FusedLocationProviderClient(getContext());
+            final Task location = providerClient.getLastLocation();
+            location.addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    Location currentLocation = (Location) task.getResult();
+                    lat = currentLocation.getLatitude();
+                    lon = currentLocation.getLongitude();
+                    Log.d("Lat",String.valueOf(lat));
+                    Log.d("Lon",String.valueOf(lon));
+
+                }
+            });
+        }
+    }
+    private boolean checkLocationPermission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(permission,0);
+            }
+        }
+        return true;
+    }
 }

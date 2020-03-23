@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient"
     android:orientation="vertical"
+    android:focusableInTouchMode="true"
     android:padding="25dp">
 
     <RelativeLayout
@@ -21,6 +22,7 @@
 
 
     <RelativeLayout
+        android:layout_above="@+id/searchEt"
         android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -268,6 +270,7 @@
                     android:layout_height="wrap_content" />
 
                 <LinearLayout
+                    android:id="@+id/newLayer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -323,6 +326,5 @@
         android:layout_centerInParent="true"
         android:text="Something went wrong"
         android:visibility="gone" />
-
 
 </RelativeLayout>
