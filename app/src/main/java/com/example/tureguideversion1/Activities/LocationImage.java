@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,6 +39,7 @@ public class LocationImage extends AppCompatActivity {
     List<CardView> models;
     Integer[] colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    String slide, locationForViewPage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +48,9 @@ public class LocationImage extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         overridePendingTransition(R.anim.do_not_move, R.anim.do_not_move);
         init();
-
+        Intent intent = getIntent();
+        slide = intent.getExtras().getString("slide");
+        locationForViewPage = intent.getExtras().getString("location");
         if (savedInstanceState == null) {
             rootLayout.setVisibility(View.INVISIBLE);
 
@@ -62,7 +66,7 @@ public class LocationImage extends AppCompatActivity {
             }
         }
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child("sylhet");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(locationForViewPage);
         ref.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -134,8 +138,7 @@ public class LocationImage extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0, 130, 0);
-        Intent intent = getIntent();
-        String slide = intent.getExtras().getString("slide");
+        //Toast.makeText(getApplicationContext(),slide,Toast.LENGTH_LONG).show();
         viewPager.setCurrentItem(location.indexOf(slide),true);
         Integer[] colors_temp = {
                 getResources().getColor(R.color.color1),
@@ -190,11 +193,15 @@ public class LocationImage extends AppCompatActivity {
         circularReveal.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
-
+                int v = viewPager.getCurrentItem();
+                Intent intent = new Intent();
+                intent.putExtra("slide", v);
+                setResult(RESULT_OK, intent);
             }
 
             @Override
             public void onAnimationEnd(Animator animator) {
+
                 rootLayout.setVisibility(View.INVISIBLE);
                 finish();
             }
@@ -212,4 +219,6 @@ public class LocationImage extends AppCompatActivity {
         circularReveal.setDuration(600);
         circularReveal.start();
     }
+
+
 }

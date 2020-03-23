@@ -81,7 +81,7 @@
         android:id="@+id/location_TIL"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="61dp"
         android:layout_below="@+id/sliderLayout"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
@@ -91,11 +91,12 @@
         android:hint="Your location"
         android:textColorHint="@color/colorYellow">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/location_Et"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@drawable/edit_text_design"
+            android:completionThreshold="1"
             android:fontFamily="@font/amarante"
             android:inputType="text"
             android:maxLines="1"

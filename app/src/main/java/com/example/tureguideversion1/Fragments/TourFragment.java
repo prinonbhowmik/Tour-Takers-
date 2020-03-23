@@ -10,12 +10,16 @@ import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -26,6 +30,8 @@ import com.example.tureguideversion1.Activities.CreateEvent;
 import com.example.tureguideversion1.Activities.LocationImage;
 import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.Activities.NoInternetConnection;
+import com.example.tureguideversion1.Adapters.AutoCompleteLocationAdapter;
+import com.example.tureguideversion1.Model.LocationItem;
 import com.example.tureguideversion1.R;
 import com.glide.slider.library.SliderLayout;
 import com.glide.slider.library.animations.DescriptionAnimation;
@@ -43,8 +49,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_OK;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /**
@@ -53,10 +61,15 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 public class TourFragment extends Fragment implements BaseSliderView.OnSliderClickListener,
         ViewPagerEx.OnPageChangeListener{
 
-    private EditText locationEt,startDate,endDate;
+    private EditText startDate,endDate;
     private SliderLayout imageSlider;
     private ImageView logo;
     private LottieAnimationView loading;
+    private List<LocationItem> locationList;
+    private AutoCompleteTextView locationEt;
+    private ArrayList<String> location;
+    private String locationForViewPage;
+    private int slide;
 
     public TourFragment() {
         // Required empty public constructor
@@ -70,7 +83,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         View view = inflater.inflate(R.layout.fragment_tour, container, false);
 
         init(view);
-        logo.setVisibility(View.INVISIBLE);
         startDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,8 +95,10 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 getEndDate();
             }
         });
+        loading.setVisibility(View.INVISIBLE);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child("sylhet");
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("locationList");
         ref.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -92,7 +106,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         //Get map of users in datasnapshot
 
                         //loading.setVisibility(View.VISIBLE);
-                        collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
+                        fillLocationList((Map<String,Object>) dataSnapshot.getValue());
+                        //collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
                     }
 
                     @Override
@@ -101,19 +116,96 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     }
                 });
 
+        locationEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEARCH ||
+                        i == EditorInfo.IME_ACTION_DONE ||
+                        keyEvent != null &&
+                                keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
+                                keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    if (keyEvent == null || !keyEvent.isShiftPressed()) {
+                        // the user is done typing.
+                        logo.setVisibility(View.INVISIBLE);
+                        loading.setVisibility(View.VISIBLE);
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(locationEt.getText().toString());
+                        ref.addListenerForSingleValueEvent(
+                                new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        //Get map of users in datasnapshot
+                                        locationForViewPage = locationEt.getText().toString();
+                                        //loading.setVisibility(View.VISIBLE);
+                                        collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        //handle databaseError
+                                    }
+                                });
+                        return true; // consume.
+                    }
+                }
+                return false; // pass on to other listeners.
+            }
+
+        });
+
 
 
         return  view;
     }
 
-    private void collectImageNInfo(Map<String,Object> users) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                slide = data.getIntExtra("slide",0);
 
-        ArrayList<String> location = new ArrayList<>();
+                //Toast.makeText(getContext(),Integer.toString(slide),Toast.LENGTH_LONG).show();
+                loading.setVisibility(View.INVISIBLE);
+                logo.setVisibility(View.INVISIBLE);
+                imageSlider.setVisibility(View.VISIBLE);
+                if(imageSlider.getCurrentPosition()<slide){
+                    if(slide-imageSlider.getCurrentPosition() > 1){
+
+                    }else {
+                        imageSlider.setCurrentPosition(slide, false);
+                    }
+                }else if(imageSlider.getCurrentPosition()>slide){
+                    if(imageSlider.getCurrentPosition()-slide > 1){
+
+                    }else {
+                        imageSlider.setCurrentPosition(slide, false);
+                    }
+                }
+            }
+        }
+    }
+
+    private void fillLocationList(Map<String,Object> users) {
+        locationList = new ArrayList<>();
+
+        for (Map.Entry<String, Object> entry : users.entrySet()){
+
+            //Get user map
+            Map singleUser = (Map) entry.getValue();
+            //Get district field and append to list
+            locationList.add(new LocationItem((String) singleUser.get("district"), R.drawable.travel_icon));
+        }
+        AutoCompleteLocationAdapter adapter = new AutoCompleteLocationAdapter(getContext(), locationList);
+        locationEt.setAdapter(adapter);
+    }
+
+    private void collectImageNInfo(Map<String,Object> locations) {
+
+        location = new ArrayList<>();
         ArrayList<String> image = new ArrayList<>();
         //ArrayList<String> description = new ArrayList<>();
 
         //iterate through each user, ignoring their UID
-        for (Map.Entry<String, Object> entry : users.entrySet()){
+        for (Map.Entry<String, Object> entry : locations.entrySet()){
 
             //Get user map
             Map singleUser = (Map) entry.getValue();
@@ -128,6 +220,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         //.diskCacheStrategy(DiskCacheStrategy.NONE)
         //.placeholder(R.drawable.placeholder)
         //.error(R.drawable.placeholder);
+        imageSlider.removeAllSliders();
 
         for (int i = 0; i < image.size(); i++) {
             TextSliderView sliderView = new TextSliderView(getActivity());
@@ -237,7 +330,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         MainActivity main = new MainActivity();
         if(main.checkConnection()){
         //Toast.makeText(getActivity(), slider.getBundle().getString("extra") + "", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")));
+            Intent i = new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")).putExtra("location",locationForViewPage);
+            startActivityForResult(i, 1);
+        //startActivity(new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")));
         } else {
             startActivity(new Intent(getContext(), NoInternetConnection.class));
         }
