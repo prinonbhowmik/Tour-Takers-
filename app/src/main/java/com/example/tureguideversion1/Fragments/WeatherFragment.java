@@ -134,7 +134,7 @@ public class WeatherFragment extends Fragment {
                     }else{
                         WeatherResponse weatherResponse = response.body();
 
-                        addressTxt.setText(weatherResponse.name);
+                        addressTxt.setText(weatherResponse.name+","+weatherResponse.sys.country);
 
                         Float updatedAt = weatherResponse.dt;
                         // Date time  = new Date(updatedAt.longValue());
