@@ -2,6 +2,8 @@ package com.example.tureguideversion1.Fragments;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -31,8 +33,10 @@ import com.google.android.gms.tasks.Task;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -45,6 +49,8 @@ import static androidx.core.content.PermissionChecker.checkSelfPermission;
 public class WeatherFragment extends Fragment {
 
     String API = "618e3a096dcd96b86ffa64b35ef140e1";
+
+    String CITY = "";
 
     FusedLocationProviderClient providerClient;
 
@@ -92,13 +98,33 @@ public class WeatherFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getLocation();
+        getLocation(lat,lon);
 
         findweather();
     }
 
+    private void getLocation(double lat, double lon) {
+        if (checkLocationPermission()){
+            Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
+            try {
+                List<Address> addresses = gcd.getFromLocation(lat,lon,10);
+                for (Address adrs: addresses){
+                    if (adrs!=null){
+                        String city =adrs.getLocality();
+                        if (city != null && !city.equals("")) {
+                            CITY = city;
+                            Log.d("city",city);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void findweather() {
-        Call<WeatherResponse> call = api.getWeather(lat,lon,API);
+        Call<WeatherResponse> call = api.getWeather(CITY,API);
         call.enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
@@ -140,23 +166,7 @@ public class WeatherFragment extends Fragment {
         });
     }
 
-    private void getLocation() {
-        if (checkLocationPermission()){
-            providerClient = new FusedLocationProviderClient(getContext());
-            final Task location = providerClient.getLastLocation();
-            location.addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    Location currentLocation = (Location) task.getResult();
-                    lat = currentLocation.getLatitude();
-                    lon = currentLocation.getLongitude();
-                    Log.d("Lat",String.valueOf(lat));
-                    Log.d("Lon",String.valueOf(lon));
 
-                }
-            });
-        }
-    }
     private boolean checkLocationPermission(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
