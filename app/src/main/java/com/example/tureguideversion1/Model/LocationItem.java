@@ -10,7 +10,7 @@ public class LocationItem {
         this.icon = icon;
     }
 
-    public String getCountryName() {
+    public String getlocationName() {
         return locationName;
     }
 

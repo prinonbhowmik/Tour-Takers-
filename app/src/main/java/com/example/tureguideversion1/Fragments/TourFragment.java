@@ -1,6 +1,8 @@
 package com.example.tureguideversion1.Fragments;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -15,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -116,6 +120,31 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     }
                 });
 
+        locationEt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                hideKeyboardFrom(getContext(),getView());
+                logo.setVisibility(View.INVISIBLE);
+                loading.setVisibility(View.VISIBLE);
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(locationEt.getText().toString());
+                ref.addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                //Get map of users in datasnapshot
+                                locationForViewPage = locationEt.getText().toString();
+                                //loading.setVisibility(View.VISIBLE);
+                                collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                //handle databaseError
+                            }
+                        });
+            }
+        });
+
         locationEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -126,6 +155,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                 keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                     if (keyEvent == null || !keyEvent.isShiftPressed()) {
                         // the user is done typing.
+                        hideKeyboardFrom(getContext(),getView());
+                        locationEt.dismissDropDown();
                         logo.setVisibility(View.INVISIBLE);
                         loading.setVisibility(View.VISIBLE);
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(locationEt.getText().toString());
@@ -205,15 +236,16 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         //ArrayList<String> description = new ArrayList<>();
 
         //iterate through each user, ignoring their UID
-        for (Map.Entry<String, Object> entry : locations.entrySet()){
+        if (locations != null){
+            for (Map.Entry<String, Object> entry : locations.entrySet()) {
 
-            //Get user map
-            Map singleUser = (Map) entry.getValue();
-            //Get phone field and append to list
-            location.add((String) singleUser.get("locationName"));
-            image.add((String) singleUser.get("image"));
-            //description.add((String) singleUser.get("description"));
-        }
+                //Get user map
+                Map singleUser = (Map) entry.getValue();
+                //Get phone field and append to list
+                location.add((String) singleUser.get("locationName"));
+                image.add((String) singleUser.get("image"));
+                //description.add((String) singleUser.get("description"));
+            }
 
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.centerCrop();
@@ -250,6 +282,11 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         imageSlider.setDuration(4000);
         imageSlider.addOnPageChangeListener(this);
         imageSlider.stopCyclingWhenTouch(false);
+    }else {
+            logo.setVisibility(View.VISIBLE);
+            loading.setVisibility(View.INVISIBLE);
+            Toast.makeText(getContext(),"Tour not available on this location!",Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -319,6 +356,12 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     }
 
     @Override
+    public void onResume() {
+        imageSlider.startAutoCycle();
+        super.onResume();
+    }
+
+    @Override
     public void onStop() {
         // To prevent a memory leak on rotation, make sure to call stopAutoCycle() on the slider before activity or fragment is destroyed
         imageSlider.stopAutoCycle();
@@ -351,5 +394,10 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    public static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

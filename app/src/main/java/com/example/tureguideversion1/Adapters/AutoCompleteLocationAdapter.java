@@ -29,7 +29,7 @@ public class AutoCompleteLocationAdapter extends ArrayAdapter<LocationItem> {
     @NonNull
     @Override
     public Filter getFilter() {
-        return countryFilter;
+        return locaionFilter;
     }
 
     @NonNull
@@ -47,14 +47,15 @@ public class AutoCompleteLocationAdapter extends ArrayAdapter<LocationItem> {
         LocationItem locationItem = getItem(position);
 
         if (locationItem != null) {
-            textViewName.setText(locationItem.getCountryName());
+            textViewName.setText(locationItem.getlocationName());
             imageViewFlag.setImageResource(locationItem.getIcon());
         }
+
 
         return convertView;
     }
 
-    private Filter countryFilter = new Filter() {
+    private Filter locaionFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();
@@ -66,7 +67,7 @@ public class AutoCompleteLocationAdapter extends ArrayAdapter<LocationItem> {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
                 for (LocationItem item : locationListFull) {
-                    if (item.getCountryName().toLowerCase().contains(filterPattern)) {
+                    if (item.getlocationName().toLowerCase().contains(filterPattern)) {
                         suggestions.add(item);
                     }
                 }
@@ -87,7 +88,7 @@ public class AutoCompleteLocationAdapter extends ArrayAdapter<LocationItem> {
 
         @Override
         public CharSequence convertResultToString(Object resultValue) {
-            return ((LocationItem) resultValue).getCountryName();
+            return ((LocationItem) resultValue).getlocationName();
         }
     };
 }
