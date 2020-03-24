@@ -100,7 +100,7 @@
             android:background="@drawable/edit_text_design"
             android:completionThreshold="1"
             android:fontFamily="@font/amarante"
-            android:inputType="text"
+            android:inputType="textNoSuggestions|textCapWords"
             android:maxLines="1"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"

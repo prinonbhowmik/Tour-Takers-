@@ -34,11 +34,11 @@ public class LocationImage extends AppCompatActivity {
 
     private View rootLayout;
     ArrayList<String> location;
-    ViewPager viewPager;
-    Adapter adapter;
+    private ViewPager viewPager;
+    private Adapter adapter;
     List<CardView> models;
-    Integer[] colors = null;
-    ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    private Integer[] colors = null;
+    private ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     String slide, locationForViewPage;
 
     @Override
@@ -98,7 +98,7 @@ public class LocationImage extends AppCompatActivity {
 
         // create the animator for this view (the start radius is zero)
         Animator circularReveal = ViewAnimationUtils.createCircularReveal(rootLayout, cx, cy, 0, finalRadius);
-        circularReveal.setDuration(1000);
+        circularReveal.setDuration(700);
 
         // make the view visible and start the animation
         rootLayout.setVisibility(View.VISIBLE);

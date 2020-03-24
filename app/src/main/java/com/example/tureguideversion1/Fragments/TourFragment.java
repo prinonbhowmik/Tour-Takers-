@@ -41,6 +41,7 @@ import com.glide.slider.library.SliderLayout;
 import com.glide.slider.library.animations.DescriptionAnimation;
 import com.glide.slider.library.slidertypes.BaseSliderView;
 import com.glide.slider.library.slidertypes.TextSliderView;
+import com.glide.slider.library.transformers.BaseTransformer;
 import com.glide.slider.library.tricks.ViewPagerEx;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -126,13 +127,14 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 hideKeyboardFrom(getContext(),getView());
                 logo.setVisibility(View.INVISIBLE);
                 loading.setVisibility(View.VISIBLE);
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(locationEt.getText().toString());
+                String location = locationEt.getText().toString().toLowerCase();
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location);
                 ref.addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 //Get map of users in datasnapshot
-                                locationForViewPage = locationEt.getText().toString();
+                                locationForViewPage = locationEt.getText().toString().toLowerCase();
                                 //loading.setVisibility(View.VISIBLE);
                                 collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
                             }
@@ -159,13 +161,14 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         locationEt.dismissDropDown();
                         logo.setVisibility(View.INVISIBLE);
                         loading.setVisibility(View.VISIBLE);
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(locationEt.getText().toString());
+                        String location = locationEt.getText().toString().toLowerCase();
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location);
                         ref.addListenerForSingleValueEvent(
                                 new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         //Get map of users in datasnapshot
-                                        locationForViewPage = locationEt.getText().toString();
+                                        locationForViewPage = locationEt.getText().toString().toLowerCase();
                                         //loading.setVisibility(View.VISIBLE);
                                         collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
                                     }
@@ -223,7 +226,15 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             //Get user map
             Map singleUser = (Map) entry.getValue();
             //Get district field and append to list
-            locationList.add(new LocationItem((String) singleUser.get("district"), R.drawable.travel_icon));
+            String location = (String) singleUser.get("district");
+            String[] strArray = location.split(" ");
+            StringBuilder uppercaseWord = new StringBuilder();
+            for (String s : strArray) {
+                String cap = s.substring(0, 1).toUpperCase() + s.substring(1);
+                uppercaseWord.append(cap + " ");
+            }
+            String pureString = uppercaseWord.substring(0,uppercaseWord.length()-1);
+            locationList.add(new LocationItem(pureString, R.drawable.travel_icon));
         }
         AutoCompleteLocationAdapter adapter = new AutoCompleteLocationAdapter(getContext(), locationList);
         locationEt.setAdapter(adapter);
@@ -275,13 +286,26 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
         // set Slider Transition Animation
         // mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Default);
-        imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
 
-        imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
-        imageSlider.setCustomAnimation(new DescriptionAnimation());
-        imageSlider.setDuration(4000);
-        imageSlider.addOnPageChangeListener(this);
-        imageSlider.stopCyclingWhenTouch(false);
+            if (imageSlider.getSliderImageCount() < 2) {
+                imageSlider.stopAutoCycle();
+                imageSlider.setPagerTransformer(false, new BaseTransformer() {
+                    @Override
+                    protected void onTransform(View view, float v) {
+                    }
+                });
+                imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
+            }else {
+
+                imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
+                imageSlider.startAutoCycle();
+                imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
+                imageSlider.setCustomAnimation(new DescriptionAnimation());
+                imageSlider.setDuration(4000);
+                imageSlider.addOnPageChangeListener(this);
+                imageSlider.stopCyclingWhenTouch(true);
+
+            }
     }else {
             logo.setVisibility(View.VISIBLE);
             loading.setVisibility(View.INVISIBLE);
