@@ -2,22 +2,29 @@ package com.example.tureguideversion1.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.core.view.GravityCompat;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tureguideversion1.Activities.CreateEvent;
-import com.example.tureguideversion1.Activities.MainActivity;
-import com.example.tureguideversion1.Activities.UserProfile;
+import com.example.tureguideversion1.Adapters.EventAdapter;
+import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,6 +33,10 @@ public class EventFragment extends Fragment {
 
     FloatingActionButton createEvent;
     private EditText eventSearch;
+    private DatabaseReference databaseReference;
+    private RecyclerView eventRecyclerview;
+    private EventAdapter eventAdapter;
+    private List<Event> eventList;
 
     public EventFragment() {
         // Required empty public constructor
@@ -43,7 +54,6 @@ public class EventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getContext(), CreateEvent.class));
-
             }
         });
 
@@ -54,12 +64,43 @@ public class EventFragment extends Fragment {
             }
         });
 
+        getData(view);
+
+
         return view;
     }
 
-    private void init(View view) {
+    private void getData(View view) {
+        DatabaseReference eventInfoRef = databaseReference.child("event");
+        eventInfoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    eventList.clear();
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        Event event = data.getValue(Event.class);
+                        eventList.add(event);
+                        eventAdapter.notifyDataSetChanged();
 
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+
+    private void init(View view) {
         createEvent=view.findViewById(R.id.create_event);
         eventSearch=view.findViewById(R.id.event_searchET);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        eventList = new ArrayList<>();
+        eventRecyclerview = view.findViewById(R.id.event_recyclerview);
+        eventRecyclerview.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        eventAdapter = new EventAdapter(eventList);
+        eventRecyclerview.setAdapter(eventAdapter);
     }
 }

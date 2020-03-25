@@ -9,10 +9,9 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_margin="10dp"
         android:backgroundTint="@android:color/white"
-        app:cardCornerRadius="5dp">
+        app:cardCornerRadius="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,93 +24,100 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="130dp"
-                    android:src="@drawable/images" />
+                    android:background="@android:color/holo_red_light"
+                    android:contentDescription="@null" />
             </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp">
 
                 <TextView
-                    android:id="@+id/event_title"
+                    android:id="@+id/e_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5sp"
-                    android:text=" Head Line"
-                    android:textColor="@android:color/black"
-                    android:textSize="35sp"
+                    android:paddingStart="25dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="@color/quantum_googgreen700"
+                    android:textSize="28sp"
                     android:textStyle="bold" />
-
-
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="10dp"
+                    android:contentDescription="@null"
+                    android:padding="6dp"
                     android:src="@drawable/ic_clock" />
 
                 <TextView
-                    android:id="@+id/event_date"
+                    android:id="@+id/e_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="1/12/2020"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="21sp" />
+                    android:layout_marginEnd="5dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="At"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="21sp" />
+                    android:layout_gravity="center_vertical"
+                    android:contentDescription="@null"
+                    android:text="@string/at"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
 
                 <TextView
-                    android:id="@+id/event_time"
+                    android:id="@+id/e_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="5dp"
                     android:layout_marginEnd="10dp"
-                    android:text="10:30 AM"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="21sp" />
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="10dp"
+                    android:contentDescription="@null"
                     android:padding="5dp"
                     android:src="@drawable/ic_pin" />
 
                 <TextView
-                    android:id="@+id/event_place"
+                    android:id="@+id/e_place"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_vertical"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
-                    android:text="Mirpur"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="21sp" />
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -120,26 +126,34 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="10dp"
+                    android:contentDescription="@null"
+                    android:padding="6dp"
                     android:src="@drawable/ic_person" />
 
                 <TextView
-                    android:id="@+id/event_member"
+                    android:id="@+id/e_member"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
+                    android:layout_gravity="center_vertical"
                     android:paddingStart="10dp"
+                    android:paddingEnd="3dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingStart="2dp"
                     android:paddingEnd="10dp"
-                    android:text="5 Attending"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="21sp" />
-
+                    android:text="@string/attending"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
             </LinearLayout>
-
-
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

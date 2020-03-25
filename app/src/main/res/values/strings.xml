@@ -12,4 +12,13 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="create_your_own_event">Create Your Own Event</string>
+    <string name="tour_place">Tour Place</string>
+    <string name="event_date">Event Date</string>
+    <string name="event_time">Event Time</string>
+    <string name="meeting_place">Meeting Place</string>
+    <string name="write_about_the_tour">Write about the tour...</string>
+    <string name="create_event">Create Event</string>
+    <string name="at">At</string>
+    <string name="attending">Attending</string>
 </resources>
