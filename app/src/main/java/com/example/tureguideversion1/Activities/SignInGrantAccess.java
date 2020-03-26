@@ -31,6 +31,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import es.dmoral.toasty.Toasty;
+
 public class SignInGrantAccess extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private EditText passEt;
@@ -116,7 +118,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         startActivity(intent);
                     } else {
-                        Toast.makeText(getApplicationContext(), "Please verify your email address!", Toast.LENGTH_LONG).show();
+                        Toasty.info(getApplicationContext(), "Please verify your email address!", Toasty.LENGTH_LONG).show();
                     }
 
                 }

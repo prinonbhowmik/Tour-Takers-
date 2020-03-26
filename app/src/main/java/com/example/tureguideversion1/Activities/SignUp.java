@@ -45,6 +45,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import es.dmoral.toasty.Toasty;
 
 import static android.view.Gravity.CENTER_HORIZONTAL;
 
@@ -190,14 +191,10 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             progressDialog.dismiss();
-                                            Toast toast = Toast.makeText(getApplicationContext(), "Successfully Sign Up.\nPlease check your email for verification", Toast.LENGTH_LONG);
-                                            LinearLayout layout = (LinearLayout) toast.getView();
-                                            if (layout.getChildCount() > 0) {
-                                                TextView tv = (TextView) layout.getChildAt(0);
-                                                tv.setGravity(Gravity.CENTER_VERTICAL | CENTER_HORIZONTAL);
-                                            }
-                                            toast.show();
-
+                                            Toasty.success(getApplicationContext(), "Successfully Signed Up.", Toast.LENGTH_SHORT).show();
+                                            Toasty.Config.getInstance().setTextSize(14).allowQueue(true).apply();
+                                            Toasty.info(getApplicationContext(), "Please check your mailbox for verification!", Toast.LENGTH_LONG).show();
+                                            Toasty.Config.reset();
                                             startActivity(new Intent(SignUp.this, SignIn.class).putExtra("email", email));
                                             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                                         } else {

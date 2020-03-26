@@ -57,6 +57,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import es.dmoral.toasty.Toasty;
+
 import static android.app.Activity.RESULT_OK;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
@@ -64,9 +66,9 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
  * A simple {@link Fragment} subclass.
  */
 public class TourFragment extends Fragment implements BaseSliderView.OnSliderClickListener,
-        ViewPagerEx.OnPageChangeListener{
+        ViewPagerEx.OnPageChangeListener {
 
-    private EditText startDate,endDate;
+    private EditText startDate, endDate;
     private SliderLayout imageSlider;
     private ImageView logo;
     private LottieAnimationView loading;
@@ -111,7 +113,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         //Get map of users in datasnapshot
 
                         //loading.setVisibility(View.VISIBLE);
-                        fillLocationList((Map<String,Object>) dataSnapshot.getValue());
+                        fillLocationList((Map<String, Object>) dataSnapshot.getValue());
                         //collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
                     }
 
@@ -124,7 +126,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         locationEt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                hideKeyboardFrom(getContext(),getView());
+                hideKeyboardFrom(getContext(), getView());
                 logo.setVisibility(View.INVISIBLE);
                 loading.setVisibility(View.VISIBLE);
                 String location = locationEt.getText().toString().toLowerCase();
@@ -136,7 +138,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                 //Get map of users in datasnapshot
                                 locationForViewPage = locationEt.getText().toString().toLowerCase();
                                 //loading.setVisibility(View.VISIBLE);
-                                collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
+                                collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
                             }
 
                             @Override
@@ -157,7 +159,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                 keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                     if (keyEvent == null || !keyEvent.isShiftPressed()) {
                         // the user is done typing.
-                        hideKeyboardFrom(getContext(),getView());
+                        hideKeyboardFrom(getContext(), getView());
                         locationEt.dismissDropDown();
                         logo.setVisibility(View.INVISIBLE);
                         loading.setVisibility(View.VISIBLE);
@@ -170,7 +172,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                         //Get map of users in datasnapshot
                                         locationForViewPage = locationEt.getText().toString().toLowerCase();
                                         //loading.setVisibility(View.VISIBLE);
-                                        collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
+                                        collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
                                     }
 
                                     @Override
@@ -187,30 +189,28 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         });
 
 
-
-        return  view;
+        return view;
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
-            if(resultCode == RESULT_OK) {
-                slide = data.getIntExtra("slide",0);
+            if (resultCode == RESULT_OK) {
+                slide = data.getIntExtra("slide", 0);
 
-                //Toast.makeText(getContext(),Integer.toString(slide),Toast.LENGTH_LONG).show();
                 loading.setVisibility(View.INVISIBLE);
                 logo.setVisibility(View.INVISIBLE);
                 imageSlider.setVisibility(View.VISIBLE);
-                if(imageSlider.getCurrentPosition()<slide){
-                    if(slide-imageSlider.getCurrentPosition() > 1){
+                if (imageSlider.getCurrentPosition() < slide) {
+                    if (slide - imageSlider.getCurrentPosition() > 1) {
 
-                    }else {
+                    } else {
                         imageSlider.setCurrentPosition(slide, false);
                     }
-                }else if(imageSlider.getCurrentPosition()>slide){
-                    if(imageSlider.getCurrentPosition()-slide > 1){
+                } else if (imageSlider.getCurrentPosition() > slide) {
+                    if (imageSlider.getCurrentPosition() - slide > 1) {
 
-                    }else {
+                    } else {
                         imageSlider.setCurrentPosition(slide, false);
                     }
                 }
@@ -218,10 +218,10 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         }
     }
 
-    private void fillLocationList(Map<String,Object> users) {
+    private void fillLocationList(Map<String, Object> users) {
         locationList = new ArrayList<>();
 
-        for (Map.Entry<String, Object> entry : users.entrySet()){
+        for (Map.Entry<String, Object> entry : users.entrySet()) {
 
             //Get user map
             Map singleUser = (Map) entry.getValue();
@@ -233,21 +233,21 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 String cap = s.substring(0, 1).toUpperCase() + s.substring(1);
                 uppercaseWord.append(cap + " ");
             }
-            String pureString = uppercaseWord.substring(0,uppercaseWord.length()-1);
+            String pureString = uppercaseWord.substring(0, uppercaseWord.length() - 1);
             locationList.add(new LocationItem(pureString, R.drawable.travel_icon));
         }
         AutoCompleteLocationAdapter adapter = new AutoCompleteLocationAdapter(getContext(), locationList);
         locationEt.setAdapter(adapter);
     }
 
-    private void collectImageNInfo(Map<String,Object> locations) {
+    private void collectImageNInfo(Map<String, Object> locations) {
 
         location = new ArrayList<>();
         ArrayList<String> image = new ArrayList<>();
         //ArrayList<String> description = new ArrayList<>();
 
         //iterate through each user, ignoring their UID
-        if (locations != null){
+        if (locations != null) {
             for (Map.Entry<String, Object> entry : locations.entrySet()) {
 
                 //Get user map
@@ -258,34 +258,34 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 //description.add((String) singleUser.get("description"));
             }
 
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.centerCrop();
-        //.diskCacheStrategy(DiskCacheStrategy.NONE)
-        //.placeholder(R.drawable.placeholder)
-        //.error(R.drawable.placeholder);
-        imageSlider.removeAllSliders();
+            RequestOptions requestOptions = new RequestOptions();
+            requestOptions.centerCrop();
+            //.diskCacheStrategy(DiskCacheStrategy.NONE)
+            //.placeholder(R.drawable.placeholder)
+            //.error(R.drawable.placeholder);
+            imageSlider.removeAllSliders();
 
-        for (int i = 0; i < image.size(); i++) {
-            TextSliderView sliderView = new TextSliderView(getActivity());
-            // if you want show image only / without description text use DefaultSliderView instead
+            for (int i = 0; i < image.size(); i++) {
+                TextSliderView sliderView = new TextSliderView(getActivity());
+                // if you want show image only / without description text use DefaultSliderView instead
 
-            // initialize SliderLayout
-            sliderView
-                    .image(image.get(i))
-                    .description(location.get(i))
-                    .setRequestOption(requestOptions)
-                    .setProgressBarVisible(false)
-                    .setOnSliderClickListener(this);
+                // initialize SliderLayout
+                sliderView
+                        .image(image.get(i))
+                        .description(location.get(i))
+                        .setRequestOption(requestOptions)
+                        .setProgressBarVisible(false)
+                        .setOnSliderClickListener(this);
 
-            //add your extra information
-            sliderView.bundle(new Bundle());
-            sliderView.getBundle().putString("extra", location.get(i));
-            imageSlider.addSlider(sliderView);
-            //loading.setVisibility(View.INVISIBLE);
-        }
+                //add your extra information
+                sliderView.bundle(new Bundle());
+                sliderView.getBundle().putString("extra", location.get(i));
+                imageSlider.addSlider(sliderView);
+                //loading.setVisibility(View.INVISIBLE);
+            }
 
-        // set Slider Transition Animation
-        // mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Default);
+            // set Slider Transition Animation
+            // mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Default);
 
             if (imageSlider.getSliderImageCount() < 2) {
                 imageSlider.stopAutoCycle();
@@ -295,7 +295,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     }
                 });
                 imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
-            }else {
+            } else {
 
                 imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
                 imageSlider.startAutoCycle();
@@ -306,10 +306,10 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 imageSlider.stopCyclingWhenTouch(true);
 
             }
-    }else {
+        } else {
             logo.setVisibility(View.VISIBLE);
             loading.setVisibility(View.INVISIBLE);
-            Toast.makeText(getContext(),"Tour not available on this location!",Toast.LENGTH_LONG).show();
+            Toasty.warning(getContext(), "Tour not available on this location!", Toasty.LENGTH_SHORT).show();
         }
 
     }
@@ -318,8 +318,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                month = month+1;
-                String currentDate = year+"/"+month+"/"+day;
+                month = month + 1;
+                String currentDate = year + "/" + month + "/" + day;
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
                 Date date = null;
 
@@ -338,7 +338,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), dateSetListener,year,month,day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), dateSetListener, year, month, day);
         datePickerDialog.show();
     }
 
@@ -355,8 +355,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                month = month+1;
-                String currentDate = year+"/"+month+"/"+day;
+                month = month + 1;
+                String currentDate = year + "/" + month + "/" + day;
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
                 Date date = null;
 
@@ -375,7 +375,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), dateSetListener,year,month,day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), dateSetListener, year, month, day);
         datePickerDialog.show();
     }
 
@@ -395,15 +395,15 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     @Override
     public void onSliderClick(BaseSliderView slider) {
         MainActivity main = new MainActivity();
-        if(main.checkConnection()){
-        //Toast.makeText(getActivity(), slider.getBundle().getString("extra") + "", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")).putExtra("location",locationForViewPage);
+        if (main.checkConnection()) {
+            //Toast.makeText(getActivity(), slider.getBundle().getString("extra") + "", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(getContext(), LocationImage.class).putExtra("slide", slider.getBundle().getString("extra")).putExtra("location", locationForViewPage);
             startActivityForResult(i, 1);
-        //startActivity(new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")));
+            //startActivity(new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")));
         } else {
             startActivity(new Intent(getContext(), NoInternetConnection.class));
         }
-        }
+    }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

@@ -21,4 +21,5 @@
     <string name="create_event">Create Event</string>
     <string name="at">At</string>
     <string name="attending">Attending</string>
+    <string name="exit_toast" translatable="false">Press again to exit!</string>
 </resources>

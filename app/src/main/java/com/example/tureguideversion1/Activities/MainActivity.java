@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
@@ -45,6 +46,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.skyfishjy.library.RippleBackground;
+
+import es.dmoral.toasty.Toasty;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
@@ -113,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     } catch (NullPointerException e) {
                         e.printStackTrace();
-                        Toast.makeText(getApplicationContext(), "Data has changed!", Toast.LENGTH_LONG).show();
+                        Toasty.error(getApplicationContext(),"Data has changed!",Toasty.LENGTH_LONG).show();
                         FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(MainActivity.this, SignIn.class));
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -345,7 +348,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return;
             }
             this.doubleBackToExitPressedOnce = true;
-            toast.setText("Press again to exit");
+            toast = Toasty.custom(getApplicationContext(),
+                    R.string.exit_toast,
+                    ResourcesCompat.getDrawable(getResources(),
+                    R.drawable.shutdown,null),
+                    R.color.colorPrimary,
+                    R.color.colorYellow,
+                    Toasty.LENGTH_SHORT, true,
+                    false);
             toast.show();
             new Handler().postDelayed(new Runnable() {
 
@@ -354,6 +364,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     doubleBackToExitPressedOnce = false;
                 }
             }, 2000);
+
         }
     }
 
