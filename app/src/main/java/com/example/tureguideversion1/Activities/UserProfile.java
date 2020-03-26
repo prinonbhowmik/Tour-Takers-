@@ -1,6 +1,7 @@
 package com.example.tureguideversion1.Activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -37,8 +38,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
+import es.dmoral.toasty.Toasty;
 
 public class UserProfile extends AppCompatActivity {
 
@@ -214,7 +218,7 @@ public class UserProfile extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(UserProfile.this, "Image upload failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toasty.error(UserProfile.this, "Image upload failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -222,7 +226,14 @@ public class UserProfile extends AppCompatActivity {
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                             double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot
                                     .getTotalByteCount();
-                            Toast.makeText(UserProfile.this, "Uploaded " + (int) progress + "%", Toast.LENGTH_SHORT).show();
+                            if(progress<100){
+                                Toasty.info(getApplicationContext(),"Uploading...",Toasty.LENGTH_SHORT).show();
+                                //Toasty.info(getApplicationContext(),"Uploaded " + (int) progress + "% done",Toasty.LENGTH_SHORT).show();
+                            }else {
+                                Toasty.success(getApplicationContext(),"Successfully uploaded",Toasty.LENGTH_SHORT).show();
+                            }
+
+                            //Toast.makeText(UserProfile.this, "Uploaded " + (int) progress + "%", Toast.LENGTH_SHORT).show();
                         }
                     });
         }
@@ -246,7 +257,7 @@ public class UserProfile extends AppCompatActivity {
                         // Uh-oh, an error occurred!
                         //Log.d(TAG, "onFailure: did not delete file");
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getApplicationContext(), "Faild", Toast.LENGTH_SHORT).show();
+                        Toasty.error(getApplicationContext(), "Faild", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
