@@ -15,32 +15,45 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tureguideversion1.Model.Event;
+import com.example.tureguideversion1.Model.EventJoinMemberList;
 import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import es.dmoral.toasty.Toasty;
 
 public class CreateEvent extends AppCompatActivity {
     private View rootLayout;
     private TextInputEditText eventDate, eventTime, eventPlace, meetingPlace;
     private EditText eventDescription;
     private Button eventBtn;
-    private String date, time, publishDate, place, meetPlace, description, eventImage, publisherName, publisherImage, join_member_info;
+    private String date, time, publishDate, place, meetPlace, description, eventPublisherName,
+            eventPublisherPhone, eventPublisherImage, join_member_info;
     private int joinMemberCount = 1;
     private DatabaseReference databaseReference;
+    private StorageReference storageReference;
     public String format;
-    public int hour, minute;
+    private FirebaseAuth auth;
+    private String userId, n, p, i;
+    private static String eventId;
+
+    private String memberName, memberPhone, memberImage;
 
 
 
@@ -54,7 +67,6 @@ public class CreateEvent extends AppCompatActivity {
         init();
         if (savedInstanceState == null) {
             rootLayout.setVisibility(View.INVISIBLE);
-
             ViewTreeObserver viewTreeObserver = rootLayout.getViewTreeObserver();
             if (viewTreeObserver.isAlive()) {
                 viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -66,6 +78,9 @@ public class CreateEvent extends AppCompatActivity {
                 });
             }
         }
+
+
+        getUserDataFromProfile();
 
         eventDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,44 +100,90 @@ public class CreateEvent extends AppCompatActivity {
             public void onClick(View v) {
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh:mm a");
+                publishDate = simpleDateFormat.format(calendar.getTime());
+
+
+                eventPublisherName = n;
+                eventPublisherPhone = p;
+                eventPublisherImage = i;
+                memberName = n;
+                memberPhone = p;
+                memberImage = i;
                 date = eventDate.getText().toString();
                 time = eventTime.getText().toString();
                 place = eventPlace.getText().toString();
                 description = eventDescription.getText().toString();
                 meetPlace = meetingPlace.getText().toString();
-                publishDate = simpleDateFormat.format(calendar.getTime());
+
+
                 if (TextUtils.isEmpty(place)) {
-                    Toast.makeText(CreateEvent.this, "Please fill Tour Place", Toast.LENGTH_SHORT).show();
+                    Toasty.info(getApplicationContext(), "Please fill Tour Place", Toasty.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(date)) {
-                    Toast.makeText(CreateEvent.this, "Please fill Event Date", Toast.LENGTH_SHORT).show();
+                    Toasty.info(getApplicationContext(), "Please fill Event Date", Toasty.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(time)) {
-                    Toast.makeText(CreateEvent.this, "Please fill Event Time", Toast.LENGTH_SHORT).show();
+                    Toasty.info(getApplicationContext(), "Please fill Event Time", Toasty.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(meetPlace)) {
-                    Toast.makeText(CreateEvent.this, "Please fill Meeting Place", Toast.LENGTH_SHORT).show();
+                    Toasty.info(getApplicationContext(), "Please fill Meeting Place", Toasty.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(description)) {
-                    Toast.makeText(CreateEvent.this, "Please fill Event Description", Toast.LENGTH_SHORT).show();
+                    Toasty.info(getApplicationContext(), "Please fill Description Box", Toasty.LENGTH_SHORT).show();
                 } else {
-                    addInDB(date, time, place, meetPlace, description, publishDate, joinMemberCount);
+                    addEventInDB(date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                            eventPublisherName, eventPublisherPhone, eventPublisherImage);
+                    // addJoinMember(memberName,memberPhone,memberImage);
+                    eventDescription.setText(null);
                 }
             }
         });
     }
 
-    private void addInDB(String date, String time, String place, String meetPlace, String description, String publishDate, int joinMemberCount) {
-        DatabaseReference eventRef = databaseReference.child("event");
+    private void addJoinMember(String memberName, String memberPhone, String memberImage) {
+        DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(eventId);
+        EventJoinMemberList eventJoinMemberList = new EventJoinMemberList(memberName, memberPhone, memberImage);
+        memberRef.push().setValue(eventJoinMemberList);
+    }
 
-        Event event = new Event(date, time, place, meetPlace, description, publishDate, joinMemberCount);
+
+    private void addEventInDB(String date, String time, String place, String meetPlace, String description,
+                              String publishDate, int joinMemberCount, String eventPublisherName,
+                              String eventPublisherPhone, String eventPublisherImage) {
+        final DatabaseReference eventRef = databaseReference.child("event");
+
+        final Event event = new Event(date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                eventPublisherName, eventPublisherPhone, eventPublisherImage);
+
         eventRef.push().setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(CreateEvent.this, "Event Successfully Added", Toast.LENGTH_SHORT).show();
+                    eventId = databaseReference.push().getKey();
+                    Toasty.success(getApplicationContext(), "Your Event Successfully Added", Toasty.LENGTH_SHORT).show();
+                    addJoinMember(memberName, memberPhone, memberImage);
                 } else {
-                    Toast.makeText(CreateEvent.this, "Unsuccessful", Toast.LENGTH_SHORT).show();
+                    Toasty.error(getApplicationContext(), "Unsuccessful", Toasty.LENGTH_SHORT).show();
                 }
             }
         });
     }
+
+
+    private void getUserDataFromProfile() {
+        userId = auth.getCurrentUser().getUid();
+
+        DatabaseReference profileRef = databaseReference.child("profile").child(userId);
+        profileRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                n = (String) dataSnapshot.child("name").getValue();
+                i = (String) dataSnapshot.child("image").getValue();
+                p = (String) dataSnapshot.child("phone").getValue();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
 
     private void init() {
         rootLayout=findViewById(R.id.rootLayout);
@@ -132,6 +193,7 @@ public class CreateEvent extends AppCompatActivity {
         eventDescription = findViewById(R.id.event_description);
         eventBtn = findViewById(R.id.create_eventBtn);
         meetingPlace = findViewById(R.id.meeting_place);
+        auth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 

@@ -22,4 +22,5 @@
     <string name="at">At</string>
     <string name="attending">Attending</string>
     <string name="exit_toast" translatable="false">Press again to exit!</string>
+    <string name="description"><u>Description</u></string>
 </resources>

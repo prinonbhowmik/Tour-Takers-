@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Activities.EventDetails">
+
+    <TextView
+        android:id="@+id/event_placeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:text="Cox's Bazar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:textSize="24sp" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view1"
+        android:layout_below="@+id/event_placeTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        app:cardCornerRadius="10dp"
+        android:layout_marginEnd="20dp">
+
+        <ImageView
+            android:id="@+id/event_imageIV"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:background="@android:color/holo_red_light" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/txt0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/card_view1"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:text="Publish Date     :"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/event_publish_dateTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/card_view1"
+        android:layout_toEndOf="@+id/txt0"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:text=" Sunday 10/10/2020 at 2:30 PM"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/txt1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt0"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:text="Event Date        :"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/event_dateTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/txt1"
+        android:layout_below="@+id/event_publish_dateTV"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:text="10/10/2020"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/txt2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt1"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:text="Event Time        :"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/event_timeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/txt2"
+        android:layout_below="@+id/event_dateTV"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:text="11:30 PM"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/txt3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt2"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:text="Meeting Place   :"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/meeting_placeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/txt3"
+        android:layout_below="@+id/event_timeTV"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:text="11:30 PM"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/txt4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt3"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:text="@string/description"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/event_descriptionTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@+id/txt4"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp" />
+
+
+    <RelativeLayout
+        android:id="@+id/relative1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_descriptionTV">
+
+        <TextView
+            android:id="@+id/event_publish_nameTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="21sp"
+            android:textColor="@android:color/black"
+            android:text="Admin Name"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:id="@+id/txt5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@android:color/black"
+            android:layout_below="@+id/event_publish_nameTV"
+            android:text=" Event Admin"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="2dp" />
+
+        <ImageView
+            android:id="@+id/event_publish_imageTV"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="20dp"
+            android:layout_centerVertical="true"
+            android:background="@android:color/darker_gray"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/txt6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relative1"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:text="Attending   :"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/attending_memberTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relative1"
+        android:layout_toEndOf="@+id/txt6"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp" />
+
+
+    <Button
+        android:id="@+id/joinBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt6"
+        android:textSize="18sp"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/white"
+        android:textColor="@android:color/black"
+        android:text="Join"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp" />
+
+
+</RelativeLayout>

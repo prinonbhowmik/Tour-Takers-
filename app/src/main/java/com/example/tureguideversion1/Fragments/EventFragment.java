@@ -17,6 +17,7 @@ import com.example.tureguideversion1.Adapters.EventAdapter;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,12 +32,14 @@ import java.util.List;
  */
 public class EventFragment extends Fragment {
 
-    FloatingActionButton createEvent;
+    private FloatingActionButton createEvent;
     private EditText eventSearch;
     private DatabaseReference databaseReference;
     private RecyclerView eventRecyclerview;
     private EventAdapter eventAdapter;
     private List<Event> eventList;
+    private String pid, userName, userPhone, userImage;
+    private FirebaseAuth auth;
 
     public EventFragment() {
         // Required empty public constructor
@@ -50,12 +53,15 @@ public class EventFragment extends Fragment {
         View view=inflater.inflate(R.layout.fragment_event, container, false);
         init(view);
 
+
         createEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), CreateEvent.class));
+                Intent intent = new Intent(getContext(), CreateEvent.class);
+                startActivity(intent);
             }
         });
+
 
         eventSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +75,7 @@ public class EventFragment extends Fragment {
 
         return view;
     }
+
 
     private void getData(View view) {
         DatabaseReference eventInfoRef = databaseReference.child("event");
@@ -100,7 +107,8 @@ public class EventFragment extends Fragment {
         eventList = new ArrayList<>();
         eventRecyclerview = view.findViewById(R.id.event_recyclerview);
         eventRecyclerview.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        eventAdapter = new EventAdapter(eventList);
+        eventAdapter = new EventAdapter(eventList, getContext());
         eventRecyclerview.setAdapter(eventAdapter);
+        auth = FirebaseAuth.getInstance();
     }
 }
