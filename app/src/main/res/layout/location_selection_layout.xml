@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/locationLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/edit_text_design"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/locationBtms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:fontFamily="@font/amarante"
+        android:padding="10dp"
+        android:text="TextView"
+        android:textColor="#000000"
+
+        android:textSize="18sp" />
+
+    <com.polyak.iconswitch.IconSwitch
+        android:id="@+id/icon_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical|end"
+        app:isw_active_tint_icon_left="#8F0000"
+        app:isw_active_tint_icon_right="#1B751F"
+        app:isw_background_color="#FFF"
+        app:isw_icon_left="@drawable/cross_icon"
+        app:isw_icon_right="@drawable/tick_icon"
+        app:isw_icon_size="20dp"
+        app:isw_inactive_tint_icon_left="#FFF"
+        app:isw_inactive_tint_icon_right="#FFF"
+        app:isw_thumb_color_left="@color/transparent"
+        app:isw_thumb_color_right="@color/transparent" />
+</LinearLayout>

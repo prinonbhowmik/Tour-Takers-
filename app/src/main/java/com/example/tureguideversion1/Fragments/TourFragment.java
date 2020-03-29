@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.transition.Visibility;
 
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -20,6 +21,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -35,6 +37,7 @@ import com.example.tureguideversion1.Activities.LocationImage;
 import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.Activities.NoInternetConnection;
 import com.example.tureguideversion1.Adapters.AutoCompleteLocationAdapter;
+import com.example.tureguideversion1.LocationSelection_bottomSheet;
 import com.example.tureguideversion1.Model.LocationItem;
 import com.example.tureguideversion1.R;
 import com.glide.slider.library.SliderLayout;
@@ -60,6 +63,7 @@ import java.util.Map;
 import es.dmoral.toasty.Toasty;
 
 import static android.app.Activity.RESULT_OK;
+import static android.view.View.VISIBLE;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /**
@@ -76,6 +80,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private AutoCompleteTextView locationEt;
     private ArrayList<String> location;
     private String locationForViewPage;
+    private Button locationSelection;
     private int slide;
 
     public TourFragment() {
@@ -122,6 +127,16 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         //handle databaseError
                     }
                 });
+
+        locationEt.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(locationEt.getText().toString().isEmpty()){
+                    locationSelection.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
 
         locationEt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -186,6 +201,17 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 return false; // pass on to other listeners.
             }
 
+        });
+
+        locationSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LocationSelection_bottomSheet bottom_sheet = new LocationSelection_bottomSheet();
+                Bundle args = new Bundle();
+                args.putString("location", locationEt.getText().toString());
+                bottom_sheet.setArguments(args);
+                bottom_sheet.show(getParentFragmentManager(), "locationSelection");
+            }
         });
 
 
@@ -283,7 +309,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 imageSlider.addSlider(sliderView);
                 //loading.setVisibility(View.INVISIBLE);
             }
-
+            locationSelection.setVisibility(View.VISIBLE);
             // set Slider Transition Animation
             // mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Default);
 
@@ -349,6 +375,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         imageSlider = view.findViewById(R.id.slider);
         logo = view.findViewById(R.id.logoT);
         loading = view.findViewById(R.id.loading);
+        locationSelection = view.findViewById(R.id.licationSelection);
     }
 
     private void getDate() {

@@ -14,4 +14,11 @@
     <color name="color3">#796e25</color>
     <color name="color4">#59717c</color>
 
+    <color name="transparent">#00000000</color>
+    <!-- card colors -->
+    <color name="card_background">#ffffff</color>
+    <color name="card_shadow_1">#d4d4d4</color>
+    <color name="card_shadow_2">#dddddd</color>
+    <color name="card_detailing">#eee</color>
+
 </resources>
