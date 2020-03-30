@@ -2,6 +2,7 @@ package com.example.tureguideversion1.Model;
 
 public class Event {
 
+    private String id;
     private String date;
     private String time;
     private String place;
@@ -9,17 +10,15 @@ public class Event {
     private String description;
     private String publishDate;
     private int joinMemberCount;
-    private String eventPublisherName;
-    private String eventPublisherPhone;
-    private String eventPublisherImage;
+    private String eventPublisherId;
 
 
     public Event() {
     }
 
-    public Event(String date, String time, String place, String meetPlace,
-                 String description, String publishDate, int joinMemberCount, String eventPublisherName,
-                 String eventPublisherPhone, String eventPublisherImage) {
+    public Event(String id, String date, String time, String place, String meetPlace, String description,
+                 String publishDate, int joinMemberCount, String eventPublisherId) {
+        this.id = id;
         this.date = date;
         this.time = time;
         this.place = place;
@@ -27,11 +26,12 @@ public class Event {
         this.description = description;
         this.publishDate = publishDate;
         this.joinMemberCount = joinMemberCount;
-        this.eventPublisherName = eventPublisherName;
-        this.eventPublisherPhone = eventPublisherPhone;
-        this.eventPublisherImage = eventPublisherImage;
+        this.eventPublisherId = eventPublisherId;
     }
 
+    public String getId() {
+        return id;
+    }
 
     public String getDate() {
         return date;
@@ -61,15 +61,7 @@ public class Event {
         return joinMemberCount;
     }
 
-    public String getEventPublisherName() {
-        return eventPublisherName;
-    }
-
-    public String getEventPublisherPhone() {
-        return eventPublisherPhone;
-    }
-
-    public String getEventPublisherImage() {
-        return eventPublisherImage;
+    public String getEventPublisherId() {
+        return eventPublisherId;
     }
 }

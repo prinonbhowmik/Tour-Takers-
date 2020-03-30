@@ -43,14 +43,13 @@ public class CreateEvent extends AppCompatActivity {
     private TextInputEditText eventDate, eventTime, eventPlace, meetingPlace;
     private EditText eventDescription;
     private Button eventBtn;
-    private String date, time, publishDate, place, meetPlace, description, eventPublisherName,
-            eventPublisherPhone, eventPublisherImage, join_member_info;
+    private String id, date, time, publishDate, place, meetPlace, description, eventPublisherId, join_member_info;
     private int joinMemberCount = 1;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
     public String format;
     private FirebaseAuth auth;
-    private String userId, n, p, i;
+    private String userId, member_name, member_phone, member_image, member_pro_id;
     private static String eventId;
 
     private String memberName, memberPhone, memberImage;
@@ -82,6 +81,7 @@ public class CreateEvent extends AppCompatActivity {
 
         getUserDataFromProfile();
 
+
         eventDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,22 +98,25 @@ public class CreateEvent extends AppCompatActivity {
         eventBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh:mm a");
                 publishDate = simpleDateFormat.format(calendar.getTime());
 
+                DatabaseReference eventRef = databaseReference.child("event");
+                eventId = eventRef.push().getKey();
 
-                eventPublisherName = n;
-                eventPublisherPhone = p;
-                eventPublisherImage = i;
-                memberName = n;
-                memberPhone = p;
-                memberImage = i;
+
+                eventPublisherId = member_pro_id;
+                memberName = member_name;
+                memberPhone = member_phone;
+                memberImage = member_image;
                 date = eventDate.getText().toString();
                 time = eventTime.getText().toString();
                 place = eventPlace.getText().toString();
                 description = eventDescription.getText().toString();
                 meetPlace = meetingPlace.getText().toString();
+                id = eventId;
 
 
                 if (TextUtils.isEmpty(place)) {
@@ -127,10 +130,13 @@ public class CreateEvent extends AppCompatActivity {
                 } else if (TextUtils.isEmpty(description)) {
                     Toasty.info(getApplicationContext(), "Please fill Description Box", Toasty.LENGTH_SHORT).show();
                 } else {
-                    addEventInDB(date, time, place, meetPlace, description, publishDate, joinMemberCount,
-                            eventPublisherName, eventPublisherPhone, eventPublisherImage);
-                    // addJoinMember(memberName,memberPhone,memberImage);
+                    addEventInDB(id, date, time, place, meetPlace, description, publishDate, joinMemberCount, eventPublisherId);
                     eventDescription.setText(null);
+                    eventDate.setText(null);
+                    eventTime.setText(null);
+                    meetingPlace.setText(null);
+                    eventPlace.setText(null);
+
                 }
             }
         });
@@ -139,23 +145,23 @@ public class CreateEvent extends AppCompatActivity {
     private void addJoinMember(String memberName, String memberPhone, String memberImage) {
         DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(eventId);
         EventJoinMemberList eventJoinMemberList = new EventJoinMemberList(memberName, memberPhone, memberImage);
-        memberRef.push().setValue(eventJoinMemberList);
+        memberRef.child(userId).setValue(eventJoinMemberList);
     }
 
 
-    private void addEventInDB(String date, String time, String place, String meetPlace, String description,
-                              String publishDate, int joinMemberCount, String eventPublisherName,
-                              String eventPublisherPhone, String eventPublisherImage) {
+    private void addEventInDB(String id, String date, String time, String place, String meetPlace, String description,
+                              String publishDate, int joinMemberCount, String eventPublisherId) {
         final DatabaseReference eventRef = databaseReference.child("event");
+        //  eventId= eventRef.push().getKey();
 
-        final Event event = new Event(date, time, place, meetPlace, description, publishDate, joinMemberCount,
-                eventPublisherName, eventPublisherPhone, eventPublisherImage);
+        final Event event = new Event(id, date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                eventPublisherId);
 
-        eventRef.push().setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
+        eventRef.child(eventId).setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    eventId = databaseReference.push().getKey();
+                    // eventId = databaseReference.push().getKey();
                     Toasty.success(getApplicationContext(), "Your Event Successfully Added", Toasty.LENGTH_SHORT).show();
                     addJoinMember(memberName, memberPhone, memberImage);
                 } else {
@@ -173,9 +179,11 @@ public class CreateEvent extends AppCompatActivity {
         profileRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                n = (String) dataSnapshot.child("name").getValue();
-                i = (String) dataSnapshot.child("image").getValue();
-                p = (String) dataSnapshot.child("phone").getValue();
+
+                member_name = (String) dataSnapshot.child("name").getValue();
+                member_image = (String) dataSnapshot.child("image").getValue();
+                member_phone = (String) dataSnapshot.child("phone").getValue();
+                member_pro_id = (String) dataSnapshot.child("Id").getValue();
             }
 
             @Override
