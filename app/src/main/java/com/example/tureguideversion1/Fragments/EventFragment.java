@@ -76,7 +76,6 @@ public class EventFragment extends Fragment {
         return view;
     }
 
-
     private void getData(View view) {
         DatabaseReference eventInfoRef = databaseReference.child("event");
         eventInfoRef.addValueEventListener(new ValueEventListener() {
@@ -88,11 +87,9 @@ public class EventFragment extends Fragment {
                         Event event = data.getValue(Event.class);
                         eventList.add(event);
                         eventAdapter.notifyDataSetChanged();
-
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }

@@ -20,7 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tureguideversion1.Model.Event;
-import com.example.tureguideversion1.Model.EventJoinMemberList;
 import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -142,10 +141,9 @@ public class CreateEvent extends AppCompatActivity {
         });
     }
 
-    private void addJoinMember(String memberName, String memberPhone, String memberImage) {
-        DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(eventId);
-        EventJoinMemberList eventJoinMemberList = new EventJoinMemberList(memberName, memberPhone, memberImage);
-        memberRef.child(userId).setValue(eventJoinMemberList);
+    private void addJoinMember() {
+        DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(eventId).child(userId);
+        memberRef.child("id").setValue(userId);
     }
 
 
@@ -163,7 +161,7 @@ public class CreateEvent extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     // eventId = databaseReference.push().getKey();
                     Toasty.success(getApplicationContext(), "Your Event Successfully Added", Toasty.LENGTH_SHORT).show();
-                    addJoinMember(memberName, memberPhone, memberImage);
+                    addJoinMember();
                 } else {
                     Toasty.error(getApplicationContext(), "Unsuccessful", Toasty.LENGTH_SHORT).show();
                 }

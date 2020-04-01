@@ -10,26 +10,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/event_placeTV"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/relative1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="20dp"
-            android:textColor="@android:color/black"
-            android:textSize="24sp" />
+            android:layout_marginTop="30dp">
+
+            <TextView
+                android:id="@+id/event_placeTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="50dp"
+                android:textColor="@android:color/black"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:id="@+id/moreIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_more_black_24dp"
+                android:visibility="gone" />
+
+        </RelativeLayout>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_view1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/event_placeTV"
+            android:layout_below="@+id/relative1"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
             android:background="@android:color/white"
-            app:cardCornerRadius="10dp">
+            app:cardCornerRadius="5dp">
 
             <ImageView
                 android:id="@+id/event_imageIV"
@@ -38,99 +57,119 @@
                 android:background="@android:color/holo_red_light" />
         </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/txt0"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/relative2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/card_view1"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:text="Publish Date     :"
-            android:textColor="@android:color/black"
-            android:textSize="15sp" />
+            android:layout_below="@+id/card_view1">
 
-        <TextView
-            android:id="@+id/event_publish_dateTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/card_view1"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_toEndOf="@+id/txt0"
-            android:textColor="@android:color/black"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/txt0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Publish Date     :"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
 
-        <TextView
-            android:id="@+id/txt1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/txt0"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:text="Event Date        :"
-            android:textColor="@android:color/black"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/event_publish_dateTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/txt0"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+        </RelativeLayout>
 
-        <TextView
-            android:id="@+id/event_dateTV"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/relative3"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/event_publish_dateTV"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_toEndOf="@+id/txt1"
-            android:textColor="@android:color/black"
-            android:textSize="15sp" />
+            android:layout_below="@+id/relative2">
 
-        <TextView
-            android:id="@+id/txt2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/txt1"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:text="Event Time        :"
-            android:textColor="@android:color/black"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/txt1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Event Date        :"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
 
-        <TextView
-            android:id="@+id/event_timeTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/event_dateTV"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_toEndOf="@+id/txt2"
-            android:textColor="@android:color/black"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/event_dateTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/txt1"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+        </RelativeLayout>
 
-        <TextView
-            android:id="@+id/txt3"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/relative4"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txt2"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:text="Meeting Place   :"
-            android:textColor="@android:color/black"
-            android:textSize="15sp" />
+            android:layout_below="@+id/relative3">
 
-        <TextView
-            android:id="@+id/meeting_placeTV"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/txt2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Event Time        :"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/event_timeTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/txt2"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relative5"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/event_timeTV"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_toEndOf="@+id/txt3"
-            android:textColor="@android:color/black"
-            android:textSize="15sp" />
+            android:layout_below="@+id/relative4">
+
+            <TextView
+                android:id="@+id/txt3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Meeting Place   :"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/meeting_placeTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/txt3"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/txt4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txt3"
+            android:layout_below="@+id/relative5"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:text="@string/description"
@@ -150,18 +189,17 @@
 
 
         <RelativeLayout
-            android:id="@+id/relative1"
+            android:id="@+id/relative6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/event_descriptionTV">
+            android:layout_below="@+id/event_descriptionTV"
+            android:layout_marginTop="10dp">
 
             <TextView
                 android:id="@+id/event_publish_nameTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="Admin Name"
                 android:textColor="@android:color/black"
                 android:textSize="21sp" />
 
@@ -187,11 +225,12 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/relative2"
+            android:id="@+id/relative7"
             android:layout_width="match_parent"
             android:layout_height="45dp"
+            android:layout_below="@id/relative6"
             android:layout_marginTop="10dp"
-            android:layout_below="@id/relative1">
+            android:layout_marginBottom="30dp">
 
             <TextView
                 android:id="@+id/txt6"
@@ -207,8 +246,8 @@
                 android:id="@+id/attending_memberTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="40dp"
                 android:layout_toEndOf="@+id/txt6"
                 android:textColor="@android:color/black"
                 android:textSize="21sp" />
@@ -217,30 +256,30 @@
                 android:id="@+id/viewTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="40dp"
                 android:layout_marginEnd="20dp"
                 android:text="View Members"
                 android:textColor="@color/colorBlue"
                 android:textSize="18sp" />
         </RelativeLayout>
 
-
         <Button
             android:id="@+id/joinBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/relative2"
+            android:layout_below="@+id/relative7"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="50dp"
             android:background="@android:color/holo_red_light"
             android:text="Join"
-            android:textStyle="bold"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
 
     </RelativeLayout>
 </ScrollView>
