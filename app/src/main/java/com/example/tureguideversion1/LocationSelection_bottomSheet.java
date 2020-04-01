@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,25 +33,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LocationSelection_bottomSheet extends BottomSheetDialogFragment {
+public class LocationSelection_bottomSheet extends BottomSheetDialogFragment implements LocationSelection_bottomSheet_adapter.InfoAdapterInterface {
 
     private List<LocationSelectionItem> locationList;
+    private List<String> selectedLocation;
     private LocationSelection_bottomSheet_adapter adapter;
     private RecyclerView locationRecyleView;
-    private IconSwitch iconSwitch;
-    private LinearLayout locationLayout;
+    private TextView locationStatus;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.location_selection_bottom_sheet, container, false);
         View designLayout = inflater.inflate(R.layout.location_selection_layout, container, false);
-            locationRecyleView = v.findViewById(R.id.locationSelection_recyclerview);
-            locationRecyleView.setLayoutManager(new LinearLayoutManager(v.getContext()));
-            iconSwitch = designLayout.findViewById(R.id.icon_switch);
-            locationLayout = designLayout.findViewById(R.id.locationLayout);
-
-
+        locationRecyleView = v.findViewById(R.id.locationSelection_recyclerview);
+        locationRecyleView.setLayoutManager(new LinearLayoutManager(v.getContext()));
+        locationStatus = v.findViewById(R.id.selectionStatus);
+        selectedLocation = new ArrayList<>();
 
         Bundle mArgs = getArguments();
         String location = mArgs.getString("location").toLowerCase();
@@ -73,7 +72,7 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment {
                 });
 
 
-    return v;
+        return v;
     }
 
     private void collectLocationNInfo(Map<String, Object> locations) {
@@ -89,11 +88,33 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment {
                 locationList.add(location);
                 //adapter.notifyDataSetChanged();
             }
-            adapter = new LocationSelection_bottomSheet_adapter(locationList,getContext());
+            adapter = new LocationSelection_bottomSheet_adapter(locationList, getContext(), this);
             locationRecyleView.setAdapter(adapter);
 
+        }
+    }
+
+
+    @Override
+    public void OnItemClicked(String location) {
+        if (location.substring(0, 2).matches("un")) {
+            String s = location.substring(2);
+            selectedLocation.remove(s);
+
+        } else {
+            if (!selectedLocation.contains(location)) {
+                selectedLocation.add(location);
             }
         }
 
+        String count = Integer.toString(selectedLocation.size());
+        if (selectedLocation.size() == 1) {
+            locationStatus.setText(count + " place is selected");
+        } else if (selectedLocation.size() > 1) {
 
+            locationStatus.setText(count + " places is selected");
+        }else {
+            locationStatus.setText("Select places that you want to visit");
+        }
+    }
 }

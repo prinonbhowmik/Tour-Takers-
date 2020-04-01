@@ -21,17 +21,19 @@ public class LocationSelection_bottomSheet_adapter extends RecyclerView.Adapter<
 
     private List<LocationSelectionItem> locationList;
     private Context context;
+    private InfoAdapterInterface adapterInterface;
 
-    public LocationSelection_bottomSheet_adapter(List<LocationSelectionItem> locationList, Context context) {
+    public LocationSelection_bottomSheet_adapter(List<LocationSelectionItem> locationList, Context context, InfoAdapterInterface adapterInterface) {
         this.locationList = locationList;
         this.context = context;
+        this.adapterInterface = adapterInterface;
     }
 
     @NonNull
     @Override
     public LocationSelection_bottomSheet_adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.location_selection_layout, parent, false);
-        return new LocationSelection_bottomSheet_adapter.ViewHolder(view);
+        return new LocationSelection_bottomSheet_adapter.ViewHolder(view, adapterInterface);
     }
 
     @Override
@@ -43,9 +45,11 @@ public class LocationSelection_bottomSheet_adapter extends RecyclerView.Adapter<
             public void onCheckChanged(IconSwitch.Checked current) {
                 switch (holder.swt.getChecked()) {
                     case LEFT:
+                        adapterInterface.OnItemClicked("un"+holder.location.getText().toString());
                         holder.locationLayout.setBackground(context.getDrawable(R.drawable.edit_text_design));
                         break;
                     case RIGHT:
+                        adapterInterface.OnItemClicked(holder.location.getText().toString());
                         holder.locationLayout.setBackground(context.getDrawable(R.drawable.edit_text_design2));
                         break;
                 }
@@ -75,13 +79,17 @@ public class LocationSelection_bottomSheet_adapter extends RecyclerView.Adapter<
         return locationList.size();
     }
 
+    public interface InfoAdapterInterface{
+        void OnItemClicked(String location);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView location;
         private IconSwitch swt;
         private LinearLayout locationLayout;
 
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, InfoAdapterInterface adapterInterface) {
             super(itemView);
             location = itemView.findViewById(R.id.locationBtms);
             swt = itemView.findViewById(R.id.icon_switch);
