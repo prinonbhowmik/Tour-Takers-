@@ -1,9 +1,12 @@
 package com.example.tureguideversion1.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,12 +22,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import es.dmoral.toasty.Toasty;
 
-public class EventDetails extends AppCompatActivity {
+public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     private TextView event_place, event_date, event_time, meeting_place, event_description, publish_date,
-            publisher_name, publisher_phone, event_attending_member, view;
-    private ImageView event_image, event_publisher_image, moreIV;
-    private Button joinBtn;
+            publisher_name, publisher_phone, event_attending_member, view, moreTV;
+    private ImageView event_image, event_publisher_image;
+    private Button joinBtn, cancel_joinBtn;
     private String place, date, time, m_place, description, p_date, p_name, p_phone, p_image, attend_member_count, publisher_id;
     private Integer member_count;
     private FirebaseAuth auth;
@@ -32,31 +35,35 @@ public class EventDetails extends AppCompatActivity {
     private String userId, event_Id, event_user_id;
     String member_name;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
         init();
+        registerForContextMenu(moreTV);
         getData();
         userId = auth.getCurrentUser().getUid();
         moreImageShow();
-        //joinButtonShow();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference ref = databaseReference.child("profile").child(publisher_id);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    member_name = (String) dataSnapshot.child("name").getValue();
-                    publisher_name.setText(member_name);
-                }
-            }
+        joinButtonShow();
+        setData();
 
+        moreTV.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onClick(View v) {
+                showPopupMenu();
             }
         });
-        setData();
+
+        joinBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
+                memberRef.child("id").setValue(userId);
+                member_counter();
+                joinBtn.setVisibility(View.GONE);
+            }
+        });
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +78,34 @@ public class EventDetails extends AppCompatActivity {
 
     }
 
-  /*  private void joinButtonShow() {
+    private void member_counter() {
+
+        DatabaseReference memberCountRef = databaseReference.child("eventJoinMember").child(event_Id);
+        memberCountRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long count = dataSnapshot.getChildrenCount();
+                DatabaseReference e_Ref = databaseReference.child("event").child(event_Id);
+                e_Ref.child("joinMemberCount").setValue(count);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    private void showPopupMenu() {
+        PopupMenu popup = new PopupMenu(this, moreTV);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.event_update_menu);
+        popup.show();
+    }
+
+
+    private void joinButtonShow() {
         DatabaseReference memberRef=databaseReference.child("eventJoinMember").child(event_Id);
         memberRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -79,8 +113,9 @@ public class EventDetails extends AppCompatActivity {
 
                 for(DataSnapshot data : dataSnapshot.getChildren()) {
                     String id= (String) data.child("id").getValue();
-                    if (id.equals(userId)) {
-                        joinBtn.setVisibility(View.INVISIBLE);
+                    if (userId.equals(id)) {
+                        joinBtn.setVisibility(View.GONE);
+                        cancel_joinBtn.setVisibility(View.VISIBLE);
                         break;
                     }
                 }
@@ -91,7 +126,7 @@ public class EventDetails extends AppCompatActivity {
             }
         });
 
-    }*/
+    }
 
     private void moreImageShow() {
         final DatabaseReference eRef = databaseReference.child("event").child(event_Id);
@@ -100,10 +135,10 @@ public class EventDetails extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 event_user_id = (String) dataSnapshot.child("eventPublisherId").getValue();
                 if (event_user_id.equals(userId)) {
-                    moreIV.setVisibility(View.VISIBLE);
+                    moreTV.setVisibility(View.VISIBLE);
+                    ;
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -121,6 +156,23 @@ public class EventDetails extends AppCompatActivity {
         attend_member_count = getIntent().getStringExtra("event_join_member_count");
         event_Id = getIntent().getStringExtra("event_id");
         publisher_id = getIntent().getStringExtra("member_id");
+
+        //for user name
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = databaseReference.child("profile").child(publisher_id);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    member_name = (String) dataSnapshot.child("name").getValue();
+                    publisher_name.setText(member_name);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
     }
 
     private void setData() {
@@ -144,10 +196,28 @@ public class EventDetails extends AppCompatActivity {
         publisher_name = findViewById(R.id.event_publish_nameTV);
         event_attending_member = findViewById(R.id.attending_memberTV);
         view = findViewById(R.id.viewTV);
-        moreIV = findViewById(R.id.moreIV);
+        moreTV = findViewById(R.id.moreTV);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
+        joinBtn = findViewById(R.id.joinBtn);
+        cancel_joinBtn = findViewById(R.id.cancel_joinBtn);
 
 
+    }
+
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.update:
+                Intent intent = new Intent(EventDetails.this, CreateEvent.class);
+                startActivity(intent);
+                return true;
+            case R.id.delete:
+                Toasty.normal(EventDetails.this, "Delete Event", Toasty.LENGTH_SHORT).show();
+                return true;
+            default:
+                return false;
+        }
     }
 }

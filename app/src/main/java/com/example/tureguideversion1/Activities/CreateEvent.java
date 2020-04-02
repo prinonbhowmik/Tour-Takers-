@@ -43,7 +43,7 @@ public class CreateEvent extends AppCompatActivity {
     private EditText eventDescription;
     private Button eventBtn;
     private String id, date, time, publishDate, place, meetPlace, description, eventPublisherId, join_member_info;
-    private int joinMemberCount = 1;
+    private int joinMemberCount = 0;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
     public String format;
@@ -135,10 +135,29 @@ public class CreateEvent extends AppCompatActivity {
                     eventTime.setText(null);
                     meetingPlace.setText(null);
                     eventPlace.setText(null);
-
                 }
+
+                memberCounter();
             }
         });
+    }
+
+    private void memberCounter() {
+        DatabaseReference memberCountRef = databaseReference.child("eventJoinMember").child(eventId);
+        memberCountRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long count = dataSnapshot.getChildrenCount();
+                DatabaseReference e_Ref = databaseReference.child("event").child(eventId);
+                e_Ref.child("joinMemberCount").setValue(count);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void addJoinMember() {
@@ -150,7 +169,6 @@ public class CreateEvent extends AppCompatActivity {
     private void addEventInDB(String id, String date, String time, String place, String meetPlace, String description,
                               String publishDate, int joinMemberCount, String eventPublisherId) {
         final DatabaseReference eventRef = databaseReference.child("event");
-        //  eventId= eventRef.push().getKey();
 
         final Event event = new Event(id, date, time, place, meetPlace, description, publishDate, joinMemberCount,
                 eventPublisherId);
@@ -159,9 +177,9 @@ public class CreateEvent extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    // eventId = databaseReference.push().getKey();
                     Toasty.success(getApplicationContext(), "Your Event Successfully Added", Toasty.LENGTH_SHORT).show();
                     addJoinMember();
+
                 } else {
                     Toasty.error(getApplicationContext(), "Unsuccessful", Toasty.LENGTH_SHORT).show();
                 }
@@ -232,7 +250,6 @@ public class CreateEvent extends AppCompatActivity {
         mTimePicker = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                //selectedTimeFormat(selectedHour);
                 if (selectedHour == 0) {
                     selectedHour += 12;
                     format = "AM";
@@ -247,23 +264,8 @@ public class CreateEvent extends AppCompatActivity {
                 eventTime.setText(selectedHour + ":" + selectedMinute + " " + format);
             }
         }, hour, minute, true);//Yes 24 hour time
-        // mTimePicker.setTitle("Select Time");
         mTimePicker.show();
 
-    }
-
-    public void selectedTimeFormat(int hour) {
-        if (hour == 0) {
-            hour += 12;
-            format = "AM";
-        } else if (hour == 12) {
-            format = "PM";
-        } else if (hour > 12) {
-            hour -= 12;
-            format = "Am";
-        } else {
-            format = "PM";
-        }
     }
 
 

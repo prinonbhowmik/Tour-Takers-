@@ -26,14 +26,14 @@
                 android:textColor="@android:color/black"
                 android:textSize="24sp" />
 
-            <ImageView
-                android:id="@+id/moreIV"
+            <TextView
+                android:id="@+id/moreTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="10dp"
-                android:src="@drawable/ic_more_black_24dp"
+                android:drawableStart="@drawable/ic_more_black_24dp"
                 android:visibility="gone" />
 
         </RelativeLayout>
@@ -280,6 +280,22 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:visibility="visible" />
+
+        <Button
+            android:id="@+id/cancel_joinBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative7"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"
+            android:background="@android:color/holo_red_light"
+            android:text="Cancel"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
     </RelativeLayout>
 </ScrollView>
