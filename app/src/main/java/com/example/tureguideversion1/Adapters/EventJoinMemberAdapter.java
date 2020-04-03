@@ -14,13 +14,14 @@ import com.example.tureguideversion1.R;
 import java.util.List;
 
 public class EventJoinMemberAdapter extends RecyclerView.Adapter<EventJoinMemberAdapter.ViewHolder> {
-    private List<EventJoinMemberList> eventJoinMemberLists;
+    private List<EventJoinMemberList> eventJoinMemberList;
+
 
     public EventJoinMemberAdapter() {
     }
 
-    public EventJoinMemberAdapter(List<EventJoinMemberList> eventJoinMemberLists) {
-        this.eventJoinMemberLists = eventJoinMemberLists;
+    public EventJoinMemberAdapter(List<EventJoinMemberList> eventJoinMemberList) {
+        this.eventJoinMemberList = eventJoinMemberList;
     }
 
     @NonNull
@@ -32,15 +33,16 @@ public class EventJoinMemberAdapter extends RecyclerView.Adapter<EventJoinMember
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        EventJoinMemberList eventJoinMemberList = eventJoinMemberLists.get(position);
-        holder.member_name.setText(eventJoinMemberList.getMemberName());
+        EventJoinMemberList event_member = eventJoinMemberList.get(position);
+        holder.member_name.setText(event_member.getMemberName());
+        holder.member_phone.setText(event_member.getMemberPhone());
 
 
     }
 
     @Override
     public int getItemCount() {
-        return eventJoinMemberLists.size();
+        return eventJoinMemberList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -50,6 +52,7 @@ public class EventJoinMemberAdapter extends RecyclerView.Adapter<EventJoinMember
             super(itemView);
             member_name = itemView.findViewById(R.id.member_nameET);
             member_phone = itemView.findViewById(R.id.member_phoneET);
+            member_image = itemView.findViewById(R.id.member_image);
         }
     }
 }

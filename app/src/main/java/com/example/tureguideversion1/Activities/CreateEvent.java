@@ -135,9 +135,10 @@ public class CreateEvent extends AppCompatActivity {
                     eventTime.setText(null);
                     meetingPlace.setText(null);
                     eventPlace.setText(null);
+                    memberCounter();
                 }
 
-                memberCounter();
+
             }
         });
     }

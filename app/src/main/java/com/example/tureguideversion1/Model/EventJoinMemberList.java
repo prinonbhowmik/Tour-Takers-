@@ -6,13 +6,14 @@ public class EventJoinMemberList {
     private String memberPhone;
     private String memberImage;
 
-    public EventJoinMemberList() {
-    }
 
     public EventJoinMemberList(String memberName, String memberPhone, String memberImage) {
         this.memberName = memberName;
         this.memberPhone = memberPhone;
         this.memberImage = memberImage;
+    }
+
+    public EventJoinMemberList() {
     }
 
     public String getMemberName() {

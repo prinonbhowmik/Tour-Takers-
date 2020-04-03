@@ -48,9 +48,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.eTime.setText(event.getTime());
         holder.ePlace.setText(event.getMeetPlace());
         holder.eMembers.setText(String.valueOf(event.getJoinMemberCount()));
-
-
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
