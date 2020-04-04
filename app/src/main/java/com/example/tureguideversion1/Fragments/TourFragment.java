@@ -77,6 +77,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private ImageView logo;
     private LottieAnimationView loading;
     private List<LocationItem> locationList;
+    private List<String> selectedLocation;
     private AutoCompleteTextView locationEt;
     private ArrayList<String> location;
     private String locationForViewPage;
@@ -141,6 +142,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         locationEt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                selectedLocation.clear();
+                locationSelection.setText("Select tourism places");
                 hideKeyboardFrom(getContext(), getView());
                 logo.setVisibility(View.INVISIBLE);
                 loading.setVisibility(View.VISIBLE);
@@ -174,6 +177,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                 keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                     if (keyEvent == null || !keyEvent.isShiftPressed()) {
                         // the user is done typing.
+                        selectedLocation.clear();
+                        locationSelection.setText("Select tourism places");
                         hideKeyboardFrom(getContext(), getView());
                         locationEt.dismissDropDown();
                         logo.setVisibility(View.INVISIBLE);
@@ -209,6 +214,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 LocationSelection_bottomSheet bottom_sheet = new LocationSelection_bottomSheet();
                 Bundle args = new Bundle();
                 args.putString("location", locationEt.getText().toString());
+                if(selectedLocation != null) {
+                    args.putStringArrayList("selectedLocation", (ArrayList<String>) selectedLocation);
+                }
                 bottom_sheet.setArguments(args);
                 bottom_sheet.show(getParentFragmentManager(), "locationSelection");
             }
@@ -216,6 +224,30 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
 
         return view;
+    }
+
+    public void receivedLocationData(String message)
+    {
+        if (message.substring(0, 2).matches("un")) {
+            String s = message.substring(2);
+            selectedLocation.remove(s);
+
+        } else {
+            if (!selectedLocation.contains(message)) {
+                selectedLocation.add(message);
+            }
+        }
+        String count = Integer.toString(selectedLocation.size());
+        if (selectedLocation.size() == 1) {
+            locationSelection.setText(count + " tourism place is selected");
+            locationSelection.setTextColor(getResources().getColor(R.color.colorGreen));
+        } else if (selectedLocation.size() > 1) {
+            locationSelection.setTextColor(getResources().getColor(R.color.colorGreen));
+            locationSelection.setText(count + " tourism places is selected");
+        }else {
+            locationSelection.setText("Select tourism places");
+            locationSelection.setTextColor(getResources().getColor(R.color.colorYellow));
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -375,7 +407,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         imageSlider = view.findViewById(R.id.slider);
         logo = view.findViewById(R.id.logoT);
         loading = view.findViewById(R.id.loading);
-        locationSelection = view.findViewById(R.id.licationSelection);
+        locationSelection = view.findViewById(R.id.locationSelection);
+        selectedLocation = new ArrayList<>();
     }
 
     private void getDate() {
@@ -451,4 +484,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
+
 }

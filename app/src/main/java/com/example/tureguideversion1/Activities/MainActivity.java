@@ -33,6 +33,7 @@ import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
+import com.example.tureguideversion1.LocationSelection_bottomSheet;
 import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.R;
 import com.google.android.material.navigation.NavigationView;
@@ -49,7 +50,7 @@ import com.skyfishjy.library.RippleBackground;
 
 import es.dmoral.toasty.Toasty;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ConnectivityReceiver.ConnectivityReceiverListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ConnectivityReceiver.ConnectivityReceiverListener, LocationSelection_bottomSheet.BottomSheetListener {
 
     boolean doubleBackToExitPressedOnce = false;
     private ImageView nav_icon;
@@ -372,5 +373,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStop() {
         toast.cancel();
         super.onStop();
+    }
+
+    @Override
+    public void selectedLocation(String location) {
+        TourFragment f = (TourFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        f.receivedLocationData(location);
     }
 }

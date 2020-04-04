@@ -110,24 +110,24 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/licationSelection"
-        style="@style/Widget.AppCompat.Button.Colored"
+        android:id="@+id/locationSelection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/location_TIL"
+        android:background="@drawable/custom_btn"
         android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="20dp"
-        android:text="Select location"
+        android:text="Select tourism places"
         android:textAlignment="center"
         android:textAllCaps="false"
-        android:textColor="#FFFFFF"
-        android:visibility="gone"/>
+        android:textColor="@color/colorYellow"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/licationSelection"
+        android:layout_below="@+id/locationSelection"
         android:layout_marginTop="5dp"
         android:orientation="horizontal"
         android:weightSum="2">

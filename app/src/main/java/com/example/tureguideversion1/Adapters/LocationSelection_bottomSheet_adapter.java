@@ -39,7 +39,14 @@ public class LocationSelection_bottomSheet_adapter extends RecyclerView.Adapter<
     @Override
     public void onBindViewHolder(@NonNull final LocationSelection_bottomSheet_adapter.ViewHolder holder, int position) {
         final LocationSelectionItem location = locationList.get(position);
-        holder.location.setText(location.getLocation());
+        if(location.getLocation().substring(0,1).matches("s")){
+            holder.location.setText(location.getLocation().substring(1));
+            holder.swt.toggle();
+            holder.locationLayout.setBackground(context.getDrawable(R.drawable.edit_text_design2));
+        }else {
+            holder.location.setText(location.getLocation());
+        }
+
         holder.swt.setCheckedChangeListener(new IconSwitch.CheckedChangeListener() {
             @Override
             public void onCheckChanged(IconSwitch.Checked current) {
