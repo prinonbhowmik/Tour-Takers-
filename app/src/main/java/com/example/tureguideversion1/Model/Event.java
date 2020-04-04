@@ -11,13 +11,15 @@ public class Event {
     private String publishDate;
     private int joinMemberCount;
     private String eventPublisherId;
+    private String groupName;
+    private String cost;
 
 
     public Event() {
     }
 
     public Event(String id, String date, String time, String place, String meetPlace, String description,
-                 String publishDate, int joinMemberCount, String eventPublisherId) {
+                 String publishDate, int joinMemberCount, String eventPublisherId, String groupName, String cost) {
         this.id = id;
         this.date = date;
         this.time = time;
@@ -27,6 +29,8 @@ public class Event {
         this.publishDate = publishDate;
         this.joinMemberCount = joinMemberCount;
         this.eventPublisherId = eventPublisherId;
+        this.groupName = groupName;
+        this.cost = cost;
     }
 
     public String getId() {
@@ -63,5 +67,13 @@ public class Event {
 
     public String getEventPublisherId() {
         return eventPublisherId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public String getCost() {
+        return cost;
     }
 }

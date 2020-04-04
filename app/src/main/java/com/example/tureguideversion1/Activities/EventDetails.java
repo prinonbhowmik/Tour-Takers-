@@ -23,15 +23,15 @@ import com.google.firebase.database.ValueEventListener;
 public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     private TextView event_place, event_date, event_time, meeting_place, event_description, publish_date,
-            publisher_name, publisher_phone, event_attending_member, view, moreTV, txt7;
+            publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, moreTV, txt7;
     private ImageView event_image, event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
-    private String place, date, time, m_place, description, p_date, p_name, p_phone, p_image, attend_member_count, publisher_id;
+    private String place, date, time, m_place, description, p_date, attend_member_count, g_name, e_cost, publisher_id;
     private Integer member_count;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
     private String userId, event_Id, event_user_id;
-    String member_name;
+    private String member_name, member_phone, a;
 
 
     @Override
@@ -58,6 +58,11 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             public void onClick(View v) {
                 DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
                 memberRef.child("id").setValue(userId);
+                a = event_attending_member.getText().toString();
+                int b = Integer.parseInt(a);
+                b = b + 1;
+                String c = String.valueOf(b);
+                event_attending_member.setText(c);
                 joinBtn.setVisibility(View.GONE);
                 //joinButtonShow();
                 member_counter();
@@ -68,8 +73,13 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             public void onClick(View v) {
                 DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
                 mRef.removeValue();
-                // joinButtonShow();
+                a = event_attending_member.getText().toString();
+                int b = Integer.parseInt(a);
+                b = b - 1;
+                String c = String.valueOf(b);
+                event_attending_member.setText(c);
                 cancel_joinBtn.setVisibility(View.GONE);
+                //joinButtonShow();
                 member_counter();
             }
         });
@@ -83,6 +93,7 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         });
         setData();
+
 
 
     }
@@ -168,6 +179,8 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         attend_member_count = getIntent().getStringExtra("event_join_member_count");
         event_Id = getIntent().getStringExtra("event_id");
         publisher_id = getIntent().getStringExtra("member_id");
+        g_name = getIntent().getStringExtra("group_name");
+        e_cost = getIntent().getStringExtra("cost");
 
         //for user name
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -195,6 +208,8 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         event_description.setText(description);
         publish_date.setText(p_date);
         event_attending_member.setText(attend_member_count);
+        group_name.setText(g_name);
+        event_cost.setText(e_cost);
     }
 
     private void init() {
@@ -213,6 +228,8 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         joinBtn = findViewById(R.id.joinBtn);
         cancel_joinBtn = findViewById(R.id.cancel_joinBtn);
         txt7 = findViewById(R.id.txt7);
+        event_cost = findViewById(R.id.event_costTV);
+        group_name = findViewById(R.id.group_nameTV);
     }
 
 

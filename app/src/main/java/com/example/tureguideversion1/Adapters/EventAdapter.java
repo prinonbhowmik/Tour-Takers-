@@ -48,6 +48,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.eTime.setText(event.getTime());
         holder.ePlace.setText(event.getMeetPlace());
         holder.eMembers.setText(String.valueOf(event.getJoinMemberCount()));
+        holder.eCost.setText(event.getCost());
+        holder.eGroupName.setText(event.getGroupName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +61,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 intent.putExtra("event_publish_date", event.getPublishDate());
                 intent.putExtra("event_join_member_count", String.valueOf(event.getJoinMemberCount()));
                 intent.putExtra("event_meeting_place", event.getMeetPlace());
+                intent.putExtra("group_name", event.getGroupName());
+                intent.putExtra("cost", event.getCost());
                 intent.putExtra("event_id", event.getId());
                 intent.putExtra("member_id", event.getEventPublisherId());
                 context.startActivity(intent);
@@ -74,7 +78,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView eTitle, eDate, eTime, ePlace, eMembers, eMemberid;
+        private TextView eTitle, eDate, eTime, ePlace, eMembers, eGroupName, eCost, eMemberid;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -85,6 +89,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             ePlace = itemView.findViewById(R.id.e_place);
             eMembers = itemView.findViewById(R.id.e_member);
             eMemberid = itemView.findViewById(R.id.member_id);
+            eGroupName = itemView.findViewById(R.id.e_group);
+            eCost = itemView.findViewById(R.id.e_cost);
 
         }
     }

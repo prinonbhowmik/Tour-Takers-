@@ -39,10 +39,11 @@ import es.dmoral.toasty.Toasty;
 
 public class CreateEvent extends AppCompatActivity {
     private View rootLayout;
-    private TextInputEditText eventDate, eventTime, eventPlace, meetingPlace;
+    private TextInputEditText eventDate, eventTime, eventPlace, meetingPlace, groupName, eventCost;
     private EditText eventDescription;
     private Button eventBtn;
-    private String id, date, time, publishDate, place, meetPlace, description, eventPublisherId, join_member_info;
+    private String id, date, time, publishDate, place, meetPlace, description, eventPublisherId,
+            group_name, cost, join_member_info;
     private int joinMemberCount = 0;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
@@ -115,6 +116,8 @@ public class CreateEvent extends AppCompatActivity {
                 place = eventPlace.getText().toString();
                 description = eventDescription.getText().toString();
                 meetPlace = meetingPlace.getText().toString();
+                group_name = groupName.getText().toString();
+                cost = eventCost.getText().toString();
                 id = eventId;
 
 
@@ -128,13 +131,20 @@ public class CreateEvent extends AppCompatActivity {
                     Toasty.info(getApplicationContext(), "Please fill Meeting Place", Toasty.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(description)) {
                     Toasty.info(getApplicationContext(), "Please fill Description Box", Toasty.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(group_name)) {
+                    Toasty.info(getApplicationContext(), "Please fill Group Name", Toasty.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(cost)) {
+                    Toasty.info(getApplicationContext(), "Please fill Event Cost", Toasty.LENGTH_SHORT).show();
                 } else {
-                    addEventInDB(id, date, time, place, meetPlace, description, publishDate, joinMemberCount, eventPublisherId);
+                    addEventInDB(id, date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                            eventPublisherId, group_name, cost);
                     eventDescription.setText(null);
                     eventDate.setText(null);
                     eventTime.setText(null);
                     meetingPlace.setText(null);
                     eventPlace.setText(null);
+                    groupName.setText(null);
+                    eventCost.setText(null);
                     memberCounter();
                 }
 
@@ -168,11 +178,11 @@ public class CreateEvent extends AppCompatActivity {
 
 
     private void addEventInDB(String id, String date, String time, String place, String meetPlace, String description,
-                              String publishDate, int joinMemberCount, String eventPublisherId) {
+                              String publishDate, int joinMemberCount, String eventPublisherId, String group_name, String cost) {
         final DatabaseReference eventRef = databaseReference.child("event");
 
         final Event event = new Event(id, date, time, place, meetPlace, description, publishDate, joinMemberCount,
-                eventPublisherId);
+                eventPublisherId, group_name, cost);
 
         eventRef.child(eventId).setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -216,6 +226,8 @@ public class CreateEvent extends AppCompatActivity {
         eventTime = findViewById(R.id.event_time);
         eventPlace = findViewById(R.id.event_place);
         eventDescription = findViewById(R.id.event_description);
+        groupName = findViewById(R.id.group_name);
+        eventCost = findViewById(R.id.cost);
         eventBtn = findViewById(R.id.create_eventBtn);
         meetingPlace = findViewById(R.id.meeting_place);
         auth = FirebaseAuth.getInstance();

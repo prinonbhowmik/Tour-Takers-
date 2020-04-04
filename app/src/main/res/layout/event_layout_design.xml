@@ -37,79 +37,90 @@
             </LinearLayout>
 
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/e_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5sp"
-                    android:paddingStart="25dp"
-                    android:paddingEnd="10dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="10dp"
                     android:textColor="@color/quantum_googgreen700"
-                    android:textSize="24sp"
+                    android:textSize="21sp"
                     android:textStyle="bold" />
-            </LinearLayout>
 
-            <LinearLayout
+                <TextView
+                    android:id="@+id/e_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5sp"
+                    android:layout_marginStart="16dp"
+                    android:layout_below="@+id/e_title"
+                    android:textColor="@color/color1"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:orientation="horizontal">
+                android:layout_height="35dp">
 
                 <ImageView
+                    android:id="@+id/image1"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
                     android:contentDescription="@null"
+                    android:layout_centerVertical="true"
                     android:padding="6dp"
-                    android:src="@drawable/ic_clock" />
+                    android:src="@drawable/ic_calendar" />
 
                 <TextView
                     android:id="@+id/e_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_toEndOf="@+id/image1"
                     android:layout_marginStart="10dp"
+                    android:layout_centerVertical="true"
                     android:layout_marginEnd="5dp"
                     android:textColor="@android:color/black"
                     android:textSize="15sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                <ImageView
+                    android:id="@+id/image2"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
                     android:contentDescription="@null"
-                    android:text="@string/at"
-                    android:textColor="@android:color/black"
-                    android:textSize="15sp" />
+                    android:padding="6dp"
+                    android:src="@drawable/ic_clock" />
 
                 <TextView
                     android:id="@+id/e_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="10dp"
+                    android:layout_toStartOf="@+id/image2"
                     android:textColor="@android:color/black"
                     android:textSize="15sp" />
 
-            </LinearLayout>
+            </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:orientation="horizontal">
+                android:layout_height="35dp">
 
                 <ImageView
+                    android:id="@+id/image3"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_gravity="center_vertical"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
                     android:contentDescription="@null"
                     android:padding="5dp"
@@ -119,22 +130,56 @@
                     android:id="@+id/e_place"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/image3"
+                    android:layout_marginStart="10dp"
                     android:textColor="@android:color/black"
                     android:textSize="15sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/image4"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="@null"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_money" />
+
+
+                <TextView
+                    android:id="@+id/e_cost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toStartOf="@+id/image4"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/taka"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/taka"
+                    android:layout_marginEnd="1dp"
+                    android:layout_toStartOf="@+id/e_cost"
+                    android:textColor="@android:color/black"
+                    android:textSize="17sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/image5"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
                     android:contentDescription="@null"
                     android:padding="6dp"
@@ -144,7 +189,8 @@
                     android:id="@+id/e_member"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/image5"
                     android:paddingStart="10dp"
                     android:paddingEnd="3dp"
                     android:textColor="@android:color/black"
@@ -153,13 +199,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/e_member"
                     android:paddingStart="2dp"
-                    android:paddingEnd="10dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/attending"
                     android:textColor="@android:color/black"
                     android:textSize="15sp" />
-            </LinearLayout>
+            </RelativeLayout>
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

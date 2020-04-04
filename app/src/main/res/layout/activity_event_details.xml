@@ -152,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
-                android:text="Meeting Place   :"
+                android:text="Meeting Place  :"
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />
 
@@ -167,11 +167,39 @@
                 android:textSize="15sp" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/relative8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative5">
+
+            <TextView
+                android:id="@+id/txt8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Group Name     :"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/group_nameTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/txt8"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
+
         <TextView
             android:id="@+id/txt4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/relative5"
+            android:layout_below="@+id/relative8"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:text="@string/description"
@@ -189,12 +217,51 @@
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 
+        <RelativeLayout
+            android:id="@+id/relative9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/event_descriptionTV">
+
+            <TextView
+                android:id="@+id/txt9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Total Cost :"
+                android:textColor="@android:color/black"
+                android:textSize="21sp" />
+
+            <TextView
+                android:id="@+id/taka"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/txt9"
+                android:text="@string/taka"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/event_costTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/taka"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="21sp" />
+        </RelativeLayout>
+
 
         <RelativeLayout
             android:id="@+id/relative6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/event_descriptionTV"
+            android:layout_below="@+id/relative9"
             android:layout_marginTop="10dp">
 
             <TextView
@@ -309,7 +376,6 @@
             android:layout_marginBottom="50dp"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            android:background="#ABF8ABAB"
             android:text="you are admin of this event"
             android:textColor="@android:color/black"
             android:textSize="18sp"

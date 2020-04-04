@@ -23,4 +23,7 @@
     <string name="attending">Attending</string>
     <string name="exit_toast" translatable="false">Press again to exit!</string>
     <string name="description"><u>Description</u></string>
+    <string name="taka">৳</string>
+    <string name="group_name">Group Name</string>
+    <string name="total_cost">Total Cost</string>
 </resources>
