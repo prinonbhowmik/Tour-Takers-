@@ -56,7 +56,8 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
         Bundle mArgs = getArguments();
         String location = mArgs.getString("location").toLowerCase();
         selectedLocation = mArgs.getStringArrayList("selectedLocation");
-        if (selectedLocation != null) {
+        assert selectedLocation != null;
+        if (!selectedLocation.isEmpty()) {
             final String count = Integer.toString(selectedLocation.size());
             if (selectedLocation.size() == 1) {
                 anim.setAnimationListener(new Animation.AnimationListener() {
@@ -146,6 +147,23 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
                     LocationSelectionItem location = new LocationSelectionItem((String) singleUser.get("locationName"));
                     locationList.add(location);
                     adapter.notifyDataSetChanged();
+                    if(selectedLocation.isEmpty()) {
+                        anim.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+                                locationStatus.setText("Select tourism places that you want to visit");
+                            }
+                        });
+                        locationStatus.setAnimation(anim);
+                    }
                 }
             }
         }else {
