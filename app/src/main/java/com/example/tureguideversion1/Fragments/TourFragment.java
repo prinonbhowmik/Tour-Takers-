@@ -144,6 +144,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 selectedLocation.clear();
                 locationSelection.setText("Select tourism places");
+                locationSelection.setTextColor(getResources().getColor(R.color.colorYellow));
                 hideKeyboardFrom(getContext(), getView());
                 logo.setVisibility(View.INVISIBLE);
                 loading.setVisibility(View.VISIBLE);
@@ -179,6 +180,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         // the user is done typing.
                         selectedLocation.clear();
                         locationSelection.setText("Select tourism places");
+                        locationSelection.setTextColor(getResources().getColor(R.color.colorYellow));
                         hideKeyboardFrom(getContext(), getView());
                         locationEt.dismissDropDown();
                         logo.setVisibility(View.INVISIBLE);
@@ -226,8 +228,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         return view;
     }
 
-    public void receivedLocationData(String message)
-    {
+    public void receivedLocationData(String message) {
         if (message.substring(0, 2).matches("un")) {
             String s = message.substring(2);
             selectedLocation.remove(s);

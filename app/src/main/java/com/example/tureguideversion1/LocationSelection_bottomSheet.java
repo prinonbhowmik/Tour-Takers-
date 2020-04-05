@@ -1,10 +1,13 @@
 package com.example.tureguideversion1;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -32,6 +35,7 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
     private RecyclerView locationRecyleView;
     private TextView locationStatus;
     private BottomSheetListener mListener;
+    Animation anim;
 
     @Nullable
     @Override
@@ -45,18 +49,51 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
         selectedLocation = new ArrayList<>();
         adapter = new LocationSelection_bottomSheet_adapter(locationList, getContext(), this);
         locationRecyleView.setAdapter(adapter);
+        anim = new AlphaAnimation(1.0f, 0.0f);
+        anim.setDuration(200);
+        anim.setRepeatCount(1);
+        anim.setRepeatMode(Animation.REVERSE);
         Bundle mArgs = getArguments();
         String location = mArgs.getString("location").toLowerCase();
         selectedLocation = mArgs.getStringArrayList("selectedLocation");
         if (selectedLocation != null) {
-            String count = Integer.toString(selectedLocation.size());
+            final String count = Integer.toString(selectedLocation.size());
             if (selectedLocation.size() == 1) {
-                locationStatus.setText(count + " tourism place is selected");
+                anim.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) { }
+                    @Override
+                    public void onAnimationEnd(Animation animation) { }
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                        locationStatus.setText(count + " tourism place is selected");
+                    }
+                });
+                locationStatus.startAnimation(anim);
             } else if (selectedLocation.size() > 1) {
-
-                locationStatus.setText(count + " tourism places is selected");
+                anim.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) { }
+                    @Override
+                    public void onAnimationEnd(Animation animation) { }
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                        locationStatus.setText(count + " tourism places is selected");
+                    }
+                });
+                locationStatus.startAnimation(anim);
             } else {
-                locationStatus.setText("Select tourism places that you want to visit");
+                anim.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) { }
+                    @Override
+                    public void onAnimationEnd(Animation animation) { }
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                        locationStatus.setText("Select tourism places that you want to visit");
+                    }
+                });
+                locationStatus.startAnimation(anim);
             }
         }
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location);
@@ -71,7 +108,20 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         //handle databaseError
+                        anim.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) { }
+                            @Override
+                            public void onAnimationEnd(Animation animation) { }
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+                                locationStatus.setText("Please enter district name correctly");
+                            }
+                        });
+                        locationStatus.setAnimation(anim);
                     }
+
+
                 });
 
 
@@ -97,11 +147,20 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
                     locationList.add(location);
                     adapter.notifyDataSetChanged();
                 }
-
-
             }
-
-
+        }else {
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) { }
+                @Override
+                public void onAnimationEnd(Animation animation) { }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                    locationStatus.setText("Please enter district name correctly!");
+                    locationStatus.setTextColor(Color.RED);
+                }
+            });
+            locationStatus.setAnimation(anim);
         }
     }
 
@@ -122,14 +181,43 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
             }
         }
 
-        String count = Integer.toString(selectedLocation.size());
+        final String count = Integer.toString(selectedLocation.size());
         if (selectedLocation.size() == 1) {
-            locationStatus.setText(count + " tourism place is selected");
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) { }
+                @Override
+                public void onAnimationEnd(Animation animation) { }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                    locationStatus.setText(count + " tourism place is selected");
+                }
+            });
+            locationStatus.startAnimation(anim);
         } else if (selectedLocation.size() > 1) {
-
-            locationStatus.setText(count + " tourism places is selected");
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) { }
+                @Override
+                public void onAnimationEnd(Animation animation) { }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                    locationStatus.setText(count + " tourism places is selected");
+                }
+            });
+            locationStatus.startAnimation(anim);
         } else {
-            locationStatus.setText("Select tourism places that you want to visit");
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) { }
+                @Override
+                public void onAnimationEnd(Animation animation) { }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                    locationStatus.setText("Select tourism places that you want to visit");
+                }
+            });
+            locationStatus.startAnimation(anim);
         }
     }
 
