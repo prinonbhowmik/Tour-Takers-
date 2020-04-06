@@ -9,9 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
+
+import com.bumptech.glide.Glide;
+import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.CardView;
 import com.example.tureguideversion1.R;
-import com.squareup.picasso.Picasso;
 
 
 import java.util.List;
@@ -50,8 +52,10 @@ public class Adapter extends PagerAdapter {
         title = view.findViewById(R.id.title);
         desc = view.findViewById(R.id.desc);
 
-        //imageView.set(models.get(position).getImage());
-        Picasso.get().load(models.get(position).getImage()).into(imageView);
+        GlideApp.with(view.getContext())
+                .load(models.get(position).getImage())
+                .fitCenter()
+                .into(imageView);
         title.setText(models.get(position).getTitle());
         desc.setText(models.get(position).getDesc());
         desc.setMovementMethod(new ScrollingMovementMethod());

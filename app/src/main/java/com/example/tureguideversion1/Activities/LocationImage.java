@@ -12,6 +12,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -28,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class LocationImage extends AppCompatActivity {
@@ -49,7 +51,7 @@ public class LocationImage extends AppCompatActivity {
         overridePendingTransition(R.anim.do_not_move, R.anim.do_not_move);
         init();
         Intent intent = getIntent();
-        slide = intent.getExtras().getString("slide");
+        slide = Objects.requireNonNull(intent.getExtras()).getString("slide");
         locationForViewPage = intent.getExtras().getString("location");
         if (savedInstanceState == null) {
             rootLayout.setVisibility(View.INVISIBLE);
@@ -70,13 +72,13 @@ public class LocationImage extends AppCompatActivity {
         ref.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         //Get map of users in datasnapshot
                         collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
                         //handle databaseError
                     }
                 });
@@ -113,24 +115,20 @@ public class LocationImage extends AppCompatActivity {
                 resources.getDisplayMetrics());
     }
 
-    private void collectImageNInfo(Map<String, Object> users) {
+    private void collectImageNInfo(Map<String, Object> locatios) {
 
         location = new ArrayList<>();
-        ArrayList<String> image = new ArrayList<>();
-        ArrayList<String> description = new ArrayList<>();
 
         //iterate through each user, ignoring their UID
         models = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : users.entrySet()) {
+        for (Map.Entry<String, Object> entry : locatios.entrySet()) {
 
             //Get user map
             Map singleUser = (Map) entry.getValue();
             //Get phone field and append to list
             location.add((String) singleUser.get("locationName"));
-//            image.add((String) singleUser.get("image"));
-//            description.add((String) singleUser.get("description"));
 
-            models.add(new CardView(singleUser.get("image").toString(), singleUser.get("locationName").toString(), singleUser.get("description").toString()));
+            models.add(new CardView((String) singleUser.get("image"),(String) singleUser.get("locationName"),(String) singleUser.get("description")));
         }
 
         adapter = new Adapter(models, this);
@@ -140,16 +138,15 @@ public class LocationImage extends AppCompatActivity {
         viewPager.setPadding(130, 0, 130, 0);
         //Toast.makeText(getApplicationContext(),slide,Toast.LENGTH_LONG).show();
         viewPager.setCurrentItem(location.indexOf(slide),true);
-        Integer[] colors_temp = {
+
+        colors = new Integer[]{
                 getResources().getColor(R.color.color1),
                 getResources().getColor(R.color.color2),
                 getResources().getColor(R.color.color3),
                 getResources().getColor(R.color.color4),
         };
 
-        colors = colors_temp;
-
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 

@@ -31,6 +31,7 @@ import com.example.tureguideversion1.Fragments.GuideFragment;
 import com.example.tureguideversion1.Fragments.MapFragment;
 import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
+import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.LocationSelection_bottomSheet;
@@ -46,7 +47,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.skyfishjy.library.RippleBackground;
 
 import es.dmoral.toasty.Toasty;
 
@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Uri imageUri;
     private ImageView circularImageView;
     private TextView UserName, userEmail;
-    private RippleBackground rippleBackground;
     private LinearLayout ratingLaout;
 
     @Override
@@ -107,8 +106,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         userEmail.setText(email);
                         if (!image.isEmpty()) {
                             try {
-                                Glide.with(MainActivity.this)
+                                GlideApp.with(MainActivity.this)
                                         .load(image)
+                                        .fitCenter()
                                         .into(circularImageView);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -176,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         circularImageView = navigationView.getHeaderView(0).findViewById(R.id.navImageView);
         UserName = navigationView.getHeaderView(0).findViewById(R.id.namefromNavigation);
-        rippleBackground = navigationView.getHeaderView(0).findViewById(R.id.content);
         userEmail = navigationView.getHeaderView(0).findViewById(R.id.email_fromNavigation);
         ratingLaout = navigationView.getHeaderView(0).findViewById(R.id.ratingLayout);
     }

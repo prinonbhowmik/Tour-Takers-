@@ -23,6 +23,7 @@ import androidx.core.app.ActivityCompat;
 import com.bumptech.glide.Glide;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.Profile_bottom_sheet;
 import com.example.tureguideversion1.R;
@@ -87,8 +88,9 @@ public class UserProfile extends AppCompatActivity {
                 profilephoneno.setText(phone);
                 if (!image.isEmpty()) {
                     try {
-                        Glide.with(UserProfile.this)
+                        GlideApp.with(UserProfile.this)
                                 .load(image)
+                                .fitCenter()
                                 .into(profileImage);
                     } catch (Exception e) {
                         e.printStackTrace();
