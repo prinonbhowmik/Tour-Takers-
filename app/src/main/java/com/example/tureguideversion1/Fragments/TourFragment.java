@@ -438,7 +438,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     @Override
     public void onResume() {
         imageSlider.startAutoCycle();
-        Toast.makeText(getContext(),district,Toast.LENGTH_SHORT).show();
         super.onResume();
     }
 
