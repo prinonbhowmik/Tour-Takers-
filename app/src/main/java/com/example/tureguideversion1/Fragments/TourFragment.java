@@ -6,13 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.transition.Visibility;
 
-import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,9 +25,6 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.request.RequestOptions;
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
-import com.example.tureguideversion1.Activities.CreateEvent;
 import com.example.tureguideversion1.Activities.LocationImage;
 import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.Activities.NoInternetConnection;
@@ -63,8 +55,6 @@ import java.util.Map;
 import es.dmoral.toasty.Toasty;
 
 import static android.app.Activity.RESULT_OK;
-import static android.view.View.VISIBLE;
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -80,9 +70,11 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private List<String> selectedLocation;
     private AutoCompleteTextView locationEt;
     private ArrayList<String> location;
-    private String locationForViewPage;
+    private String locationForViewPage, district;
     private Button locationSelection;
     private int slide;
+    private View view;
+
 
     public TourFragment() {
         // Required empty public constructor
@@ -93,7 +85,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_tour, container, false);
+        view = inflater.inflate(R.layout.fragment_tour, container, false);
 
         init(view);
         startDate.setOnClickListener(new View.OnClickListener() {
@@ -148,8 +140,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 hideKeyboardFrom(getContext(), getView());
                 logo.setVisibility(View.INVISIBLE);
                 loading.setVisibility(View.VISIBLE);
-                String location = locationEt.getText().toString().toLowerCase();
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location);
+                district = locationEt.getText().toString();
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(district.toLowerCase());
                 ref.addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override
@@ -185,8 +177,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         locationEt.dismissDropDown();
                         logo.setVisibility(View.INVISIBLE);
                         loading.setVisibility(View.VISIBLE);
-                        String location = locationEt.getText().toString().toLowerCase();
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location);
+                        district = locationEt.getText().toString();
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(district.toLowerCase());
                         ref.addListenerForSingleValueEvent(
                                 new ValueEventListener() {
                                     @Override
@@ -215,6 +207,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             public void onClick(View view) {
                 LocationSelection_bottomSheet bottom_sheet = new LocationSelection_bottomSheet();
                 Bundle args = new Bundle();
+                if(locationEt.getText().toString().isEmpty() && !selectedLocation.isEmpty() || !selectedLocation.isEmpty()){
+                    locationEt.setText(district);
+                }
                 args.putString("location", locationEt.getText().toString());
                 if(selectedLocation != null) {
                     args.putStringArrayList("selectedLocation", (ArrayList<String>) selectedLocation);
@@ -295,7 +290,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             String pureString = uppercaseWord.substring(0, uppercaseWord.length() - 1);
             locationList.add(new LocationItem(pureString, R.drawable.travel_icon));
         }
-        AutoCompleteLocationAdapter adapter = new AutoCompleteLocationAdapter(getContext(), locationList);
+        AutoCompleteLocationAdapter adapter = new AutoCompleteLocationAdapter(view.getContext(), locationList);
         locationEt.setAdapter(adapter);
     }
 
@@ -325,7 +320,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             imageSlider.removeAllSliders();
 
             for (int i = 0; i < image.size(); i++) {
-                TextSliderView sliderView = new TextSliderView(getActivity());
+                TextSliderView sliderView = new TextSliderView(view.getContext());
                 // if you want show image only / without description text use DefaultSliderView instead
 
                 // initialize SliderLayout
@@ -397,7 +392,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), dateSetListener, year, month, day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(view.getContext(), dateSetListener, year, month, day);
         datePickerDialog.show();
     }
 
@@ -436,13 +431,14 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), dateSetListener, year, month, day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(view.getContext(), dateSetListener, year, month, day);
         datePickerDialog.show();
     }
 
     @Override
     public void onResume() {
         imageSlider.startAutoCycle();
+        Toast.makeText(getContext(),district,Toast.LENGTH_SHORT).show();
         super.onResume();
     }
 
@@ -458,7 +454,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         MainActivity main = new MainActivity();
         if (main.checkConnection()) {
             //Toast.makeText(getActivity(), slider.getBundle().getString("extra") + "", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(getContext(), LocationImage.class).putExtra("slide", slider.getBundle().getString("extra")).putExtra("location", locationForViewPage);
+            Intent i = new Intent(view.getContext(), LocationImage.class).putExtra("slide", slider.getBundle().getString("extra")).putExtra("location", locationForViewPage);
             startActivityForResult(i, 1);
             //startActivity(new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")));
         } else {

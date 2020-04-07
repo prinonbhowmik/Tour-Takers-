@@ -138,15 +138,29 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
                 //Get locations map
                 Map singleUser = (Map) entry.getValue();
                 //Get location field and append to list
-
-                if (selectedLocation.contains(singleUser.get("locationName").toString())) {
-                    LocationSelectionItem location = new LocationSelectionItem("s" + (String) singleUser.get("locationName"));
-                    locationList.add(location);
-                    adapter.notifyDataSetChanged();
-                } else {
-                    LocationSelectionItem location = new LocationSelectionItem((String) singleUser.get("locationName"));
-                    locationList.add(location);
-                    adapter.notifyDataSetChanged();
+                if(singleUser.get("locationName") != null) {
+                    if (selectedLocation.contains(singleUser.get("locationName").toString())) {
+                        LocationSelectionItem location = new LocationSelectionItem("s" + singleUser.get("locationName"));
+                        locationList.add(location);
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        LocationSelectionItem location = new LocationSelectionItem((String) singleUser.get("locationName"));
+                        locationList.add(location);
+                        adapter.notifyDataSetChanged();
+                    }
+                }else {
+                    anim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) { }
+                        @Override
+                        public void onAnimationEnd(Animation animation) { }
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                            locationStatus.setText("Please enter district name!");
+                            locationStatus.setTextColor(Color.RED);
+                        }
+                    });
+                    locationStatus.setAnimation(anim);
                 }
             }
 
