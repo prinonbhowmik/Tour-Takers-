@@ -1,6 +1,7 @@
 package com.example.tureguideversion1.Fragments;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -27,6 +28,7 @@ import com.example.tureguideversion1.ForApi.ApiUtils;
 import com.example.tureguideversion1.R;
 import com.example.tureguideversion1.Weather.WeatherResponse;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -86,45 +88,28 @@ public class WeatherFragment extends Fragment {
         pressureTxt = view.findViewById(R.id.pressure);
         humidityTxt = view.findViewById(R.id.humidity);
         api = ApiUtils.getUserService();
+        providerClient = LocationServices.getFusedLocationProviderClient(getContext());
 
-        if(ActivityCompat.checkSelfPermission(getContext(),ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            return view;
-        }
 
-        return view;
-    }
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        getLocation(lat,lon);
-
-        findweather();
-    }
-
-    private void getLocation(double lat, double lon) {
-        if (checkLocationPermission()){
-            Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
-            try {
-                List<Address> addresses = gcd.getFromLocation(lat,lon,10);
-                for (Address adrs: addresses){
-                    if (adrs!=null){
-                        String city =adrs.getLocality();
-                        if (city != null && !city.equals("")) {
-                            CITY = city;
-                            Log.d("city",city);
-                        }
+        if (checkPermissions()){
+            if (isLocationEnabled()){
+                providerClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        Location location = task.getResult();
+                        lat = location.getLatitude();
+                        lon = location.getLongitude();
+                        findweather();
                     }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+                });
             }
         }
+        return view;
     }
 
+
     private void findweather() {
-        Call<WeatherResponse> call = api.getWeather(CITY,API);
+        Call<WeatherResponse> call = api.getWeather(lat,lon,API);
         call.enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
@@ -175,4 +160,18 @@ public class WeatherFragment extends Fragment {
         }
         return true;
     }
+    private boolean checkPermissions(){
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+        return false;
+    }
+    private boolean isLocationEnabled() {
+        LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+                LocationManager.NETWORK_PROVIDER
+        );
+    }
+
 }
