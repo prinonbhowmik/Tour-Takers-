@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tureguideversion1.Adapters.LocationSelection_bottomSheet_adapter;
+import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Model.LocationSelectionItem;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +38,7 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
     private TextView locationStatus;
     private BottomSheetListener mListener;
     Animation anim;
+    String location;
 
     @Nullable
     @Override
@@ -55,7 +57,7 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
         anim.setRepeatCount(1);
         anim.setRepeatMode(Animation.REVERSE);
         Bundle mArgs = getArguments();
-        String location = mArgs.getString("location").toLowerCase();
+        location = mArgs.getString("location");
         selectedLocation = mArgs.getStringArrayList("selectedLocation");
         if (selectedLocation != null) {
             final String count = Integer.toString(selectedLocation.size());
@@ -97,7 +99,7 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
                 locationStatus.startAnimation(anim);
             }
         }
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location.toLowerCase());
         ref.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -132,6 +134,8 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
     private void collectLocationNInfo(Map<String, Object> locations) {
 
         if (locations != null) {
+            TourFragment f = (TourFragment) getParentFragmentManager().findFragmentById(R.id.fragment_container);
+            f.district(location);
             locationList.clear();
             for (Map.Entry<String, Object> entry : locations.entrySet()) {
 
