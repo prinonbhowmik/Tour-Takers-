@@ -17,7 +17,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.JoinMemberDetails"></activity>
+        <activity android:name=".Activities.UpdateEvent"></activity>
+        <activity android:name=".Activities.JoinMemberDetails" />
         <activity android:name=".Activities.EventDetails" />
         <activity android:name=".Activities.LocationImage" />
         <activity android:name=".Activities.NoInternetConnection" />

@@ -1,6 +1,7 @@
 package com.example.tureguideversion1.Activities;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,15 +20,18 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.dmoral.toasty.Toasty;
-
 public class JoinMemberDetails extends AppCompatActivity {
 
     private RecyclerView member_list_recyclerView;
     private EventJoinMemberAdapter eventJoinMemberAdapter;
-    private List<EventJoinMemberList> eventJoinMemberList;
+    private List<EventJoinMemberList> eventJoinMemberListList;
     private String event_id;
+    private String id;
     private DatabaseReference databaseReference;
+    private ArrayList<String> uid;
+
+    public JoinMemberDetails() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,44 +39,57 @@ public class JoinMemberDetails extends AppCompatActivity {
         setContentView(R.layout.activity_join_member_details);
         init();
         getData();
+        eventJoinMemberAdapter.notifyDataSetChanged();
+
 
     }
 
 
     private void getData() {
-        event_id=getIntent().getStringExtra("event_id");
-        DatabaseReference memRef=databaseReference.child("eventJoinMember").child(event_id);
+        event_id = getIntent().getStringExtra("event_id");
+        DatabaseReference memRef = databaseReference.child("eventJoinMember").child(event_id);
         memRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    String id = (String) data.child("id").getValue();
-                    DatabaseReference uRef = databaseReference.child("profile").child(id);
-                    uRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                eventJoinMemberList.clear();
-                                for (DataSnapshot data1 : dataSnapshot.getChildren()) {
-                                    EventJoinMemberList eventJoinMember = data1.getValue(EventJoinMemberList.class);
-                                    eventJoinMemberList.add(eventJoinMember);
-                                    eventJoinMemberAdapter.notifyDataSetChanged();
-                                    Toasty.normal(JoinMemberDetails.this, "success", Toasty.LENGTH_SHORT).show();
+                List<String> uid = new ArrayList<>();
+                for (final DataSnapshot data : dataSnapshot.getChildren()) {
+
+                    id = (String) data.child("id").getValue();
+                    final int count = (int) data.getChildrenCount();
+                    uid.add(id);
+                    for (int a = 1; a < count; a++) {
+                        String url = uid.get(a);
+                        Toast.makeText(JoinMemberDetails.this, "" + url, Toast.LENGTH_SHORT).show();
+                        DatabaseReference uRef = databaseReference.child("profile").child(url);
+                        uRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    eventJoinMemberListList.clear();
+                                    for (DataSnapshot data1 : dataSnapshot.getChildren()) {
+                                        String pid = (String) data1.child("Id").getValue();
+                                        //if (id.equals(pid)) {
+                                        EventJoinMemberList eventJoinMember = data1.getValue(EventJoinMemberList.class);
+                                        eventJoinMemberListList.add(eventJoinMember);
+                                        //   break;
+                                        // }
+                                    }
 
                                 }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Toasty.normal(getApplicationContext(), "" + databaseError, Toasty.LENGTH_SHORT).show();
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
 
 
-                        }
-                    });
                 }
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
@@ -82,9 +99,9 @@ public class JoinMemberDetails extends AppCompatActivity {
 
     private void init() {
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        eventJoinMemberList = new ArrayList<>();
+        eventJoinMemberListList = new ArrayList<>();
         member_list_recyclerView = findViewById(R.id.member_details_recycler_view);
-        eventJoinMemberAdapter = new EventJoinMemberAdapter(eventJoinMemberList);
+        eventJoinMemberAdapter = new EventJoinMemberAdapter(eventJoinMemberListList, JoinMemberDetails.this);
         member_list_recyclerView.setLayoutManager(new LinearLayoutManager(this));
         member_list_recyclerView.setAdapter(eventJoinMemberAdapter);
 
