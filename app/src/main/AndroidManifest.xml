@@ -22,12 +22,14 @@
         <activity android:name=".Activities.EventDetails" />
         <activity android:name=".Activities.LocationImage" />
         <activity android:name=".Activities.NoInternetConnection" />
-        <activity android:name=".Activities.CreateEvent" />
+        <activity
+            android:name=".Activities.CreateEvent"
+            android:theme="@style/Theme.Transparent" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" /> <!-- optional (needed if default theme has no action bar) -->
         <activity android:name=".Activities.UserProfile" />
-        <activity android:name=".Activities.Term_And_Condition" />
+        <activity android:name=".Activities.TermAndCondition" />
         <activity android:name=".Activities.SignIn" />
         <activity android:name=".Activities.SignInGrantAccess" />
         <activity android:name=".Activities.SignUp" />

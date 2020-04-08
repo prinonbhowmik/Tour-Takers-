@@ -5,15 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
-    tools:context=".Activities.Term_And_Condition">
+    tools:context=".Activities.TermAndCondition">
+
 
     <TextView
         android:id="@+id/txt3"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:layout_marginTop="50dp"
         android:text="This is term and condition page. Update is coming soon...."
         android:textColor="@color/colorBlack"
         android:textSize="21sp" />
-
 </RelativeLayout>

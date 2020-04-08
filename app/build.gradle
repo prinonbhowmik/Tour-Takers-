@@ -96,5 +96,6 @@ dependencies {
     //IconSwitch
     implementation 'com.polyak:icon-switch:1.0.0'
 
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
 
 }
