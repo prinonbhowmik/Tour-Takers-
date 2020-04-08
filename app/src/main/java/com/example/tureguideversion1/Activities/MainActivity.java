@@ -1,6 +1,8 @@
 package com.example.tureguideversion1.Activities;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -13,6 +15,7 @@ import android.util.Pair;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,6 +40,7 @@ import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.LocationSelection_bottomSheet;
 import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.R;
+import com.example.tureguideversion1.Weather.Main;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,6 +51,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 
@@ -172,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 drawerLayout.openDrawer(GravityCompat.START);
+                hideKeyboardFrom(getApplicationContext());
             }
         });
         circularImageView = navigationView.getHeaderView(0).findViewById(R.id.navImageView);
@@ -193,7 +200,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     tour.commit();
                     drawerLayout.closeDrawers();
                     navigationView.getMenu().getItem(0).setChecked(true);
-
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
@@ -378,5 +384,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void selectedLocation(String location) {
         TourFragment f = (TourFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         f.receivedLocationData(location);
+    }
+
+    private void hideKeyboardFrom(Context context) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(this.getWindow().getDecorView().getRootView().getWindowToken(), 0);
     }
 }

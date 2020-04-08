@@ -8,6 +8,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +53,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 
@@ -121,23 +124,30 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     }
                 });
 
-        locationEt.setOnKeyListener(new View.OnKeyListener() {
+        locationEt.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if(locationEt.getText().toString().isEmpty()){
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (locationEt.getText().toString().isEmpty()) {
                     locationSelection.setVisibility(View.GONE);
                 }
-                return false;
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
             }
         });
 
         locationEt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View v, int i, long l) {
                 selectedLocation.clear();
                 locationSelection.setText("Select tourism places");
                 locationSelection.setTextColor(getResources().getColor(R.color.colorYellow));
-                hideKeyboardFrom(getContext(), getView());
+                hideKeyboardFrom(view.getContext(), view);
                 logo.setVisibility(View.INVISIBLE);
                 loading.setVisibility(View.VISIBLE);
                 district = locationEt.getText().toString();
@@ -173,7 +183,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         selectedLocation.clear();
                         locationSelection.setText("Select tourism places");
                         locationSelection.setTextColor(getResources().getColor(R.color.colorYellow));
-                        hideKeyboardFrom(getContext(), getView());
+                        hideKeyboardFrom(view.getContext(), view);
                         locationEt.dismissDropDown();
                         logo.setVisibility(View.INVISIBLE);
                         loading.setVisibility(View.VISIBLE);
@@ -207,11 +217,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             public void onClick(View view) {
                 LocationSelection_bottomSheet bottom_sheet = new LocationSelection_bottomSheet();
                 Bundle args = new Bundle();
-                if(locationEt.getText().toString().isEmpty() && !selectedLocation.isEmpty() || !selectedLocation.isEmpty()){
+                if (locationEt.getText().toString().isEmpty() && !selectedLocation.isEmpty() || !selectedLocation.isEmpty()) {
                     locationEt.setText(district);
+                    int pos = locationEt.getText().length();
+                    locationEt.setSelection(pos);
                 }
                 args.putString("location", locationEt.getText().toString());
-                if(selectedLocation != null) {
+                if (selectedLocation != null) {
                     args.putStringArrayList("selectedLocation", (ArrayList<String>) selectedLocation);
                 }
                 bottom_sheet.setArguments(args);
@@ -240,7 +252,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         } else if (selectedLocation.size() > 1) {
             locationSelection.setTextColor(getResources().getColor(R.color.colorGreen));
             locationSelection.setText(count + " tourism places is selected");
-        }else {
+        } else {
             locationSelection.setText("Select tourism places");
             locationSelection.setTextColor(getResources().getColor(R.color.colorYellow));
         }
@@ -476,7 +488,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
     }
 
-    public static void hideKeyboardFrom(Context context, View view) {
+    private static void hideKeyboardFrom(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
