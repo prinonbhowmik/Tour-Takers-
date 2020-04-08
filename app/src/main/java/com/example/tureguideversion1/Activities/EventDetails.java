@@ -237,7 +237,7 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.update:
-                Intent intent = new Intent(EventDetails.this, CreateEvent.class);
+                Intent intent = new Intent(EventDetails.this, UpdateEvent.class);
                 startActivity(intent);
                 return false;
             case R.id.delete:

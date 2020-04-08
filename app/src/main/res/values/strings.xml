@@ -26,4 +26,6 @@
     <string name="taka">৳</string>
     <string name="group_name">Group Name</string>
     <string name="total_cost">Total Cost</string>
+    <string name="update_your_event">Update Your Event</string>
+    <string name="update">Update</string>
 </resources>

@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,7 +54,6 @@ public class LocationImage extends AppCompatActivity {
         locationForViewPage = intent.getExtras().getString("location");
         if (savedInstanceState == null) {
             rootLayout.setVisibility(View.INVISIBLE);
-
             ViewTreeObserver viewTreeObserver = rootLayout.getViewTreeObserver();
             if (viewTreeObserver.isAlive()) {
                 viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -92,7 +90,7 @@ public class LocationImage extends AppCompatActivity {
 
     private void circularRevealActivity() {
 
-        int cx = rootLayout.getWidth() - getDips(205);
+        int cx = rootLayout.getWidth() / 2;
         // int cy = rootLayout.getHeight() - getDips(650);
         int cy = rootLayout.getTop() + getDips(170);
 
