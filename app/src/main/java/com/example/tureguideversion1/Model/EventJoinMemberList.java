@@ -10,6 +10,12 @@ public class EventJoinMemberList {
     private String image;
     private String rating;
 
+    public EventJoinMemberList(String name, String email, String image) {
+        this.name = name;
+        this.email = email;
+        this.image = image;
+    }
+
     public EventJoinMemberList(String id, String name, String phone, String email, String password,
                                String image, String rating) {
         this.Id = id;

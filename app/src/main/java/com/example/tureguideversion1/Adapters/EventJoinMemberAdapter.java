@@ -4,11 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.EventJoinMemberList;
 import com.example.tureguideversion1.R;
 
@@ -38,8 +40,14 @@ public class EventJoinMemberAdapter extends RecyclerView.Adapter<EventJoinMember
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         EventJoinMemberList event_member = eventJoinMemberList.get(position);
         holder.member_name.setText(event_member.getName());
-        holder.member_phone.setText(event_member.getPhone());
-
+        holder.member_phone.setText(event_member.getEmail());
+        if(!event_member.getImage().isEmpty()) {
+            GlideApp.with(context)
+                    .load(event_member
+                            .getImage())
+                    .fitCenter()
+                    .into(holder.member_image);
+        }
 
     }
 
@@ -49,13 +57,14 @@ public class EventJoinMemberAdapter extends RecyclerView.Adapter<EventJoinMember
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView member_name, member_phone, member_image;
+        private TextView member_name, member_phone;
+        private ImageView member_image;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             member_name = itemView.findViewById(R.id.member_nameET);
             member_phone = itemView.findViewById(R.id.member_phoneET);
-            //member_image = itemView.findViewById(R.id.member_image);
+            member_image = itemView.findViewById(R.id.member_image);
         }
     }
 }

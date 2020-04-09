@@ -55,6 +55,7 @@ public class UserProfile extends AppCompatActivity {
     private DatabaseReference reference;
     private String userId, name, email, phone, image, rating;
     private StorageReference storageReference;
+    private FirebaseStorage storage;
     private Uri imageUri;
     private ImageView profileImage, n1, e2, e1, p1;
     ProgressBar progressBar;
@@ -192,6 +193,8 @@ public class UserProfile extends AppCompatActivity {
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
+                progressBar.setVisibility(View.INVISIBLE);
+                Toast.makeText(getApplicationContext(),"Failed",Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -305,6 +308,8 @@ public class UserProfile extends AppCompatActivity {
         profileImage = findViewById(R.id.profileIV);
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("profile");
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
         n1 = findViewById(R.id.n1);
         n2 = findViewById(R.id.n2);
         e1 = findViewById(R.id.e1);

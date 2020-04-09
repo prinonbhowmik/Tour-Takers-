@@ -20,17 +20,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:textSize="24sp"
+                android:paddingStart="5dp"
                 android:text="Member Name"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/member_phoneET"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
+                android:layout_below="@+id/member_nameET"
+                android:paddingStart="5dp"
                 android:text="01776482727"
-                android:layout_below="@+id/member_nameET" />
+                android:textColor="@android:color/black" />
 
             <ImageView
                 android:id="@+id/member_image"

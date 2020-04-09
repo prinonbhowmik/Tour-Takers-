@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tureguideversion1.Adapters.AutoCompleteLocationAdapter;
 import com.example.tureguideversion1.Adapters.EventJoinMemberAdapter;
 import com.example.tureguideversion1.Model.EventJoinMemberList;
+import com.example.tureguideversion1.Model.LocationItem;
 import com.example.tureguideversion1.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JoinMemberDetails extends AppCompatActivity {
 
@@ -26,8 +29,6 @@ public class JoinMemberDetails extends AppCompatActivity {
     private EventJoinMemberAdapter eventJoinMemberAdapter;
     private List<EventJoinMemberList> eventJoinMemberListList;
     private String event_id;
-    private String id;
-    private DatabaseReference databaseReference;
     private ArrayList<String> uid;
 
     public JoinMemberDetails() {
@@ -39,71 +40,65 @@ public class JoinMemberDetails extends AppCompatActivity {
         setContentView(R.layout.activity_join_member_details);
         init();
         getData();
-        eventJoinMemberAdapter.notifyDataSetChanged();
-
-
     }
 
 
     private void getData() {
         event_id = getIntent().getStringExtra("event_id");
-        DatabaseReference memRef = databaseReference.child("eventJoinMember").child(event_id);
-        memRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<String> uid = new ArrayList<>();
-                for (final DataSnapshot data : dataSnapshot.getChildren()) {
-
-                    id = (String) data.child("id").getValue();
-                    final int count = (int) data.getChildrenCount();
-                    uid.add(id);
-                    for (int a = 1; a < count; a++) {
-                        String url = uid.get(a);
-                        Toast.makeText(JoinMemberDetails.this, "" + url, Toast.LENGTH_SHORT).show();
-                        DatabaseReference uRef = databaseReference.child("profile").child(url);
-                        uRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()) {
-                                    eventJoinMemberListList.clear();
-                                    for (DataSnapshot data1 : dataSnapshot.getChildren()) {
-                                        String pid = (String) data1.child("Id").getValue();
-                                        //if (id.equals(pid)) {
-                                        EventJoinMemberList eventJoinMember = data1.getValue(EventJoinMemberList.class);
-                                        eventJoinMemberListList.add(eventJoinMember);
-                                        //   break;
-                                        // }
-                                    }
-
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventJoinMember").child(event_id);
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+                        joinMemberList((Map<String, Object>) dataSnapshot.getValue());
                     }
 
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
     }
 
+    private void joinMemberList(Map<String, Object> users) {
+
+        for (Map.Entry<String, Object> entry : users.entrySet()) {
+
+            //Get user map
+            Map singleUser = (Map) entry.getValue();
+            //Get district field and append to list
+            uid.add((String) singleUser.get("id"));
+        }
+
+        for (int i = 0; i < uid.size(); i++) {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("profile").child(uid.get(i));
+            ref.addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            //Get map of users in datasnapshot
+                            //joinMemberInfoList((Map<String, Object>) dataSnapshot.getValue());
+                            Map<String,Object> values = (Map<String, Object>) dataSnapshot.getValue();
+                            EventJoinMemberList members = new EventJoinMemberList((String) values.get("name"),(String) values.get("email"),(String) values.get("image"));
+                            eventJoinMemberListList.add(members);
+                            eventJoinMemberAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            //handle databaseError
+                        }
+                    });
+        }
+    }
 
     private void init() {
-        databaseReference = FirebaseDatabase.getInstance().getReference();
         eventJoinMemberListList = new ArrayList<>();
         member_list_recyclerView = findViewById(R.id.member_details_recycler_view);
         eventJoinMemberAdapter = new EventJoinMemberAdapter(eventJoinMemberListList, JoinMemberDetails.this);
         member_list_recyclerView.setLayoutManager(new LinearLayoutManager(this));
         member_list_recyclerView.setAdapter(eventJoinMemberAdapter);
-
+        uid = new ArrayList<>();
     }
 }
