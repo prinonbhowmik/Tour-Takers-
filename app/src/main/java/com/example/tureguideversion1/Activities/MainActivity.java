@@ -28,7 +28,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.bumptech.glide.Glide;
 import com.example.tureguideversion1.Fragments.EventFragment;
 import com.example.tureguideversion1.Fragments.GuideFragment;
 import com.example.tureguideversion1.Fragments.MapFragment;
@@ -40,7 +39,6 @@ import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.LocationSelection_bottomSheet;
 import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.R;
-import com.example.tureguideversion1.Weather.Main;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,8 +49,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 
@@ -263,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 finish();
                 break;
             case R.id.terms:
-                startActivity(new Intent(MainActivity.this, Term_And_Condition.class));
+                startActivity(new Intent(MainActivity.this, TermAndCondition.class));
                 //  overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                 break;
         }

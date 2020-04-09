@@ -10,7 +10,7 @@ import android.widget.Button;
 
 import com.example.tureguideversion1.R;
 
-public class Term_And_Condition extends AppCompatActivity {
+public class TermAndCondition extends AppCompatActivity {
 
 
 
