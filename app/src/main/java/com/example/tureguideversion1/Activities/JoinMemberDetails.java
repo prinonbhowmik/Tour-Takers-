@@ -1,17 +1,13 @@
 package com.example.tureguideversion1.Activities;
 
 import android.os.Bundle;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tureguideversion1.Adapters.AutoCompleteLocationAdapter;
 import com.example.tureguideversion1.Adapters.EventJoinMemberAdapter;
 import com.example.tureguideversion1.Model.EventJoinMemberList;
-import com.example.tureguideversion1.Model.LocationItem;
 import com.example.tureguideversion1.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -100,5 +96,13 @@ public class JoinMemberDetails extends AppCompatActivity {
         member_list_recyclerView.setLayoutManager(new LinearLayoutManager(this));
         member_list_recyclerView.setAdapter(eventJoinMemberAdapter);
         uid = new ArrayList<>();
+    }
+
+    @Override
+    public void onBackPressed() {
+//        Intent intent=new Intent(JoinMemberDetails.this,EventDetails.class);
+//        startActivity(intent);
+        //overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        super.onBackPressed();
     }
 }

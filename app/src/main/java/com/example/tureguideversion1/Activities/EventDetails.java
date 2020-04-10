@@ -1,5 +1,7 @@
 package com.example.tureguideversion1.Activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -24,14 +27,16 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
 
     private TextView event_place, event_date, event_time, meeting_place, event_description, publish_date,
             publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, moreTV, txt7;
-    private ImageView event_image, event_publisher_image;
+    private ImageView descriptionIV, meetingIV, groupIV, event_image, event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
     private String place, date, time, m_place, description, p_date, attend_member_count, g_name, e_cost, publisher_id;
     private Integer member_count;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
     private String userId, event_Id, event_user_id;
-    private String member_name, member_phone, a;
+    private String member_name, member_image, member_phone, a;
+    private String update_des;
+
 
 
     @Override
@@ -87,13 +92,53 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 Intent intent = new Intent(EventDetails.this, JoinMemberDetails.class);
+
                 intent.putExtra("event_id", event_Id);
                 startActivity(intent);
             }
         });
         setData();
 
+        descriptionIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString("description", "Description");
+                args.putString("event_id", event_Id);
+                args.putString("input_d", description);
+                EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
+                bottomSheet.setArguments(args);
+                bottomSheet.show(getSupportFragmentManager(), "test");
+            }
+        });
+
+        meetingIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString("meeting_place", "Meeting Place");
+                args.putString("event_id", event_Id);
+                args.putString("input_m", m_place);
+                EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
+                bottomSheet.setArguments(args);
+                bottomSheet.show(getSupportFragmentManager(), "test");
+            }
+        });
+
+        groupIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString("group_name", "Group Name");
+                args.putString("event_id", event_Id);
+                args.putString("input_g", g_name);
+                EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
+                bottomSheet.setArguments(args);
+                bottomSheet.show(getSupportFragmentManager(), "test");
+            }
+        });
 
 
     }
@@ -132,6 +177,9 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
                 if (event_user_id.equals(userId)) {
                     moreTV.setVisibility(View.VISIBLE);
                     txt7.setVisibility(View.VISIBLE);
+                    meetingIV.setVisibility(View.VISIBLE);
+                    descriptionIV.setVisibility(View.VISIBLE);
+                    groupIV.setVisibility(View.VISIBLE);
                 } else {
                     joinButtonShow();
                 }
@@ -166,6 +214,18 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         });
 
+        getUpdateData();
+
+    }
+
+    private void getUpdateData() {
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+            }
+        };
+
     }
 
 
@@ -190,7 +250,19 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     member_name = (String) dataSnapshot.child("name").getValue();
+                    member_image = (String) dataSnapshot.child("image").getValue();
                     publisher_name.setText(member_name);
+                    if (!member_image.isEmpty()) {
+                        try {
+
+                            GlideApp.with(EventDetails.this)
+                                    .load(member_image)
+                                    .fitCenter()
+                                    .into(event_publisher_image);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
 
@@ -230,6 +302,10 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         txt7 = findViewById(R.id.txt7);
         event_cost = findViewById(R.id.event_costTV);
         group_name = findViewById(R.id.group_nameTV);
+        event_publisher_image = findViewById(R.id.event_publish_imageIV);
+        descriptionIV = findViewById(R.id.edit_description);
+        groupIV = findViewById(R.id.edit_groupName);
+        meetingIV = findViewById(R.id.edit_meetingPlace);
     }
 
 
