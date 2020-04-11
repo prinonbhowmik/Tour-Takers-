@@ -15,8 +15,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp">
+            android:layout_marginStart="5dp">
 
             <TextView
                 android:id="@+id/member_nameET"
@@ -33,8 +32,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/member_nameET"
-                android:paddingStart="5dp"
                 android:layout_marginBottom="5dp"
+                android:paddingStart="5dp"
                 android:text="01776482727"
                 android:textColor="@android:color/black" />
 
@@ -42,9 +41,9 @@
                 android:id="@+id/member_image"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:contentDescription="@null"
-                android:layout_alignParentEnd="true" />
+                android:contentDescription="@null" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 

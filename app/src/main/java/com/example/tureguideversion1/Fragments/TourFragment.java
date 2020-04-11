@@ -215,9 +215,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 LocationSelection_bottomSheet bottom_sheet = new LocationSelection_bottomSheet();
                 Bundle args = new Bundle();
                 if (locationEt.getText().toString().isEmpty() && !selectedLocation.isEmpty() || !selectedLocation.isEmpty()) {
+                    locationEt.setFocusable(false);
+                    locationEt.setFocusableInTouchMode(false);
                     locationEt.setText(districtFromLocationSelection);
                     int pos = locationEt.getText().length();
                     locationEt.setSelection(pos);
+                    locationEt.setFocusable(true);
+                    locationEt.setFocusableInTouchMode(true);
                 }
                 args.putString("location", locationEt.getText().toString());
                 if (selectedLocation != null) {

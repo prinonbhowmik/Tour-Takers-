@@ -36,10 +36,9 @@
             android:id="@+id/namefromNavigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
             android:fontFamily="@font/amarante"
             android:textColor="@android:color/white"
-            android:textSize="15sp"/>
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/email_fromNavigation"
