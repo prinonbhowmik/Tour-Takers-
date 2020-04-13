@@ -23,11 +23,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import es.dmoral.toasty.Toasty;
+
 public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     private TextView event_place, event_date, event_time, meeting_place, event_description, publish_date,
             publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, moreTV, txt7;
-    private ImageView descriptionIV, meetingIV, groupIV, event_image, event_publisher_image;
+    private ImageView descriptionIV, meetingIV, groupIV, costIV, event_image, event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
     private String place, date, time, m_place, description, p_date, attend_member_count, g_name, e_cost, publisher_id;
     private Integer member_count;
@@ -140,6 +142,19 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         });
 
+        costIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString("cost", "Total Cost");
+                args.putString("event_id", event_Id);
+                args.putString("input_c", e_cost);
+                EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
+                bottomSheet.setArguments(args);
+                bottomSheet.show(getSupportFragmentManager(), "test");
+            }
+        });
+
 
     }
 
@@ -174,14 +189,17 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 event_user_id = (String) dataSnapshot.child("eventPublisherId").getValue();
-                if (event_user_id.equals(userId)) {
-                    moreTV.setVisibility(View.VISIBLE);
-                    txt7.setVisibility(View.VISIBLE);
-                    meetingIV.setVisibility(View.VISIBLE);
-                    descriptionIV.setVisibility(View.VISIBLE);
-                    groupIV.setVisibility(View.VISIBLE);
-                } else {
-                    joinButtonShow();
+                if (event_user_id != null) {
+                    if (event_user_id.equals(userId)) {
+                        moreTV.setVisibility(View.VISIBLE);
+                        txt7.setVisibility(View.VISIBLE);
+                        meetingIV.setVisibility(View.VISIBLE);
+                        descriptionIV.setVisibility(View.VISIBLE);
+                        groupIV.setVisibility(View.VISIBLE);
+                        costIV.setVisibility(View.VISIBLE);
+                    } else {
+                        joinButtonShow();
+                    }
                 }
             }
 
@@ -306,6 +324,7 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         descriptionIV = findViewById(R.id.edit_description);
         groupIV = findViewById(R.id.edit_groupName);
         meetingIV = findViewById(R.id.edit_meetingPlace);
+        costIV = findViewById(R.id.edit_costIV);
     }
 
 
@@ -317,16 +336,23 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
                 startActivity(intent);
                 return false;
             case R.id.delete:
+                DatabaseReference dRef = databaseReference.child("event").child(event_Id).child("eventPublisherId");
+                dRef.setValue(null);
                 DatabaseReference eRef = databaseReference.child("event").child(event_Id);
                 DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id);
                 eRef.removeValue();
                 mRef.removeValue();
-                Intent intent1 = new Intent(EventDetails.this, MainActivity.class);
-                startActivity(intent1);
+                onBackPressed();
+                Toasty.success(getApplicationContext(), "Delete Success", Toasty.LENGTH_SHORT).show();
+
                 return false;
             default:
                 return false;
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

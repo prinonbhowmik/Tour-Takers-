@@ -6,8 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +43,8 @@ public class EventFragment extends Fragment {
     private List<Event> eventList;
     private String pid, userName, userPhone, userImage;
     private FirebaseAuth auth;
+    private DrawerLayout mdrawrelayout;
+    private ImageView event_nav_icon;
 
     public EventFragment() {
         // Required empty public constructor
@@ -51,7 +56,16 @@ public class EventFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_event, container, false);
+        mdrawrelayout = getActivity().findViewById(R.id.drawer_layout);
         init(view);
+
+
+        event_nav_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mdrawrelayout.openDrawer(GravityCompat.START);
+            }
+        });
 
 
         createEvent.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +108,8 @@ public class EventFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+
+
     }
 
 
@@ -107,5 +123,8 @@ public class EventFragment extends Fragment {
         eventAdapter = new EventAdapter(eventList, getContext());
         eventRecyclerview.setAdapter(eventAdapter);
         auth = FirebaseAuth.getInstance();
+        event_nav_icon = view.findViewById(R.id.event_nav_icon);
+        //mdrawrelayout=view.findViewById(R.id.nav_view);
+
     }
 }

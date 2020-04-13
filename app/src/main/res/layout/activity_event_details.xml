@@ -258,7 +258,7 @@
             android:id="@+id/relative9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:layout_below="@+id/event_descriptionTV">
 
             <TextView
@@ -266,7 +266,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
                 android:text="Total Cost :"
                 android:textColor="@android:color/black"
                 android:textSize="21sp" />
@@ -276,7 +275,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
                 android:layout_toEndOf="@+id/txt9"
                 android:text="@string/taka"
                 android:textColor="@android:color/holo_red_light"
@@ -287,10 +285,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:layout_marginTop="10dp"
                 android:layout_toEndOf="@+id/taka"
                 android:textColor="@android:color/holo_red_light"
                 android:textSize="21sp" />
+
+            <ImageView
+                android:id="@+id/edit_costIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/ic_edit_blue_24dp"
+                android:layout_toEndOf="@id/event_costTV"
+                android:layout_centerVertical="true"
+                android:visibility="invisible" />
         </RelativeLayout>
 
 

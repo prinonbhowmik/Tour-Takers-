@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tureguideversion1.Activities.EventDetails;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     private Context context;
     private String member_id, member_name, member_image, member_phone;
     private DatabaseReference databaseReference;
+    private FirebaseAuth auth;
 
     public EventAdapter() {
     }
@@ -79,6 +82,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView eTitle, eDate, eTime, ePlace, eMembers, eGroupName, eCost, eMemberid;
+        private ImageView image6;
 
 
         public ViewHolder(@NonNull View itemView) {

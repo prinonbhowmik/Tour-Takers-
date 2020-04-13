@@ -25,7 +25,7 @@ public class EventUpdateBottomSheet extends BottomSheetDialogFragment {
     private TextView title;
     private Button updateBtn;
     private String u_description_title, u_description_input, u_description_text, u_group_title, u_group_input,
-            u_meeting_title, u_meeting_input, event_id;
+            u_meeting_title, u_meeting_input, event_id, u_cost_title, u_cost_input;
 
 
     @Nullable
@@ -43,6 +43,8 @@ public class EventUpdateBottomSheet extends BottomSheetDialogFragment {
         u_group_input = bundle.getString("input_g");
         u_meeting_title = bundle.getString("meeting_place");
         u_meeting_input = bundle.getString("input_m");
+        u_cost_title = bundle.getString("cost");
+        u_cost_input = bundle.getString("input_c");
 
 
         if (u_description_title != null) {
@@ -58,6 +60,10 @@ public class EventUpdateBottomSheet extends BottomSheetDialogFragment {
             title.setText("Update " + u_group_title);
             inputLayout.setHint(u_group_title);
             updateText.setText(u_group_input);
+        } else if (u_cost_title != null) {
+            title.setText("Update " + u_cost_title);
+            inputLayout.setHint(u_cost_title);
+            updateText.setText(u_cost_input);
         }
 
 
@@ -67,9 +73,6 @@ public class EventUpdateBottomSheet extends BottomSheetDialogFragment {
                 @Override
                 public void onClick(View v) {
                     databaseReference.setValue(updateText.getText().toString());
-                    Bundle pass = new Bundle();
-                    u_description_text = updateText.getText().toString();
-                    pass.putString("pass_des", u_description_text);
                     Toasty.success(getContext(), "Description Updated", Toasty.LENGTH_SHORT).show();
                     dismiss();
                 }
@@ -80,9 +83,7 @@ public class EventUpdateBottomSheet extends BottomSheetDialogFragment {
                 @Override
                 public void onClick(View v) {
                     databaseReference.setValue(updateText.getText().toString());
-                    Bundle pass = new Bundle();
-                    u_description_text = updateText.getText().toString();
-                    pass.putString("pass_des", u_description_text);
+
                     Toasty.success(getContext(), "Group Name Updated", Toasty.LENGTH_SHORT).show();
                     dismiss();
                 }
@@ -93,10 +94,17 @@ public class EventUpdateBottomSheet extends BottomSheetDialogFragment {
                 @Override
                 public void onClick(View v) {
                     databaseReference.setValue(updateText.getText().toString());
-                    Bundle pass = new Bundle();
-                    u_description_text = updateText.getText().toString();
-                    pass.putString("pass_des", u_description_text);
                     Toasty.success(getContext(), "Meeting Place Updated", Toasty.LENGTH_SHORT).show();
+                    dismiss();
+                }
+            });
+        } else if (u_cost_title != null) {
+            final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("event").child(event_id).child("cost");
+            updateBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    databaseReference.setValue(updateText.getText().toString());
+                    Toasty.success(getContext(), "Total Cost Updated", Toasty.LENGTH_SHORT).show();
                     dismiss();
                 }
             });

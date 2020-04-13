@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,65 +9,79 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/event_searchCV"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="5dp"
-        android:backgroundTint="@android:color/white"
-        app:cardCornerRadius="5dp">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
 
-        <RelativeLayout
-            android:id="@+id/rl1"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlways">
 
-            <ImageView
-                android:id="@+id/event_nav_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:padding="10dp"
-                android:src="@drawable/ic_menu_black_24dp" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/event_searchCV"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="5dp"
+                android:backgroundTint="@android:color/white"
+                app:cardCornerRadius="5dp">
 
-            <EditText
-                android:id="@+id/event_searchET"
-                android:layout_width="275dp"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:background="@null"
-                android:cursorVisible="false"
-                android:gravity="center_vertical"
-                android:hint="Search Events"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:textColor="@android:color/black"
-                android:textColorHint="@android:color/darker_gray"
-                android:textSize="21sp" />
+                <RelativeLayout
+                    android:id="@+id/rl1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/searchIV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerInParent="true"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/custom_round"
-                android:padding="8dp"
-                android:src="@drawable/ic_search" />
+                    <ImageView
+                        android:id="@+id/event_nav_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_menu_black_24dp" />
 
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
-    
-        <androidx.recyclerview.widget.RecyclerView
+                    <EditText
+                        android:id="@+id/event_searchET"
+                        android:layout_width="275dp"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:background="@null"
+                        android:cursorVisible="false"
+                        android:gravity="center_vertical"
+                        android:hint="Search Events"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="15dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@android:color/darker_gray"
+                        android:textSize="21sp" />
+
+                    <ImageView
+                        android:id="@+id/searchIV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginEnd="5dp"
+                        android:background="@drawable/custom_round"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_search" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
             android:layout_below="@+id/event_searchCV"
             android:id="@+id/event_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
@@ -86,4 +100,5 @@
         android:backgroundTint="@color/colorGreen"
         android:src="@drawable/ic_add_white_24dp" />
 
-</RelativeLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
