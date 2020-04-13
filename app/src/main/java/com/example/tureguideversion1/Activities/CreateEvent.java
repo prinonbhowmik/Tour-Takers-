@@ -44,7 +44,7 @@ public class CreateEvent extends AppCompatActivity {
     private Button eventBtn;
     private String id, date, time, publishDate, place, meetPlace, description, eventPublisherId,
             group_name, cost, join_member_info;
-    private int joinMemberCount = 0;
+    private int joinMemberCount;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
     public String format;
@@ -119,6 +119,7 @@ public class CreateEvent extends AppCompatActivity {
                 group_name = groupName.getText().toString();
                 cost = eventCost.getText().toString();
                 id = eventId;
+                joinMemberCount = 1;
 
 
                 if (TextUtils.isEmpty(place)) {
@@ -145,7 +146,7 @@ public class CreateEvent extends AppCompatActivity {
                     eventPlace.setText(null);
                     groupName.setText(null);
                     eventCost.setText(null);
-                    memberCounter();
+
                 }
 
 

@@ -1,7 +1,5 @@
 package com.example.tureguideversion1.Activities;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -32,13 +30,12 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
     private ImageView descriptionIV, meetingIV, groupIV, costIV, event_image, event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
     private String place, date, time, m_place, description, p_date, attend_member_count, g_name, e_cost, publisher_id;
-    private Integer member_count;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
     private String userId, event_Id, event_user_id;
-    private String member_name, member_image, member_phone, a;
+    private String member_name, member_image, member_phone;
     private String update_des;
-
+    private long count;
 
 
     @Override
@@ -65,14 +62,24 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             public void onClick(View v) {
                 DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
                 memberRef.child("id").setValue(userId);
-                a = event_attending_member.getText().toString();
-                int b = Integer.parseInt(a);
-                b = b + 1;
-                String c = String.valueOf(b);
-                event_attending_member.setText(c);
+                DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
+                memberRef2.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        count = dataSnapshot.getChildrenCount();
+                        DatabaseReference e_Ref = databaseReference.child("event").child(event_Id);
+                        e_Ref.child("joinMemberCount").setValue(count);
+                        String c = String.valueOf(count);
+                        event_attending_member.setText(c);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 joinBtn.setVisibility(View.GONE);
-                //joinButtonShow();
-                member_counter();
+
             }
         });
         cancel_joinBtn.setOnClickListener(new View.OnClickListener() {
@@ -80,14 +87,23 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             public void onClick(View v) {
                 DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
                 mRef.removeValue();
-                a = event_attending_member.getText().toString();
-                int b = Integer.parseInt(a);
-                b = b - 1;
-                String c = String.valueOf(b);
-                event_attending_member.setText(c);
+                DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
+                memberRef2.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        count = dataSnapshot.getChildrenCount();
+                        DatabaseReference e_Ref = databaseReference.child("event").child(event_Id);
+                        e_Ref.child("joinMemberCount").setValue(count);
+                        String c = String.valueOf(count);
+                        event_attending_member.setText(c);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 cancel_joinBtn.setVisibility(View.GONE);
-                //joinButtonShow();
-                member_counter();
             }
         });
 
@@ -163,10 +179,9 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         memberCountRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                long count = dataSnapshot.getChildrenCount();
-                DatabaseReference e_Ref = databaseReference.child("event").child(event_Id);
-                e_Ref.child("joinMemberCount").setValue(count);
+                //count = dataSnapshot.getChildrenCount();
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -184,41 +199,29 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
 
 
     private void moreImageShow() {
-        final DatabaseReference eRef = databaseReference.child("event").child(event_Id);
-        eRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                event_user_id = (String) dataSnapshot.child("eventPublisherId").getValue();
-                if (event_user_id != null) {
-                    if (event_user_id.equals(userId)) {
-                        moreTV.setVisibility(View.VISIBLE);
-                        txt7.setVisibility(View.VISIBLE);
-                        meetingIV.setVisibility(View.VISIBLE);
-                        descriptionIV.setVisibility(View.VISIBLE);
-                        groupIV.setVisibility(View.VISIBLE);
-                        costIV.setVisibility(View.VISIBLE);
-                    } else {
-                        joinButtonShow();
-                    }
-                }
+        if (publisher_id != null) {
+            if (publisher_id.equals(userId)) {
+                moreTV.setVisibility(View.VISIBLE);
+                txt7.setVisibility(View.VISIBLE);
+                meetingIV.setVisibility(View.VISIBLE);
+                descriptionIV.setVisibility(View.VISIBLE);
+                groupIV.setVisibility(View.VISIBLE);
+                costIV.setVisibility(View.VISIBLE);
+            } else {
+                joinButtonShow();
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        }
     }
 
 
     private void joinButtonShow() {
-        DatabaseReference memberRef=databaseReference.child("eventJoinMember").child(event_Id);
+        DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(event_Id);
         memberRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for(DataSnapshot data : dataSnapshot.getChildren()) {
-                    String id= (String) data.child("id").getValue();
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    String id = (String) data.child("id").getValue();
                     if (userId.equals(id)) {
                         cancel_joinBtn.setVisibility(View.VISIBLE);
                     } else {
@@ -232,17 +235,6 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         });
 
-        getUpdateData();
-
-    }
-
-    private void getUpdateData() {
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-            }
-        };
 
     }
 
@@ -336,12 +328,10 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
                 startActivity(intent);
                 return false;
             case R.id.delete:
-                DatabaseReference dRef = databaseReference.child("event").child(event_Id).child("eventPublisherId");
-                dRef.setValue(null);
                 DatabaseReference eRef = databaseReference.child("event").child(event_Id);
                 DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id);
-                eRef.removeValue();
-                mRef.removeValue();
+                eRef.setValue(null);
+                mRef.setValue(null);
                 onBackPressed();
                 Toasty.success(getApplicationContext(), "Delete Success", Toasty.LENGTH_SHORT).show();
 

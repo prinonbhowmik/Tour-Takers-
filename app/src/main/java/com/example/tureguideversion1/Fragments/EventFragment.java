@@ -86,7 +86,7 @@ public class EventFragment extends Fragment {
 
         getData(view);
 
-
+        eventAdapter.notifyDataSetChanged();
         return view;
     }
 
