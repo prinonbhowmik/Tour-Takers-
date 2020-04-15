@@ -44,7 +44,7 @@ public class EventFragment extends Fragment {
     private String pid, userName, userPhone, userImage;
     private FirebaseAuth auth;
     private DrawerLayout mdrawrelayout;
-    private ImageView map_nav;
+    private ImageView event_nav_icon;
 
     public EventFragment() {
         // Required empty public constructor
@@ -60,7 +60,7 @@ public class EventFragment extends Fragment {
         init(view);
 
 
-        map_nav.setOnClickListener(new View.OnClickListener() {
+        event_nav_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mdrawrelayout.openDrawer(GravityCompat.START);
@@ -123,7 +123,7 @@ public class EventFragment extends Fragment {
         eventAdapter = new EventAdapter(eventList, getContext());
         eventRecyclerview.setAdapter(eventAdapter);
         auth = FirebaseAuth.getInstance();
-        map_nav = view.findViewById(R.id.map_nav);
+        event_nav_icon = view.findViewById(R.id.event_nav_icon);
         //mdrawrelayout=view.findViewById(R.id.nav_view);
 
     }
