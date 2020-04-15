@@ -88,27 +88,31 @@ public class WeatherFragment extends Fragment {
         pressureTxt = view.findViewById(R.id.pressure);
         humidityTxt = view.findViewById(R.id.humidity);
         api = ApiUtils.getUserService();
-        providerClient = LocationServices.getFusedLocationProviderClient(getContext());
+        providerClient = new FusedLocationProviderClient(getContext());
 
-
-        if (checkPermissions()){
-            if (isLocationEnabled()){
-                providerClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        Location location = task.getResult();
-                        lat = location.getLatitude();
-                        lon = location.getLongitude();
-                        findweather();
-                    }
-                });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(ActivityCompat.checkSelfPermission(getContext(),
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(getContext(),
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(permission,0);
             }
         }
+
+        Task location = providerClient.getLastLocation();
+        location.addOnCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                Location currentLocation = (Location) task.getResult();
+                lat = currentLocation.getLatitude();
+                lon = currentLocation.getLongitude();
+                findweather(lat,lon);
+            }
+        });
         return view;
     }
 
-
-    private void findweather() {
+    private void findweather(double lat, double lon) {
         Call<WeatherResponse> call = api.getWeather(lat,lon,API);
         call.enqueue(new Callback<WeatherResponse>() {
             @Override
@@ -151,26 +155,5 @@ public class WeatherFragment extends Fragment {
         });
     }
 
-
-    private boolean checkLocationPermission(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(permission,0);
-            }
-        }
-        return true;
-    }
-    private boolean checkPermissions(){
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            return true;
-        }
-        return false;
-    }
-    private boolean isLocationEnabled() {
-        LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && locationManager.isProviderEnabled(
-                LocationManager.NETWORK_PROVIDER);
-    }
 
 }
