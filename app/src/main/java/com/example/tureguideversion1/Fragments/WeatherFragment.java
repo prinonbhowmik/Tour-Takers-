@@ -71,6 +71,7 @@ public class WeatherFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -90,25 +91,18 @@ public class WeatherFragment extends Fragment {
         api = ApiUtils.getUserService();
         providerClient = new FusedLocationProviderClient(getContext());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(ActivityCompat.checkSelfPermission(getContext(),
-                    android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(getContext(),
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(permission,0);
-            }
+        if (checkLocationPermission()){
+            Task location = providerClient.getLastLocation();
+            location.addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    Location currentLocation = (Location) task.getResult();
+                    lat = currentLocation.getLatitude();
+                    lon = currentLocation.getLongitude();
+                    findweather(lat,lon);
+                }
+            });
         }
-
-        Task location = providerClient.getLastLocation();
-        location.addOnCompleteListener(new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                Location currentLocation = (Location) task.getResult();
-                lat = currentLocation.getLatitude();
-                lon = currentLocation.getLongitude();
-                findweather(lat,lon);
-            }
-        });
         return view;
     }
 
@@ -173,5 +167,15 @@ public class WeatherFragment extends Fragment {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean checkLocationPermission(){
+        if(getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},123);
+            return false;
+        }
+
+        return true;
+    }
 
 }

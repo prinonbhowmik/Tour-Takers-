@@ -7,7 +7,9 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -51,8 +53,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-       init(view);
-        getUserPermission();
+        init(view);
 
         return view;
     }
@@ -76,36 +77,43 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
         map = googleMap;
 
+
         currentLocation();
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void currentLocation() {
-        FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(getContext());
-        Task location = fusedLocationProviderClient.getLastLocation();
-        location.addOnCompleteListener(new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                Location curentlocation =(Location)  task.getResult();
-                latitude = curentlocation.getLatitude();
-                longtitude = curentlocation.getLongitude();
-                map.addMarker(new MarkerOptions().position(new LatLng(latitude,longtitude)));
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curentlocation.getLatitude(),curentlocation.getLongitude()),15));
-            }
-        });
+       if (checkLocationPermission()){
+           FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(getContext());
+           Task location = fusedLocationProviderClient.getLastLocation();
+           location.addOnCompleteListener(new OnCompleteListener() {
+               @Override
+               public void onComplete(@NonNull Task task) {
+                   Location curentlocation =(Location)  task.getResult();
+                   latitude = curentlocation.getLatitude();
+                   longtitude = curentlocation.getLongitude();
+                   map.addMarker(new MarkerOptions().position(new LatLng(latitude,longtitude)));
+                   map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curentlocation.getLatitude(),curentlocation.getLongitude()),15));
+               }
+           });
+       }
     }
 
-    private void getUserPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(permission,0);
-            }
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean checkLocationPermission(){
+        if(getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},123);
+            return false;
         }
 
+        return true;
     }
 }
