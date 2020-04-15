@@ -112,7 +112,7 @@ public class WeatherFragment extends Fragment {
         return view;
     }
 
-    private void findweather(double lat, double lon) {
+    private void findweather(final double lat, final double lon) {
         Call<WeatherResponse> call = api.getWeather(lat,lon,API);
         call.enqueue(new Callback<WeatherResponse>() {
             @Override
@@ -122,8 +122,26 @@ public class WeatherFragment extends Fragment {
                         return;
                     }else{
                         WeatherResponse weatherResponse = response.body();
+                        String address = "";
 
-                        addressTxt.setText(weatherResponse.name+","+weatherResponse.sys.country);
+                        Geocoder geocoder = new Geocoder(getContext(),Locale.getDefault());
+
+                        List<Address>  addresses;
+
+                        try {
+                            addresses = geocoder.getFromLocation(lat,lon,1);
+                            if(addresses.size()>0){
+                                address = addresses.get(0).getLocality();
+                                addressTxt.setText(address);
+                            }
+
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+
+                      //  addressTxt.setText(weatherResponse.name+","+weatherResponse.sys.country);
 
                         Float updatedAt = weatherResponse.dt;
                         // Date time  = new Date(updatedAt.longValue());
