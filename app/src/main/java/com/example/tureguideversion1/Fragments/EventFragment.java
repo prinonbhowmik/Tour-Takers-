@@ -1,6 +1,5 @@
 package com.example.tureguideversion1.Fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tureguideversion1.Activities.CreateEvent;
 import com.example.tureguideversion1.Adapters.EventAdapter;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.R;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,7 +33,6 @@ import java.util.List;
  */
 public class EventFragment extends Fragment {
 
-    private FloatingActionButton createEvent;
     private EditText eventSearch;
     private DatabaseReference databaseReference;
     private RecyclerView eventRecyclerview;
@@ -67,16 +64,6 @@ public class EventFragment extends Fragment {
             }
         });
 
-
-        createEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), CreateEvent.class);
-                startActivity(intent);
-            }
-        });
-
-
         eventSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,7 +73,7 @@ public class EventFragment extends Fragment {
 
         getData(view);
 
-        eventAdapter.notifyDataSetChanged();
+        //eventAdapter.notifyDataSetChanged();
         return view;
     }
 
@@ -100,8 +87,11 @@ public class EventFragment extends Fragment {
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
                         Event event = data.getValue(Event.class);
                         eventList.add(event);
-                        eventAdapter.notifyDataSetChanged();
+
+                        //eventAdapter.notifyDataSetChanged();
                     }
+                    Collections.reverse(eventList);
+                    eventAdapter.notifyDataSetChanged();
                 }
             }
             @Override
@@ -114,7 +104,6 @@ public class EventFragment extends Fragment {
 
 
     private void init(View view) {
-        createEvent=view.findViewById(R.id.create_event);
         eventSearch=view.findViewById(R.id.event_searchET);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         eventList = new ArrayList<>();

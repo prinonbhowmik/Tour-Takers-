@@ -122,6 +122,7 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
                                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                             }
                         } catch (Exception e) {
+                            singin.setText("Continue");
                             e.printStackTrace();
                             String message = "Couldn't reach to the server! Try again leter.";
                             snackbar(message);

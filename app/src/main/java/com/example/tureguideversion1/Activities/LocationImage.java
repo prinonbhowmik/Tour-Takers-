@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +35,7 @@ import java.util.Objects;
 public class LocationImage extends AppCompatActivity {
 
     private View rootLayout;
-    ArrayList<String> location;
+    ArrayList<String> location, locationFromEvent;
     private ViewPager viewPager;
     private Adapter adapter;
     List<CardView> models;
@@ -52,6 +53,7 @@ public class LocationImage extends AppCompatActivity {
         Intent intent = getIntent();
         slide = Objects.requireNonNull(intent.getExtras()).getString("slide");
         locationForViewPage = intent.getExtras().getString("location");
+        locationFromEvent = intent.getStringArrayListExtra("willVisit");
         if (savedInstanceState == null) {
             rootLayout.setVisibility(View.INVISIBLE);
             ViewTreeObserver viewTreeObserver = rootLayout.getViewTreeObserver();
@@ -85,7 +87,7 @@ public class LocationImage extends AppCompatActivity {
     private void init() {
 
         rootLayout = findViewById(R.id.locationImageRootLayout);
-
+        locationFromEvent = new ArrayList<>();
     }
 
     private void circularRevealActivity() {
@@ -124,9 +126,15 @@ public class LocationImage extends AppCompatActivity {
             //Get user map
             Map singleUser = (Map) entry.getValue();
             //Get phone field and append to list
-            location.add((String) singleUser.get("locationName"));
-
-            models.add(new CardView((String) singleUser.get("image"),(String) singleUser.get("locationName"),(String) singleUser.get("description")));
+            if(locationFromEvent != null) {
+                if (locationFromEvent.contains(singleUser.get("locationName").toString())) {
+                    location.add((String) singleUser.get("locationName"));
+                    models.add(new CardView((String) singleUser.get("image"), (String) singleUser.get("locationName"), (String) singleUser.get("description")));
+                }
+            }else {
+                location.add((String) singleUser.get("locationName"));
+                models.add(new CardView((String) singleUser.get("image"), (String) singleUser.get("locationName"), (String) singleUser.get("description")));
+            }
         }
 
         adapter = new Adapter(models, this);

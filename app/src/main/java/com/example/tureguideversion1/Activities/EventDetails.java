@@ -8,12 +8,24 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.request.RequestOptions;
+import com.example.tureguideversion1.Adapters.EventLocationListAdapter;
 import com.example.tureguideversion1.GlideApp;
+import com.example.tureguideversion1.Model.EventLocationList;
 import com.example.tureguideversion1.R;
+import com.glide.slider.library.SliderLayout;
+import com.glide.slider.library.animations.DescriptionAnimation;
+import com.glide.slider.library.slidertypes.BaseSliderView;
+import com.glide.slider.library.slidertypes.TextSliderView;
+import com.glide.slider.library.transformers.BaseTransformer;
+import com.glide.slider.library.tricks.ViewPagerEx;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,9 +33,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import es.dmoral.toasty.Toasty;
 
-public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
+public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener, BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
 
     private TextView event_place, event_date, event_time, meeting_place, event_description, publish_date,
             publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, moreTV, txt7;
@@ -36,7 +52,12 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
     private String member_name, member_image, member_phone;
     private String update_des;
     private long count;
-
+    private List<EventLocationList> locationLists;
+    private List<String> locationWillBeVisit;
+    private EventLocationListAdapter locationAdapter;
+    private RecyclerView locationRecycleView;
+    private SliderLayout imageSlider;
+    private int slide;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +68,20 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         getData();
         userId = auth.getCurrentUser().getUid();
         moreImageShow();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(place.toLowerCase());
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+                        collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
 
 
         //joinButtonShow();
@@ -174,6 +209,99 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
 
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                slide = data.getIntExtra("slide", 0);
+
+                if (imageSlider.getCurrentPosition() < slide) {
+                    if (slide - imageSlider.getCurrentPosition() > 1) {
+
+                    } else {
+                        imageSlider.setCurrentPosition(slide, false);
+                    }
+                } else if (imageSlider.getCurrentPosition() > slide) {
+                    if (imageSlider.getCurrentPosition() - slide > 1) {
+
+                    } else {
+                        imageSlider.setCurrentPosition(slide, false);
+                    }
+                }
+            }
+        }
+    }
+
+    private void collectImageNInfo(Map<String, Object> locations) {
+
+        ArrayList<String> location = new ArrayList<>();
+        ArrayList<String> image = new ArrayList<>();
+        //ArrayList<String> description = new ArrayList<>();
+
+        //iterate through each user, ignoring their UID
+        if (locations != null) {
+            for (Map.Entry<String, Object> entry : locations.entrySet()) {
+
+                //Get user map
+                Map singleUser = (Map) entry.getValue();
+                //Get phone field and append to list
+                if(locationWillBeVisit.contains(singleUser.get("locationName").toString())) {
+                    location.add((String) singleUser.get("locationName"));
+                    image.add((String) singleUser.get("image"));
+                }
+            }
+
+            RequestOptions requestOptions = new RequestOptions();
+            requestOptions.centerCrop();
+            //.diskCacheStrategy(DiskCacheStrategy.NONE)
+            //.placeholder(R.drawable.placeholder)
+            //.error(R.drawable.placeholder);
+            //imageSlider.removeAllSliders();
+
+            for (int i = 0; i < image.size(); i++) {
+                TextSliderView sliderView = new TextSliderView(this);
+                // if you want show image only / without description text use DefaultSliderView instead
+
+                // initialize SliderLayout
+                sliderView
+                        .image(image.get(i))
+                        .description(location.get(i))
+                        .setRequestOption(requestOptions)
+                        .setProgressBarVisible(true)
+                        .setOnSliderClickListener(this);
+
+                //add your extra information
+                sliderView.bundle(new Bundle());
+                sliderView.getBundle().putString("extra", location.get(i));
+                imageSlider.addSlider(sliderView);
+                //loading.setVisibility(View.INVISIBLE);
+            }
+            // set Slider Transition Animation
+            if (imageSlider.getSliderImageCount() < 2) {
+                imageSlider.stopAutoCycle();
+                imageSlider.setPagerTransformer(false, new BaseTransformer() {
+                    @Override
+                    protected void onTransform(View view, float v) {
+                    }
+                });
+                imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
+            } else {
+
+                imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
+                imageSlider.startAutoCycle();
+                imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
+                imageSlider.setCustomAnimation(new DescriptionAnimation());
+                imageSlider.setDuration(4000);
+                imageSlider.addOnPageChangeListener(this);
+                imageSlider.stopCyclingWhenTouch(true);
+
+            }
+        } else {
+            Toasty.warning(getApplicationContext(), "Image not found!", Toasty.LENGTH_SHORT).show();
+        }
+
+    }
+
     private void member_counter() {
         DatabaseReference memberCountRef = databaseReference.child("eventJoinMember").child(event_Id);
         memberCountRef.addValueEventListener(new ValueEventListener() {
@@ -280,6 +408,35 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+
+        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference().child("eventLocationList").child(event_Id);
+        ref1.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+                        locationList((Map<String, Object>) dataSnapshot.getValue());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
+    }
+
+    private void locationList(Map<String, Object> value) {
+        if(value != null) {
+            for (Map.Entry<String, Object> entry : value.entrySet()) {
+                //Get user map
+                Map singleUser = (Map) entry.getValue();
+                //Get location field and append to list
+                locationWillBeVisit.add((String) singleUser.get("locationName"));
+                EventLocationList location = new EventLocationList((String) singleUser.get("locationName"));
+                locationLists.add(location);
+                locationAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     private void setData() {
@@ -317,6 +474,14 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         groupIV = findViewById(R.id.edit_groupName);
         meetingIV = findViewById(R.id.edit_meetingPlace);
         costIV = findViewById(R.id.edit_costIV);
+        locationLists = new ArrayList<>();
+        locationWillBeVisit = new ArrayList<>();
+        locationAdapter = new EventLocationListAdapter(locationLists,getApplicationContext());
+        locationRecycleView = findViewById(R.id.eventLocationList_recyclerview);
+        locationRecycleView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        locationRecycleView.setHasFixedSize(true);
+        locationRecycleView.setAdapter(locationAdapter);
+        imageSlider = findViewById(R.id.sliderFromEventDetails);
     }
 
 
@@ -324,8 +489,6 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.update:
-                Intent intent = new Intent(EventDetails.this, UpdateEvent.class);
-                startActivity(intent);
                 return false;
             case R.id.delete:
                 DatabaseReference eRef = databaseReference.child("event").child(event_Id);
@@ -342,7 +505,37 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
     @Override
+    public void onResume() {
+        imageSlider.startAutoCycle();
+        super.onResume();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void onSliderClick(BaseSliderView slider) {
+        Intent i = new Intent(view.getContext(), LocationImage.class)
+                .putExtra("slide", slider.getBundle().getString("extra"))
+                .putExtra("location", place.toLowerCase())
+                .putStringArrayListExtra("willVisit", (ArrayList<String>) locationWillBeVisit);
+        startActivityForResult(i, 1);
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 }

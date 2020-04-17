@@ -87,18 +87,4 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/create_event"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:theme="@style/Theme.Transparent"
-        android:backgroundTint="@color/colorGreen"
-        android:src="@drawable/ic_add_white_24dp" />
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -37,7 +37,7 @@ public class LocationSelection_bottomSheet extends BottomSheetDialogFragment imp
     private RecyclerView locationRecyleView;
     private TextView locationStatus;
     private BottomSheetListener mListener;
-    Animation anim;
+    private Animation anim;
     String location;
 
     @Nullable

@@ -24,17 +24,22 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="170dp">
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="130dp"
+                    android:layout_height="match_parent"
                     android:background="@android:color/holo_red_light"
                     android:contentDescription="@null" />
-            </LinearLayout>
+
+                <com.glide.slider.library.SliderLayout
+                    style="@style/GlideSliderCardStyle"
+                    android:id="@+id/sliderFromEvent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
 
 
             <RelativeLayout

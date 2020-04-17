@@ -2,11 +2,14 @@ package com.example.tureguideversion1.Fragments;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +17,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -22,7 +27,9 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -32,6 +39,7 @@ import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.Activities.NoInternetConnection;
 import com.example.tureguideversion1.Adapters.AutoCompleteLocationAdapter;
 import com.example.tureguideversion1.LocationSelection_bottomSheet;
+import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.LocationItem;
 import com.example.tureguideversion1.R;
 import com.glide.slider.library.SliderLayout;
@@ -40,11 +48,15 @@ import com.glide.slider.library.slidertypes.BaseSliderView;
 import com.glide.slider.library.slidertypes.TextSliderView;
 import com.glide.slider.library.transformers.BaseTransformer;
 import com.glide.slider.library.tricks.ViewPagerEx;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.polyak.iconswitch.IconSwitch;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -65,7 +77,7 @@ import static android.app.Activity.RESULT_OK;
 public class TourFragment extends Fragment implements BaseSliderView.OnSliderClickListener,
         ViewPagerEx.OnPageChangeListener {
 
-    private EditText startDate, endDate;
+    private EditText startDate, endDate, eventTime, groupName_ET, eventCost_ET, meetingPlace_ET, eventDescription_ET;
     private SliderLayout imageSlider;
     private ImageView logo;
     private LottieAnimationView loading;
@@ -73,11 +85,19 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private List<String> selectedLocation;
     private AutoCompleteTextView locationEt;
     private ArrayList<String> location;
-    private String locationForViewPage, districtForLocationImage, districtFromLocationSelection;
-    private Button locationSelection;
+    private String locationForViewPage, districtForLocationImage, districtFromLocationSelection, format, userID, publishDate, date, time, place, description, meetPlace, group_name, cost;
+    private Button locationSelection, createEvent;
     private int slide;
     private View view;
-
+    private IconSwitch iconSwitch;
+    private Animation anim;
+    private TextView tourTitle;
+    private LinearLayout eventLayout;
+    private FirebaseAuth auth;
+    private DatabaseReference databaseReference;
+    private static String eventId;
+    private int joinMemberCount;
+    private navDrawerCheck check;
 
     public TourFragment() {
         // Required empty public constructor
@@ -91,6 +111,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         view = inflater.inflate(R.layout.fragment_tour, container, false);
 
         init(view);
+        userID = auth.getUid();
         startDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,7 +125,51 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             }
         });
         loading.setVisibility(View.INVISIBLE);
+        eventLayout.setVisibility(View.GONE);
+        iconSwitch.setCheckedChangeListener(new IconSwitch.CheckedChangeListener() {
+            @Override
+            public void onCheckChanged(IconSwitch.Checked current) {
+                switch (iconSwitch.getChecked()) {
+                    case LEFT:
+                        anim.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) { }
+                            @Override
+                            public void onAnimationEnd(Animation animation) { }
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+                                tourTitle.setText("Tour");
+                                eventLayout.setVisibility(View.GONE);
+                            }
+                        });
+                        tourTitle.startAnimation(anim);
+                        eventLayout.startAnimation(anim);
+                        break;
+                    case RIGHT:
+                        anim.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) { }
+                            @Override
+                            public void onAnimationEnd(Animation animation) { }
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+                                tourTitle.setText("Event");
+                                eventLayout.setVisibility(View.VISIBLE);
+                            }
+                        });
+                        tourTitle.startAnimation(anim);
 
+                        break;
+                }
+            }
+        });
+
+        eventTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                timePickers();
+            }
+        });
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("locationList");
         ref.addListenerForSingleValueEvent(
@@ -232,6 +297,28 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             }
         });
 
+        createEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference eventRef = databaseReference.child("event");
+                eventId = eventRef.push().getKey();
+
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh:mm a");
+                publishDate = simpleDateFormat.format(calendar.getTime());
+                date = startDate.getText().toString();
+                time = eventTime.getText().toString();
+                place = locationEt.getText().toString();
+                description = eventDescription_ET.getText().toString();
+                meetPlace = meetingPlace_ET.getText().toString();
+                group_name = groupName_ET.getText().toString();
+                cost = eventCost_ET.getText().toString();
+                joinMemberCount = 1;
+
+                addEventInDB(eventId, date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                        userID, group_name, cost);
+            }
+        });
 
         return view;
     }
@@ -415,6 +502,46 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         datePickerDialog.show();
     }
 
+    private void addEventInDB(String id, String date, String time, String place, String meetPlace, String description,
+                              String publishDate, int joinMemberCount, String eventPublisherId, String group_name, String cost) {
+        final DatabaseReference eventRef = databaseReference.child("event");
+
+        final Event event = new Event(id, date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                eventPublisherId, group_name, cost);
+
+        eventRef.child(eventId).setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toasty.success(getContext(), "Your Event Successfully Added", Toasty.LENGTH_SHORT).show();
+                    addJoinMember();
+                    addEventLoacationList();
+                    FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                    event.replace(R.id.fragment_container, new EventFragment());
+                    event.commit();
+
+                    check.checked(1);
+                    //navigationView.getMenu().getItem(2).setChecked(true);
+                } else {
+                    Toasty.error(getContext(), "Unsuccessful", Toasty.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void addJoinMember() {
+        DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(eventId).child(userID);
+        memberRef.child("id").setValue(userID);
+    }
+
+    private void addEventLoacationList(){
+        for (int i=0; i<selectedLocation.size(); i++){
+            DatabaseReference memberRef = databaseReference.child("eventLocationList").child(eventId).child(selectedLocation.get(i));
+            memberRef.child("locationName").setValue(selectedLocation.get(i));
+        }
+
+    }
+
     private void init(View view) {
         locationEt = view.findViewById(R.id.location_Et);
         startDate = view.findViewById(R.id.startDate_Et);
@@ -424,6 +551,21 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         loading = view.findViewById(R.id.loading);
         locationSelection = view.findViewById(R.id.locationSelection);
         selectedLocation = new ArrayList<>();
+        iconSwitch = view.findViewById(R.id.tourSwitch);
+        tourTitle = view.findViewById(R.id.tourTitle);
+        anim = new AlphaAnimation(1.0f, 0.0f);
+        anim.setDuration(200);
+        anim.setRepeatCount(1);
+        anim.setRepeatMode(Animation.REVERSE);
+        eventLayout = view.findViewById(R.id.eventLayout);
+        eventTime = view.findViewById(R.id.eventTime_ET);
+        auth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        createEvent = view.findViewById(R.id.createEvent);
+        groupName_ET = view.findViewById(R.id.groupName_ET);
+        eventCost_ET = view.findViewById(R.id.eventCost_ET);
+        meetingPlace_ET = view.findViewById(R.id.meetingPlace_ET);
+        eventDescription_ET = view.findViewById(R.id.eventDescription_ET);
     }
 
     private void getDate() {
@@ -495,10 +637,52 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
     }
 
+    private void timePickers() {
+        Calendar mcurrentTime = Calendar.getInstance();
+        int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+        int minute = mcurrentTime.get(Calendar.MINUTE);
+
+        TimePickerDialog mTimePicker;
+        mTimePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                if (selectedHour == 0) {
+                    selectedHour += 12;
+                    format = "AM";
+                } else if (selectedHour == 12) {
+                    format = "PM";
+                } else if (selectedHour > 12) {
+                    selectedHour -= 12;
+                    format = "PM";
+                } else {
+                    format = "AM";
+                }
+                eventTime.setText(selectedHour + ":" + selectedMinute + " " + format);
+            }
+        }, hour, minute, true);//Yes 24 hour time
+        mTimePicker.show();
+
+    }
+
     private static void hideKeyboardFrom(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    public interface navDrawerCheck {
+        void checked(int value);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            check = (navDrawerCheck) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement BottomSheetListener");
+        }
+    }
 
 }

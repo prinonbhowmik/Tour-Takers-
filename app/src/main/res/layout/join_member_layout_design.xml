@@ -34,7 +34,6 @@
                 android:layout_below="@+id/member_nameET"
                 android:layout_marginBottom="5dp"
                 android:paddingStart="5dp"
-                android:text="01776482727"
                 android:textColor="@android:color/black" />
 
             <ImageView

@@ -75,6 +75,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                 } else if (passEt.length() < 6) {
                     passEt.setError("At least 6 characters!",null);
                 } else {
+                    singin.setText("Connecting");
                     logo.startAnimation(blink);
                     singin.setEnabled(false);
                     signinuser(email, password);
@@ -111,6 +112,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                 if (task.isSuccessful()) {
                     logo.clearAnimation();
                     if (auth.getCurrentUser().isEmailVerified()) {
+                        singin.setText("Login");
                         unregisterReceiver(connectivityReceiver);
                         Intent intent = new Intent(SignInGrantAccess.this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -118,6 +120,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         startActivity(intent);
                     } else {
+                        singin.setText("Login");
                         Toasty.info(getApplicationContext(), "Please verify your email address!", Toasty.LENGTH_LONG).show();
                     }
 
@@ -126,6 +129,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                singin.setText("Login");
                 logo.clearAnimation();
                 Toast.makeText(SignInGrantAccess.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }

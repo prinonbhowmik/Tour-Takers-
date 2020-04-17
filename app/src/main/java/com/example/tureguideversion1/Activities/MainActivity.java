@@ -52,7 +52,10 @@ import com.google.firebase.storage.StorageReference;
 
 import es.dmoral.toasty.Toasty;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ConnectivityReceiver.ConnectivityReceiverListener, LocationSelection_bottomSheet.BottomSheetListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        ConnectivityReceiver.ConnectivityReceiverListener,
+        LocationSelection_bottomSheet.BottomSheetListener,
+        TourFragment.navDrawerCheck{
 
     boolean doubleBackToExitPressedOnce = false;
     private ImageView nav_icon;
@@ -385,5 +388,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void hideKeyboardFrom(Context context) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(this.getWindow().getDecorView().getRootView().getWindowToken(), 0);
+    }
+
+    @Override
+    public void checked(int value) {
+        if(value == 1){
+            navigationView.getMenu().getItem(2).setChecked(true);
+        }
     }
 }

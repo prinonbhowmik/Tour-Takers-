@@ -2,6 +2,7 @@ package com.example.tureguideversion1.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +12,27 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.tureguideversion1.Activities.EventDetails;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.R;
+import com.glide.slider.library.SliderLayout;
+import com.glide.slider.library.animations.DescriptionAnimation;
+import com.glide.slider.library.slidertypes.TextSliderView;
+import com.glide.slider.library.transformers.BaseTransformer;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
 
@@ -46,6 +61,96 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final Event event = eventList.get(position);
+        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference().child("eventLocationList").child(event.getId());
+        ref1.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+                        Map<String, Object> locationList =(Map<String, Object>) dataSnapshot.getValue();
+                        if(locationList != null) {
+                            holder.locationWillBeVisit.clear();
+                            for (Map.Entry<String, Object> entry : locationList.entrySet()) {
+                                //Get user map
+                                Map singleUser = (Map) entry.getValue();
+                                //Get location field and append to list
+                                holder.locationWillBeVisit.add((String) singleUser.get("locationName"));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(event.getPlace().toLowerCase());
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+                        Map<String, Object> collectImageNInfo = (Map<String, Object>) dataSnapshot.getValue();
+                        ArrayList<String> location = new ArrayList<>();
+                        ArrayList<String> image = new ArrayList<>();
+                        if (collectImageNInfo != null) {
+                            for (Map.Entry<String, Object> entry : collectImageNInfo.entrySet()) {
+
+                                //Get user map
+                                Map singleUser = (Map) entry.getValue();
+                                //Get phone field and append to list
+                                if(holder.locationWillBeVisit.contains(singleUser.get("locationName").toString())) {
+                                    location.add((String) singleUser.get("locationName"));
+                                    image.add((String) singleUser.get("image"));
+                                }
+                            }
+
+                            RequestOptions requestOptions = new RequestOptions();
+                            requestOptions.centerCrop();
+                            //.diskCacheStrategy(DiskCacheStrategy.NONE);
+                            //.placeholder(R.drawable.placeholder)
+                            //.error(R.drawable.placeholder);
+                            holder.imageSlider.removeAllSliders();
+
+                            for (int i = 0; i < image.size(); i++) {
+                                TextSliderView sliderView = new TextSliderView(context);
+                                // if you want show image only / without description text use DefaultSliderView instead
+
+                                // initialize SliderLayout
+                                sliderView
+                                        .image(image.get(i))
+                                        .description(location.get(i))
+                                        .setRequestOption(requestOptions)
+                                        .setProgressBarVisible(true);
+
+                                holder.imageSlider.addSlider(sliderView);
+                            }
+                            // set Slider Transition Animation
+                            if (holder.imageSlider.getSliderImageCount() < 2) {
+                                holder.imageSlider.stopAutoCycle();
+                                holder.imageSlider.setPagerTransformer(false, new BaseTransformer() {
+                                    @Override
+                                    protected void onTransform(View view, float v) {
+                                    }
+                                });
+                                holder.imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
+                            } else {
+                                holder.imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
+                                holder.imageSlider.startAutoCycle();
+                                holder.imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
+                                holder.imageSlider.setCustomAnimation(new DescriptionAnimation());
+                                holder.imageSlider.setDuration(4000);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
+
         holder.eTitle.setText(event.getPlace());
         holder.eDate.setText(event.getDate());
         holder.eTime.setText(event.getTime());
@@ -83,6 +188,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView eTitle, eDate, eTime, ePlace, eMembers, eGroupName, eCost, eMemberid;
         private ImageView image6;
+        private SliderLayout imageSlider;
+        private List<String> locationWillBeVisit;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -95,6 +202,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             eMemberid = itemView.findViewById(R.id.member_id);
             eGroupName = itemView.findViewById(R.id.e_group);
             eCost = itemView.findViewById(R.id.e_cost);
+            imageSlider = itemView.findViewById(R.id.sliderFromEvent);
+            locationWillBeVisit = new ArrayList<>();
 
         }
     }
