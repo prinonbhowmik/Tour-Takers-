@@ -2,13 +2,10 @@ package com.example.tureguideversion1.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.request.RequestOptions;
 import com.example.tureguideversion1.Adapters.EventLocationListAdapter;
+import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.EventLocationList;
 import com.example.tureguideversion1.R;
@@ -39,13 +37,13 @@ import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
 
-public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener, BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
+public class EventDetails extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
 
-    private TextView event_place, event_date, event_time, meeting_place, event_description, publish_date,
-            publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, moreTV, txt7;
+    private TextView event_place, event_date, return_date, event_time, meeting_place, event_description, publish_date,
+            publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, deleteTV, txt7;
     private ImageView descriptionIV, meetingIV, groupIV, costIV, event_image, event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
-    private String place, date, time, m_place, description, p_date, attend_member_count, g_name, e_cost, publisher_id;
+    private String place, s_date, r_date, time, m_place, description, p_date, attend_member_count, g_name, e_cost, publisher_id;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
     private String userId, event_Id, event_user_id;
@@ -58,13 +56,13 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
     private RecyclerView locationRecycleView;
     private SliderLayout imageSlider;
     private int slide;
+    private TourFragment.navDrawerCheck check;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
         init();
-        registerForContextMenu(moreTV);
         getData();
         userId = auth.getCurrentUser().getUid();
         moreImageShow();
@@ -83,12 +81,17 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
                     }
                 });
 
-
-        //joinButtonShow();
-        moreTV.setOnClickListener(new View.OnClickListener() {
+        deleteTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPopupMenu();
+                DatabaseReference eRef = databaseReference.child("event").child(event_Id);
+                DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id);
+                DatabaseReference lRef = databaseReference.child("eventLocationList").child(event_Id);
+                eRef.setValue(null);
+                mRef.setValue(null);
+                lRef.setValue(null);
+                Toasty.success(getApplicationContext(), "Delete Success", Toasty.LENGTH_SHORT).show();
+                startActivity(new Intent(EventDetails.this, MainActivity.class));
             }
         });
 
@@ -318,18 +321,13 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
 
-    private void showPopupMenu() {
-        PopupMenu popup = new PopupMenu(this, moreTV);
-        popup.setOnMenuItemClickListener(this);
-        popup.inflate(R.menu.event_update_menu);
-        popup.show();
-    }
+
 
 
     private void moreImageShow() {
         if (publisher_id != null) {
             if (publisher_id.equals(userId)) {
-                moreTV.setVisibility(View.VISIBLE);
+                deleteTV.setVisibility(View.VISIBLE);
                 txt7.setVisibility(View.VISIBLE);
                 meetingIV.setVisibility(View.VISIBLE);
                 descriptionIV.setVisibility(View.VISIBLE);
@@ -369,7 +367,8 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
 
     private void getData() {
         place = getIntent().getStringExtra("event_place");
-        date = getIntent().getStringExtra("event_date");
+        s_date = getIntent().getStringExtra("event_start_date");
+        r_date = getIntent().getStringExtra("event_return_date");
         time = getIntent().getStringExtra("event_time");
         m_place = getIntent().getStringExtra("event_meeting_place");
         description = getIntent().getStringExtra("event_description");
@@ -441,7 +440,8 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
 
     private void setData() {
         event_place.setText(place);
-        event_date.setText(date);
+        event_date.setText(s_date);
+        return_date.setText(r_date);
         event_time.setText(time);
         meeting_place.setText(m_place);
         event_description.setText(description);
@@ -454,6 +454,7 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
     private void init() {
         event_place = findViewById(R.id.event_placeTV);
         event_date = findViewById(R.id.event_dateTV);
+        return_date = findViewById(R.id.return_dateTV);
         event_time = findViewById(R.id.event_timeTV);
         meeting_place = findViewById(R.id.meeting_placeTV);
         event_description = findViewById(R.id.event_descriptionTV);
@@ -461,7 +462,7 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         publisher_name = findViewById(R.id.event_publish_nameTV);
         event_attending_member = findViewById(R.id.attending_memberTV);
         view = findViewById(R.id.viewTV);
-        moreTV = findViewById(R.id.moreTV);
+        deleteTV = findViewById(R.id.deleteTV);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
         joinBtn = findViewById(R.id.joinBtn);
@@ -485,24 +486,7 @@ public class EventDetails extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
 
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.update:
-                return false;
-            case R.id.delete:
-                DatabaseReference eRef = databaseReference.child("event").child(event_Id);
-                DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id);
-                eRef.setValue(null);
-                mRef.setValue(null);
-                onBackPressed();
-                Toasty.success(getApplicationContext(), "Delete Success", Toasty.LENGTH_SHORT).show();
 
-                return false;
-            default:
-                return false;
-        }
-    }
 
     @Override
     public void onResume() {

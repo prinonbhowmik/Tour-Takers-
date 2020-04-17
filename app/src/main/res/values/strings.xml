@@ -16,12 +16,12 @@
     <string name="tour_place">Tour Place</string>
     <string name="event_date">Event Date</string>
     <string name="event_time">Event Time</string>
-    <string name="write_about_the_tour">Write about the tour...</string>
+    <string name="write_about_the_tour">Write about the tour…</string>
     <string name="create_event">Create Event</string>
     <string name="at">At</string>
     <string name="attending">Attending</string>
     <string name="exit_toast" translatable="false">Press again to exit!</string>
-    <string name="description"><u>Description</u></string>
+    <string name="description"><u>Description :</u></string>
     <string name="taka">৳</string>
     <string name="group_name">Group Name</string>
     <string name="total_cost">Total Cost</string>
@@ -29,4 +29,10 @@
     <string name="update">Update</string>
     <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
     <string name="meeting_place">Meeting Place</string>
+    <string name="event_description">Event Description</string>
+    <string name="district">District</string>
+    <string name="return_date">Return Date</string>
+    <string name="start_date">Start Date</string>
+    <string name="select_tourism_places">Select tourism places</string>
+    <string name="tour">Tour</string>
 </resources>

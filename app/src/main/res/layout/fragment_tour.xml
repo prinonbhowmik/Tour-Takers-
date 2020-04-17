@@ -38,7 +38,7 @@
                 android:background="@null"
                 android:fontFamily="@font/amarante"
                 android:gravity="center"
-                android:text="Tour"
+                android:text="@string/tour"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="21sp"
                 android:textStyle="bold" />
@@ -102,14 +102,12 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_below="@+id/sliderLayout"
-                android:layout_centerHorizontal="true"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
                 android:focusableInTouchMode="true"
                 android:fontFamily="@font/amarante"
-                android:hint="District"
+                android:hint="@string/district"
                 android:textColorHint="@color/colorYellow">
 
                 <AutoCompleteTextView
@@ -121,7 +119,7 @@
                     android:fontFamily="@font/amarante"
                     android:inputType="textNoSuggestions|textCapWords"
                     android:maxLines="1"
-                    android:paddingStart="20dp"
+                    android:paddingStart="15dp"
                     android:paddingEnd="20dp"
                     android:textColor="#000"
                     android:textSize="21sp" />
@@ -136,7 +134,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/custom_btn"
-                android:text="Select tourism places"
+                android:text="@string/select_tourism_places"
                 android:textAlignment="center"
                 android:textAllCaps="false"
                 android:textColor="@color/colorYellow"
@@ -145,8 +143,7 @@
             <LinearLayout
                 android:id="@+id/dateLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_below="@+id/locationSelection"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal"
                 android:weightSum="2">
@@ -155,29 +152,29 @@
                     android:id="@+id/date1_TIL"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/location_TIL"
-                    android:layout_centerHorizontal="true"
+                    android:layout_height="50dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/amarante"
-                    android:hint="Start Date"
+                    android:hint="@string/start_date"
                     android:textColorHint="@color/colorYellow">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/startDate_Et"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:background="@drawable/edit_text_design"
                         android:focusable="false"
                         android:fontFamily="@font/amarante"
                         android:inputType="text"
                         android:maxLines="1"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="15dp"
                         android:textColor="#000"
-                        android:textSize="15sp" />
+                        android:textSize="21sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -192,29 +189,29 @@
                     android:id="@+id/date2_TIL"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/location_TIL"
-                    android:layout_centerHorizontal="true"
+                    android:layout_height="50dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/amarante"
-                    android:hint="Return Date"
+                    android:hint="@string/return_date"
                     android:textColorHint="@color/colorYellow">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/endDate_Et"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:background="@drawable/edit_text_design"
                         android:focusable="false"
                         android:fontFamily="@font/amarante"
                         android:inputType="text"
                         android:maxLines="1"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="15dp"
                         android:textColor="#000"
-                        android:textSize="15sp" />
+                        android:textSize="21sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -230,26 +227,25 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_centerHorizontal="true"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="20dp"
                     android:fontFamily="@font/amarante"
-                    android:hint="Group Name"
+                    android:hint="@string/group_name"
                     android:textColorHint="@color/colorYellow">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/groupName_ET"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:background="@drawable/edit_text_design"
                         android:fontFamily="@font/amarante"
                         android:inputType="textEmailAddress"
                         android:maxLines="1"
-                        android:paddingStart="20dp"
-                        android:paddingTop="0dp"
-                        android:paddingEnd="20dp"
-                        android:paddingBottom="0dp"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="15dp"
                         android:textColor="@color/colorBlack"
                         android:textSize="21sp" />
 
@@ -269,20 +265,21 @@
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/amarante"
-                        android:hint="Total Cost"
+                        android:hint="@string/total_cost"
                         android:textColorHint="@color/colorYellow">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/eventCost_ET"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp"
                             android:background="@drawable/edit_text_design"
                             android:fontFamily="@font/amarante"
                             android:inputType="text"
                             android:maxLines="1"
-                            android:paddingStart="20dp"
-                            android:paddingTop="0dp"
-                            android:paddingBottom="0dp"
+                            android:paddingStart="15dp"
+                            android:paddingEnd="15dp"
                             android:textColor="@color/colorBlack"
                             android:textSize="21sp" />
 
@@ -297,7 +294,6 @@
                         android:layout_marginTop="5dp"
                         android:layout_marginEnd="20dp"
                         android:fontFamily="@font/amarante"
-                        android:gravity="center_vertical"
                         android:hint="@string/event_time"
                         android:textColorHint="@color/colorYellow">
 
@@ -305,12 +301,13 @@
                             android:id="@+id/eventTime_ET"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp"
                             android:background="@drawable/edit_text_design"
                             android:focusable="false"
+                            android:paddingStart="15dp"
+                            android:paddingEnd="15dp"
                             android:fontFamily="@font/amarante"
-                            android:gravity="center_vertical"
-                            android:paddingTop="0dp"
-                            android:paddingBottom="0dp"
                             android:textColor="@color/colorBlack"
                             android:textSize="21sp" />
 
@@ -338,10 +335,10 @@
                         android:fontFamily="@font/amarante"
                         android:inputType="textEmailAddress"
                         android:maxLines="1"
-                        android:paddingStart="20dp"
-                        android:paddingTop="0dp"
-                        android:paddingEnd="20dp"
-                        android:paddingBottom="0dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="10dp"
                         android:textColor="@color/colorBlack"
                         android:textSize="21sp" />
 
@@ -356,7 +353,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="20dp"
                     android:fontFamily="@font/amarante"
-                    android:hint="Event Description"
+                    android:hint="@string/event_description"
                     android:textColorHint="@color/colorYellow">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -373,9 +370,9 @@
                         android:inputType="textMultiLine|textCapSentences"
                         android:maxLength="2000"
                         android:paddingStart="15dp"
-                        android:paddingTop="5dp"
+                        android:paddingTop="8dp"
                         android:paddingEnd="20dp"
-                        android:paddingBottom="5dp"
+                        android:paddingBottom="8dp"
                         android:textColor="@color/colorBlack"
                         android:textSize="21sp" />
 
@@ -388,8 +385,9 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="50dp"
                     android:background="@drawable/custom_btn"
-                    android:text="Create Event"
+                    android:text="@string/create_event"
                     android:textAlignment="center"
                     android:textAllCaps="false"
                     android:textColor="@color/colorYellow" />

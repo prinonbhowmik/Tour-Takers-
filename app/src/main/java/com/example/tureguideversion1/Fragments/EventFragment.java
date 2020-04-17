@@ -2,10 +2,13 @@ package com.example.tureguideversion1.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
@@ -28,12 +31,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class EventFragment extends Fragment {
+public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClickListener {
 
     private EditText eventSearch;
+    private TextView moreTv;
     private DatabaseReference databaseReference;
     private RecyclerView eventRecyclerview;
     private EventAdapter eventAdapter;
@@ -54,8 +60,15 @@ public class EventFragment extends Fragment {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_event, container, false);
         mdrawrelayout = getActivity().findViewById(R.id.drawer_layout);
+        //registerForContextMenu(moreTv);
         init(view);
 
+        moreTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopupMenu();
+            }
+        });
 
         event_nav_icon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +88,14 @@ public class EventFragment extends Fragment {
 
         //eventAdapter.notifyDataSetChanged();
         return view;
+    }
+
+    private void showPopupMenu() {
+        PopupMenu popup = new PopupMenu(getContext(), moreTv);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.event_menu);
+        popup.show();
+
     }
 
     private void getData(View view) {
@@ -105,6 +126,7 @@ public class EventFragment extends Fragment {
 
     private void init(View view) {
         eventSearch=view.findViewById(R.id.event_searchET);
+        moreTv = view.findViewById(R.id.moreTV);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         eventList = new ArrayList<>();
         eventRecyclerview = view.findViewById(R.id.event_recyclerview);
@@ -115,5 +137,19 @@ public class EventFragment extends Fragment {
         event_nav_icon = view.findViewById(R.id.event_nav_icon);
         //mdrawrelayout=view.findViewById(R.id.nav_view);
 
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.my_event:
+                Toasty.success(getContext(), "My Event", Toasty.LENGTH_SHORT).show();
+                return false;
+            case R.id.all_event:
+                Toasty.success(getContext(), "All Event", Toasty.LENGTH_SHORT).show();
+
+            default:
+                return false;
+        }
     }
 }

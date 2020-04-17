@@ -35,7 +35,7 @@
 
                 <RelativeLayout
                     android:id="@+id/rl1"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent">
 
                     <ImageView
@@ -48,12 +48,12 @@
 
                     <EditText
                         android:id="@+id/event_searchET"
-                        android:layout_width="275dp"
+                        android:layout_width="260dp"
                         android:layout_height="match_parent"
-                        android:layout_centerInParent="true"
                         android:background="@null"
                         android:cursorVisible="false"
                         android:gravity="center_vertical"
+                        android:layout_toEndOf="@+id/event_nav_icon"
                         android:hint="Search Events"
                         android:paddingStart="15dp"
                         android:paddingEnd="15dp"
@@ -65,12 +65,22 @@
                         android:id="@+id/searchIV"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerInParent="true"
-                        android:layout_marginEnd="5dp"
+                        android:layout_toEndOf="@+id/event_searchET"
                         android:background="@drawable/custom_round"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="5dp"
                         android:padding="8dp"
                         android:src="@drawable/ic_search" />
+
+                    <TextView
+                        android:id="@+id/moreTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/searchIV"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:drawableStart="@drawable/ic_more_black_24dp"
+                        android:visibility="visible" />
 
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>

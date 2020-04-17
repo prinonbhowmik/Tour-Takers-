@@ -6,11 +6,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -30,7 +25,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.request.RequestOptions;
@@ -65,7 +63,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 
@@ -77,7 +74,7 @@ import static android.app.Activity.RESULT_OK;
 public class TourFragment extends Fragment implements BaseSliderView.OnSliderClickListener,
         ViewPagerEx.OnPageChangeListener {
 
-    private EditText startDate, endDate, eventTime, groupName_ET, eventCost_ET, meetingPlace_ET, eventDescription_ET;
+    private EditText startDateET, endDateET, eventTime, groupName_ET, eventCost_ET, meetingPlace_ET, eventDescription_ET;
     private SliderLayout imageSlider;
     private ImageView logo;
     private LottieAnimationView loading;
@@ -85,7 +82,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private List<String> selectedLocation;
     private AutoCompleteTextView locationEt;
     private ArrayList<String> location;
-    private String locationForViewPage, districtForLocationImage, districtFromLocationSelection, format, userID, publishDate, date, time, place, description, meetPlace, group_name, cost;
+    private String locationForViewPage, districtForLocationImage, districtFromLocationSelection, format,
+            userID, publishDate, s_date, r_date, time, place, description, meetPlace, group_name, cost;
     private Button locationSelection, createEvent;
     private int slide;
     private View view;
@@ -112,13 +110,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
         init(view);
         userID = auth.getUid();
-        startDate.setOnClickListener(new View.OnClickListener() {
+        startDateET.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getDate();
             }
         });
-        endDate.setOnClickListener(new View.OnClickListener() {
+        endDateET.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getEndDate();
@@ -306,7 +304,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh:mm a");
                 publishDate = simpleDateFormat.format(calendar.getTime());
-                date = startDate.getText().toString();
+                s_date = startDateET.getText().toString();
+                r_date = endDateET.getText().toString();
                 time = eventTime.getText().toString();
                 place = locationEt.getText().toString();
                 description = eventDescription_ET.getText().toString();
@@ -315,7 +314,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 cost = eventCost_ET.getText().toString();
                 joinMemberCount = 1;
 
-                addEventInDB(eventId, date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
                         userID, group_name, cost);
             }
         });
@@ -488,7 +487,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                endDate.setText(dateFormat.format(date));
+                endDateET.setText(dateFormat.format(date));
                 long milisec = date.getTime();
             }
         };
@@ -502,11 +501,11 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         datePickerDialog.show();
     }
 
-    private void addEventInDB(String id, String date, String time, String place, String meetPlace, String description,
+    private void addEventInDB(String id, String startDate, String returnDate, String time, String place, String meetPlace, String description,
                               String publishDate, int joinMemberCount, String eventPublisherId, String group_name, String cost) {
         final DatabaseReference eventRef = databaseReference.child("event");
 
-        final Event event = new Event(id, date, time, place, meetPlace, description, publishDate, joinMemberCount,
+        final Event event = new Event(id, startDate, returnDate, time, place, meetPlace, description, publishDate, joinMemberCount,
                 eventPublisherId, group_name, cost);
 
         eventRef.child(eventId).setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -544,8 +543,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
     private void init(View view) {
         locationEt = view.findViewById(R.id.location_Et);
-        startDate = view.findViewById(R.id.startDate_Et);
-        endDate = view.findViewById(R.id.endDate_Et);
+        startDateET = view.findViewById(R.id.startDate_Et);
+        endDateET = view.findViewById(R.id.endDate_Et);
         imageSlider = view.findViewById(R.id.slider);
         logo = view.findViewById(R.id.logoT);
         loading = view.findViewById(R.id.loading);
@@ -582,7 +581,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                startDate.setText(dateFormat.format(date));
+                startDateET.setText(dateFormat.format(date));
                 long milisec = date.getTime();
             }
         };

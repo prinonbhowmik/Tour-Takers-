@@ -83,7 +83,7 @@
                     android:src="@drawable/ic_calendar" />
 
                 <TextView
-                    android:id="@+id/e_date"
+                    android:id="@+id/e_start_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toEndOf="@+id/image1"
@@ -102,10 +102,10 @@
                     android:layout_marginEnd="10dp"
                     android:contentDescription="@null"
                     android:padding="6dp"
-                    android:src="@drawable/ic_clock" />
+                    android:src="@drawable/ic_calendar" />
 
                 <TextView
-                    android:id="@+id/e_time"
+                    android:id="@+id/e_return_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -140,40 +140,29 @@
                     android:layout_marginStart="10dp"
                     android:textColor="@android:color/black"
                     android:textSize="15sp" />
-
                 <ImageView
-                    android:id="@+id/image4"
+                    android:id="@+id/image6"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="10dp"
                     android:contentDescription="@null"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_money" />
-
+                    android:padding="6dp"
+                    android:src="@drawable/ic_clock" />
 
                 <TextView
-                    android:id="@+id/e_cost"
+                    android:id="@+id/e_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_toStartOf="@+id/image4"
+                    android:layout_toStartOf="@+id/image6"
                     android:textColor="@android:color/black"
                     android:textSize="15sp" />
 
-                <TextView
-                    android:id="@+id/taka"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/taka"
-                    android:layout_marginEnd="1dp"
-                    android:layout_toStartOf="@+id/e_cost"
-                    android:textColor="@android:color/black"
-                    android:textSize="17sp" />
+
             </RelativeLayout>
 
             <RelativeLayout
@@ -211,6 +200,40 @@
                     android:text="@string/attending"
                     android:textColor="@android:color/black"
                     android:textSize="15sp" />
+
+                <ImageView
+                    android:id="@+id/image4"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="@null"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_money" />
+
+
+                <TextView
+                    android:id="@+id/e_cost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toStartOf="@+id/image4"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/taka"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/taka"
+                    android:layout_marginEnd="1dp"
+                    android:layout_toStartOf="@+id/e_cost"
+                    android:textColor="@android:color/black"
+                    android:textSize="17sp" />
             </RelativeLayout>
         </LinearLayout>
 

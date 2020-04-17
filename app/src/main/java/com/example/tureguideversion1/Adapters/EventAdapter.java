@@ -2,7 +2,6 @@ package com.example.tureguideversion1.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.tureguideversion1.Activities.EventDetails;
 import com.example.tureguideversion1.Model.Event;
@@ -152,7 +150,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 });
 
         holder.eTitle.setText(event.getPlace());
-        holder.eDate.setText(event.getDate());
+        holder.eDate.setText(event.getStartDate());
+        holder.rDate.setText(event.getReturnDate());
         holder.eTime.setText(event.getTime());
         holder.ePlace.setText(event.getMeetPlace());
         holder.eMembers.setText(String.valueOf(event.getJoinMemberCount()));
@@ -163,7 +162,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             public void onClick(View v) {
                 Intent intent = new Intent(context, EventDetails.class);
                 intent.putExtra("event_place", event.getPlace());
-                intent.putExtra("event_date", event.getDate());
+                intent.putExtra("event_start_date", event.getStartDate());
+                intent.putExtra("event_return_date", event.getReturnDate());
                 intent.putExtra("event_time", event.getTime());
                 intent.putExtra("event_description", event.getDescription());
                 intent.putExtra("event_publish_date", event.getPublishDate());
@@ -186,7 +186,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView eTitle, eDate, eTime, ePlace, eMembers, eGroupName, eCost, eMemberid;
+        private TextView eTitle, eDate, rDate, eTime, ePlace, eMembers, eGroupName, eCost, eMemberid;
         private ImageView image6;
         private SliderLayout imageSlider;
         private List<String> locationWillBeVisit;
@@ -195,7 +195,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             eTitle = itemView.findViewById(R.id.e_title);
-            eDate = itemView.findViewById(R.id.e_date);
+            eDate = itemView.findViewById(R.id.e_start_date);
+            rDate = itemView.findViewById(R.id.e_return_date);
             eTime = itemView.findViewById(R.id.e_time);
             ePlace = itemView.findViewById(R.id.e_place);
             eMembers = itemView.findViewById(R.id.e_member);

@@ -3,7 +3,8 @@ package com.example.tureguideversion1.Model;
 public class Event {
 
     private String id;
-    private String date;
+    private String startDate;
+    private String returnDate;
     private String time;
     private String place;
     private String meetPlace;
@@ -18,10 +19,12 @@ public class Event {
     public Event() {
     }
 
-    public Event(String id, String date, String time, String place, String meetPlace, String description,
-                 String publishDate, int joinMemberCount, String eventPublisherId, String groupName, String cost) {
+    public Event(String id, String startDate, String returnDate, String time, String place, String meetPlace,
+                 String description, String publishDate, int joinMemberCount, String eventPublisherId,
+                 String groupName, String cost) {
         this.id = id;
-        this.date = date;
+        this.startDate = startDate;
+        this.returnDate = returnDate;
         this.time = time;
         this.place = place;
         this.meetPlace = meetPlace;
@@ -37,8 +40,12 @@ public class Event {
         return id;
     }
 
-    public String getDate() {
-        return date;
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public String getReturnDate() {
+        return returnDate;
     }
 
     public String getTime() {
