@@ -9,15 +9,18 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
         android:backgroundTint="@android:color/white"
         app:cardCornerRadius="10dp">
 
         <TextView
+            android:id="@+id/member_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:id="@+id/member_id" />
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,15 +31,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="170dp">
 
-                <ImageView
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/loading"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@android:color/holo_red_light"
-                    android:contentDescription="@null" />
+                    android:layout_centerHorizontal="true"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="continuous-wave-loader.json"
+                    app:lottie_loop="true" />
 
                 <com.glide.slider.library.SliderLayout
-                    style="@style/GlideSliderCardStyle"
                     android:id="@+id/sliderFromEvent"
+                    style="@style/GlideSliderCardStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </RelativeLayout>
@@ -60,9 +66,9 @@
                     android:id="@+id/e_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5sp"
-                    android:layout_marginStart="16dp"
                     android:layout_below="@+id/e_title"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="5sp"
                     android:textColor="@color/color1"
                     android:textSize="15sp" />
             </RelativeLayout>
@@ -75,10 +81,10 @@
                     android:id="@+id/image1"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
                     android:contentDescription="@null"
-                    android:layout_centerVertical="true"
                     android:padding="6dp"
                     android:src="@drawable/ic_calendar" />
 
@@ -86,10 +92,10 @@
                     android:id="@+id/e_start_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@+id/image1"
-                    android:layout_marginStart="10dp"
                     android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
                     android:layout_marginEnd="5dp"
+                    android:layout_toEndOf="@+id/image1"
                     android:textColor="@android:color/black"
                     android:textSize="15sp" />
 
@@ -97,8 +103,8 @@
                     android:id="@+id/image2"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginEnd="10dp"
                     android:contentDescription="@null"
                     android:padding="6dp"
@@ -136,16 +142,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@+id/image3"
                     android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@+id/image3"
                     android:textColor="@android:color/black"
                     android:textSize="15sp" />
+
                 <ImageView
                     android:id="@+id/image6"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginEnd="10dp"
                     android:contentDescription="@null"
                     android:padding="6dp"
@@ -205,8 +212,8 @@
                     android:id="@+id/image4"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginEnd="10dp"
                     android:contentDescription="@null"
                     android:padding="5dp"
@@ -229,9 +236,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="@string/taka"
                     android:layout_marginEnd="1dp"
                     android:layout_toStartOf="@+id/e_cost"
+                    android:text="@string/taka"
                     android:textColor="@android:color/black"
                     android:textSize="17sp" />
             </RelativeLayout>

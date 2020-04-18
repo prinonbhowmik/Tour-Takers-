@@ -88,13 +88,12 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-            android:layout_below="@+id/event_searchCV"
-            android:id="@+id/event_recyclerview"
-            android:layout_width="match_parent"
+        android:id="@+id/event_recyclerview"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_below="@+id/event_searchCV"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

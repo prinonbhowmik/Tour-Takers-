@@ -108,7 +108,6 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
                         Event event = data.getValue(Event.class);
                         eventList.add(event);
-
                         //eventAdapter.notifyDataSetChanged();
                     }
                     Collections.reverse(eventList);

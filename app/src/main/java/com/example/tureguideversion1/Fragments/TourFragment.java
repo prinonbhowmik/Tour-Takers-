@@ -5,8 +5,10 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -131,9 +133,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     case LEFT:
                         anim.setAnimationListener(new Animation.AnimationListener() {
                             @Override
-                            public void onAnimationStart(Animation animation) { }
+                            public void onAnimationStart(Animation animation) {
+                            }
+
                             @Override
-                            public void onAnimationEnd(Animation animation) { }
+                            public void onAnimationEnd(Animation animation) {
+                            }
+
                             @Override
                             public void onAnimationRepeat(Animation animation) {
                                 tourTitle.setText("Tour");
@@ -146,9 +152,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     case RIGHT:
                         anim.setAnimationListener(new Animation.AnimationListener() {
                             @Override
-                            public void onAnimationStart(Animation animation) { }
+                            public void onAnimationStart(Animation animation) {
+                            }
+
                             @Override
-                            public void onAnimationEnd(Animation animation) { }
+                            public void onAnimationEnd(Animation animation) {
+                            }
+
                             @Override
                             public void onAnimationRepeat(Animation animation) {
                                 tourTitle.setText("Event");
@@ -194,8 +204,10 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (locationEt.getText().toString().isEmpty()) {
-                    locationSelection.setVisibility(View.GONE);
+                if (selectedLocation.isEmpty()) {
+                    if (locationEt.getText().toString().isEmpty()) {
+                        locationSelection.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -243,28 +255,30 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                 keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                     if (keyEvent == null || !keyEvent.isShiftPressed()) {
                         // the user is done typing.
-                        hideKeyboardFrom(view.getContext(), view);
-                        locationEt.dismissDropDown();
-                        logo.setVisibility(View.INVISIBLE);
-                        loading.setVisibility(View.VISIBLE);
-                        String location = locationEt.getText().toString();
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location.toLowerCase());
-                        ref.addListenerForSingleValueEvent(
-                                new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        //Get map of users in datasnapshot
-                                        //loading.setVisibility(View.VISIBLE);
-                                        collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
-                                        locationForViewPage = districtForLocationImage;
-                                    }
+                        if (!locationEt.getText().toString().matches("")) {
+                            hideKeyboardFrom(view.getContext(), view);
+                            locationEt.dismissDropDown();
+                            logo.setVisibility(View.INVISIBLE);
+                            loading.setVisibility(View.VISIBLE);
+                            String location = locationEt.getText().toString();
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location.toLowerCase());
+                            ref.addListenerForSingleValueEvent(
+                                    new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            //Get map of users in datasnapshot
+                                            //loading.setVisibility(View.VISIBLE);
+                                            collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
+                                            locationForViewPage = districtForLocationImage;
+                                        }
 
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        //handle databaseError
-                                    }
-                                });
-                        return true; // consume.
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            //handle databaseError
+                                        }
+                                    });
+                            return true; // consume.
+                        }
                     }
                 }
                 return false; // pass on to other listeners.
@@ -298,6 +312,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         createEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 DatabaseReference eventRef = databaseReference.child("event");
                 eventId = eventRef.push().getKey();
 
@@ -314,8 +329,73 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 cost = eventCost_ET.getText().toString();
                 joinMemberCount = 1;
 
-                addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
-                        userID, group_name, cost);
+                if (TextUtils.isEmpty(place)) {
+                    if (!selectedLocation.isEmpty()) {
+                        if (!TextUtils.isEmpty(s_date) &&
+                                !TextUtils.isEmpty(r_date) &&
+                                !TextUtils.isEmpty(group_name) &&
+                                !TextUtils.isEmpty(cost) &&
+                                !TextUtils.isEmpty(time) &&
+                                !TextUtils.isEmpty(meetPlace) &&
+                                !TextUtils.isEmpty(description)) {
+                            locationEt.setFocusable(false);
+                            locationEt.setFocusableInTouchMode(false);
+                            locationEt.setText(districtFromLocationSelection);
+                            int pos = locationEt.getText().length();
+                            locationEt.setSelection(pos);
+                            locationEt.setFocusable(true);
+                            locationEt.setFocusableInTouchMode(true);
+                            Toasty.info(view.getContext(), "Press again to create Event!", Toasty.LENGTH_SHORT).show();
+                        } else {
+                            locationEt.setFocusable(false);
+                            locationEt.setFocusableInTouchMode(false);
+                            locationEt.setText(districtFromLocationSelection);
+                            int pos = locationEt.getText().length();
+                            locationEt.setSelection(pos);
+                            locationEt.setFocusable(true);
+                            locationEt.setFocusableInTouchMode(true);
+                        }
+                    }else {
+                        Toasty.error(view.getContext(), "Enter District!", Toasty.LENGTH_SHORT).show();
+                        locationEt.requestFocus();
+                    }
+                } else if (locationSelection.getVisibility() == View.GONE) {
+                    locationSelection.setTextColor(Color.RED);
+                    Toasty.error(view.getContext(), "Select district from suggestion or press done from keyboard!", Toasty.LENGTH_SHORT).show();
+                } else if (selectedLocation.isEmpty()) {
+                    locationSelection.setTextColor(Color.RED);
+                    Toasty.error(view.getContext(), "Select Tourism Places!", Toasty.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(s_date)) {
+                    Toasty.error(view.getContext(), "Pick Start Date!", Toasty.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(r_date)) {
+                    Toasty.error(view.getContext(), "Pick Return Date!", Toasty.LENGTH_SHORT).show();
+                } else if (TextUtils.isEmpty(group_name)) {
+                    Toasty.error(view.getContext(), "Enter Group Name!", Toasty.LENGTH_SHORT).show();
+                    groupName_ET.requestFocus();
+                } else if (TextUtils.isEmpty(cost)) {
+                    Toasty.error(view.getContext(), "Enter Total Cost!", Toasty.LENGTH_SHORT).show();
+                    eventCost_ET.requestFocus();
+                } else if (TextUtils.isEmpty(time)) {
+                    Toasty.error(view.getContext(), "Pick Journey Time!", Toasty.LENGTH_SHORT).show();
+                    eventTime.requestFocus();
+                } else if (TextUtils.isEmpty(meetPlace)) {
+                    Toasty.error(view.getContext(), "Enter Meeting Places!", Toasty.LENGTH_SHORT).show();
+                    meetingPlace_ET.requestFocus();
+                } else if (TextUtils.isEmpty(description)) {
+                    Toasty.error(view.getContext(), "Enter Description about tour!", Toasty.LENGTH_SHORT).show();
+                    eventDescription_ET.requestFocus();
+                } else {
+                    if (!place.matches(districtFromLocationSelection)) {
+                        place = districtFromLocationSelection;
+                        addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                                userID, group_name, cost);
+                    } else if (place.matches(districtFromLocationSelection)) {
+                        addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                                userID, group_name, cost);
+                    } else {
+                        Toasty.error(view.getContext(), "Location mismatching!", Toasty.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 
@@ -345,7 +425,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         }
     }
 
-    public void district(String d){
+    public void district(String d) {
         districtFromLocationSelection = d;
     }
 
@@ -533,8 +613,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         memberRef.child("id").setValue(userID);
     }
 
-    private void addEventLoacationList(){
-        for (int i=0; i<selectedLocation.size(); i++){
+    private void addEventLoacationList() {
+        for (int i = 0; i < selectedLocation.size(); i++) {
             DatabaseReference memberRef = databaseReference.child("eventLocationList").child(eventId).child(selectedLocation.get(i));
             memberRef.child("locationName").setValue(selectedLocation.get(i));
         }

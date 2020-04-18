@@ -319,8 +319,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         /*register connection status listener*/
-
         Connection.getInstance().setConnectivityListener(this);
+
+        Intent intent = getIntent();
+        if(intent.getExtras() != null) {
+            if (intent.getExtras().getString("EventDetails").matches("event")) {
+                FragmentTransaction event = getSupportFragmentManager().beginTransaction();
+                event.replace(R.id.fragment_container, new EventFragment());
+                event.commit();
+                navigationView.getMenu().getItem(2).setChecked(true);
+            }
+        }
     }
 
     /**

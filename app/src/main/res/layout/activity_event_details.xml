@@ -44,7 +44,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/card_view1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="170dp"
             android:layout_below="@+id/relative1"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
@@ -53,11 +53,15 @@
             android:background="@android:color/white"
             app:cardCornerRadius="5dp">
 
-            <ImageView
-                android:id="@+id/event_imageIV"
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loading"
                 android:layout_width="match_parent"
-                android:layout_height="170dp"
-                android:background="@android:color/holo_red_light" />
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="continuous-wave-loader.json"
+                android:background="@android:color/white"
+                app:lottie_loop="true" />
 
             <com.glide.slider.library.SliderLayout
                 android:id="@+id/sliderFromEventDetails"
