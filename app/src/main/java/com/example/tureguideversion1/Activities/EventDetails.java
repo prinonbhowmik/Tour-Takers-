@@ -1,5 +1,6 @@
 package com.example.tureguideversion1.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -84,20 +86,15 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         deleteTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference eRef = databaseReference.child("event").child(event_Id);
-                DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id);
-                DatabaseReference lRef = databaseReference.child("eventLocationList").child(event_Id);
-                eRef.setValue(null);
-                mRef.setValue(null);
-                lRef.setValue(null);
-                Toasty.success(getApplicationContext(), "Delete Success", Toasty.LENGTH_SHORT).show();
-                startActivity(new Intent(EventDetails.this, MainActivity.class).putExtra("EventDetails","event"));
+                deletealertmessage();
+
             }
         });
 
         joinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                joinAlertDialog();
                 DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
                 memberRef.child("id").setValue(userId);
                 DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
@@ -123,25 +120,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         cancel_joinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
-                mRef.removeValue();
-                DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
-                memberRef2.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        count = dataSnapshot.getChildrenCount();
-                        DatabaseReference e_Ref = databaseReference.child("event").child(event_Id);
-                        e_Ref.child("joinMemberCount").setValue(count);
-                        String c = String.valueOf(count);
-                        event_attending_member.setText(c);
-                    }
+                cancelAlertDialog();
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-                cancel_joinBtn.setVisibility(View.GONE);
             }
         });
 
@@ -208,6 +188,97 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 bottomSheet.show(getSupportFragmentManager(), "test");
             }
         });
+
+
+    }
+
+    private void joinAlertDialog() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Congratulation");
+        dialog.setIcon(R.drawable.ic_congratulation);
+        dialog.setMessage("Now you are a member of this event");
+        dialog.setCancelable(false);
+        dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+    }
+
+    private void cancelAlertDialog() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Alert..!!");
+        dialog.setIcon(R.drawable.ic_leave_white);
+        dialog.setMessage("Do you want to leave this event?");
+        dialog.setCancelable(false);
+        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
+                mRef.removeValue();
+                DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
+                memberRef2.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        count = dataSnapshot.getChildrenCount();
+                        DatabaseReference e_Ref = databaseReference.child("event").child(event_Id);
+                        e_Ref.child("joinMemberCount").setValue(count);
+                        String c = String.valueOf(count);
+                        event_attending_member.setText(c);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                cancel_joinBtn.setVisibility(View.GONE);
+            }
+        });
+        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+
+
+    }
+
+    private void deletealertmessage() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Delete..!!");
+        dialog.setIcon(R.drawable.ic_delete_white);
+        dialog.setMessage("Do you want to delete this event?");
+        dialog.setCancelable(false);
+        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DatabaseReference eRef = databaseReference.child("event").child(event_Id);
+                DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id);
+                DatabaseReference lRef = databaseReference.child("eventLocationList").child(event_Id);
+                eRef.setValue(null);
+                mRef.setValue(null);
+                lRef.setValue(null);
+                Toasty.success(getApplicationContext(), "Delete Success", Toasty.LENGTH_SHORT).show();
+                startActivity(new Intent(EventDetails.this, MainActivity.class));
+                //startActivity(new Intent(EventDetails.this, MainActivity.class).putExtra("EventDetails","event"));
+
+            }
+        });
+        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
 
 
     }

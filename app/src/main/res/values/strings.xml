@@ -35,4 +35,6 @@
     <string name="start_date">Start Date</string>
     <string name="select_tourism_places">Select tourism places</string>
     <string name="tour">Tour</string>
+    <string name="join_event">Join Event</string>
+    <string name="leave_event">Leave Event</string>
 </resources>
