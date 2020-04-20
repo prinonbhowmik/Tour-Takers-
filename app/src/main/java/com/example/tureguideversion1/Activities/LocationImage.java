@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -150,13 +149,19 @@ public class LocationImage extends AppCompatActivity {
                 getResources().getColor(R.color.color2),
                 getResources().getColor(R.color.color3),
                 getResources().getColor(R.color.color4),
+                getResources().getColor(R.color.color5),
+                getResources().getColor(R.color.color6),
+                getResources().getColor(R.color.color7),
+                getResources().getColor(R.color.color8),
+                getResources().getColor(R.color.color9),
+                getResources().getColor(R.color.color10)
         };
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-                if (position < (adapter.getCount() - 1) && position < (colors.length - 1)) {
+                if (position < (adapter.getCount()) && position < (colors.length - 1)) {
                     viewPager.setBackgroundColor(
 
                             (Integer) argbEvaluator.evaluate(

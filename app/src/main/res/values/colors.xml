@@ -13,6 +13,12 @@
     <color name="color2">#7e455e</color>
     <color name="color3">#796e25</color>
     <color name="color4">#59717c</color>
+    <color name="color5">#556B2F</color>
+    <color name="color6">#483D8B</color>
+    <color name="color7">#2F4F4F</color>
+    <color name="color8">#191970</color>
+    <color name="color9">#008080</color>
+    <color name="color10">#006400</color>
 
     <color name="transparent">#00000000</color>
     <!-- card colors -->

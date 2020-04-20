@@ -266,8 +266,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 mRef.setValue(null);
                 lRef.setValue(null);
                 Toasty.success(getApplicationContext(), "Delete Success", Toasty.LENGTH_SHORT).show();
-                startActivity(new Intent(EventDetails.this, MainActivity.class));
-                //startActivity(new Intent(EventDetails.this, MainActivity.class).putExtra("EventDetails","event"));
+                //startActivity(new Intent(EventDetails.this, MainActivity.class));
+                startActivity(new Intent(EventDetails.this, MainActivity.class).putExtra("EventDetails","event"));
 
             }
         });

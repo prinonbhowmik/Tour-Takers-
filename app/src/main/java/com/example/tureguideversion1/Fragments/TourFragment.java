@@ -438,18 +438,22 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 loading.setVisibility(View.INVISIBLE);
                 logo.setVisibility(View.INVISIBLE);
                 imageSlider.setVisibility(View.VISIBLE);
-                if (imageSlider.getCurrentPosition() < slide) {
-                    if (slide - imageSlider.getCurrentPosition() > 1) {
+                try {
+                    if (imageSlider.getCurrentPosition() < slide) {
+                        if (slide - imageSlider.getCurrentPosition() > 1) {
 
-                    } else {
-                        imageSlider.setCurrentPosition(slide, false);
-                    }
-                } else if (imageSlider.getCurrentPosition() > slide) {
-                    if (imageSlider.getCurrentPosition() - slide > 1) {
+                        } else {
+                            imageSlider.setCurrentPosition(slide, false);
+                        }
+                    } else if (imageSlider.getCurrentPosition() > slide) {
+                        if (imageSlider.getCurrentPosition() - slide > 1) {
 
-                    } else {
-                        imageSlider.setCurrentPosition(slide, false);
+                        } else {
+                            imageSlider.setCurrentPosition(slide, false);
+                        }
                     }
+                } catch (ArithmeticException e) {
+                    e.printStackTrace();
                 }
             }
         }
