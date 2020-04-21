@@ -40,12 +40,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
 
-    public EventAdapter() {
-    }
-
     public EventAdapter(List<Event> eventList, Context context) {
         this.eventList = eventList;
         this.context = context;
+        setHasStableIds(true);
     }
 
 
@@ -181,6 +179,16 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     @Override
     public int getItemCount() {
         return eventList.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

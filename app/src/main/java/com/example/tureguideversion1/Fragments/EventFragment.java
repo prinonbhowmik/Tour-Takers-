@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
@@ -30,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
 
@@ -44,10 +46,11 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
     private RecyclerView eventRecyclerview;
     private EventAdapter eventAdapter;
     private List<Event> eventList;
-    private String pid, userName, userPhone, userImage;
+    private String userId;
     private FirebaseAuth auth;
     private DrawerLayout mdrawrelayout;
     private ImageView event_nav_icon;
+    View view;
 
     public EventFragment() {
         // Required empty public constructor
@@ -58,11 +61,11 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_event, container, false);
+        view=inflater.inflate(R.layout.fragment_event, container, false);
         mdrawrelayout = getActivity().findViewById(R.id.drawer_layout);
         //registerForContextMenu(moreTv);
         init(view);
-
+        userId = auth.getCurrentUser().getUid();
         moreTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,6 +112,7 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
                         Event event = data.getValue(Event.class);
                         eventList.add(event);
                         //eventAdapter.notifyDataSetChanged();
+
                     }
                     Collections.reverse(eventList);
                     eventAdapter.notifyDataSetChanged();
@@ -142,10 +146,33 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.my_event:
-                Toasty.success(getContext(), "My Event", Toasty.LENGTH_SHORT).show();
+                DatabaseReference eventInfoRef = databaseReference.child("event");
+                eventInfoRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            eventList.clear();
+                            for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                Map values = (Map) data.getValue();
+                                if(values.get("eventPublisherId").toString().matches(userId)) {
+                                    Event event = data.getValue(Event.class);
+                                    eventList.add(event);
+                                    //eventAdapter.notifyDataSetChanged();
+                                }
+                            }
+                            Collections.reverse(eventList);
+                            eventAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+                Toasty.info(view.getContext(), "My Event", Toasty.LENGTH_SHORT).show();
                 return false;
             case R.id.all_event:
-                Toasty.success(getContext(), "All Event", Toasty.LENGTH_SHORT).show();
+                getData(view);
+                Toasty.info(view.getContext(), "All Event", Toasty.LENGTH_SHORT).show();
 
             default:
                 return false;

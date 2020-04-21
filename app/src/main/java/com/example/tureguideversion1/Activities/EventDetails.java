@@ -345,7 +345,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                         .image(image.get(i))
                         .description(location.get(i))
                         .setRequestOption(requestOptions)
-                        .setProgressBarVisible(true)
+                        .setProgressBarVisible(false)
                         .setOnSliderClickListener(this);
 
                 //add your extra information

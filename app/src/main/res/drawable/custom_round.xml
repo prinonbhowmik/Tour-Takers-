@@ -7,7 +7,7 @@
         android:width="35dp"
         android:height="35dp"/>
     <solid
-        android:color="#CCCACA"/>
+        android:color="@color/transparent"/>
     <corners
         android:radius="150dp"/>
     <stroke
