@@ -1,7 +1,10 @@
 package com.example.tureguideversion1.Activities;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -49,7 +52,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
     private String userId, event_Id, event_user_id;
-    private String member_name, member_image, member_phone;
+    private String member_name, member_image, member_phone, member_email;
     private String update_des;
     private long count;
     private List<EventLocationList> locationLists;
@@ -59,6 +62,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private SliderLayout imageSlider;
     private int slide;
     private TourFragment.navDrawerCheck check;
+    private Dialog profileDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -459,6 +463,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 if (dataSnapshot.exists()) {
                     member_name = (String) dataSnapshot.child("name").getValue();
                     member_image = (String) dataSnapshot.child("image").getValue();
+                    member_phone = (String) dataSnapshot.child("phone").getValue();
+                    member_email = (String) dataSnapshot.child("email").getValue();
                     publisher_name.setText(member_name);
                     if (!member_image.isEmpty()) {
                         try {
@@ -554,6 +560,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         locationRecycleView.setHasFixedSize(true);
         locationRecycleView.setAdapter(locationAdapter);
         imageSlider = findViewById(R.id.sliderFromEventDetails);
+        profileDialog = new Dialog(this);
     }
 
 
@@ -592,5 +599,34 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    public void ShowProfilePopup(View v) {
+        TextView close, namePopUp, phonePopUp, emailPopUp;
+        ImageView pic;
+        Button btnFollow;
+        profileDialog.setContentView(R.layout.profile_popup);
+        close =profileDialog.findViewById(R.id.close);
+        namePopUp = profileDialog.findViewById(R.id.namePopUp);
+        phonePopUp = profileDialog.findViewById(R.id.phonePopUp);
+        emailPopUp = profileDialog.findViewById(R.id.emailPopUp);
+        pic = profileDialog.findViewById(R.id.pic);
+        namePopUp.setText(member_name);
+        phonePopUp.setText(member_phone);
+        emailPopUp.setText(member_email);
+        if(!member_image.matches("")) {
+            GlideApp.with(profileDialog.getContext())
+                    .load(member_image)
+                    .fitCenter()
+                    .into(pic);
+        }
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                profileDialog.dismiss();
+            }
+        });
+        profileDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        profileDialog.show();
     }
 }

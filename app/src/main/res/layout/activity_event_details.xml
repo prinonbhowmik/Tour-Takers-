@@ -453,7 +453,8 @@
             android:layout_below="@id/relative9"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
-            android:layout_marginEnd="20dp">
+            android:layout_marginEnd="20dp"
+            android:onClick="ShowProfilePopup">
 
             <TextView
                 android:id="@+id/event_publish_nameTV"

@@ -27,4 +27,10 @@
     <color name="card_shadow_2">#dddddd</color>
     <color name="card_detailing">#eee</color>
 
+    <color name="bluelight">#49acd5</color>
+    <color name="green">#45bc62</color>
+    <color name="orange">#eaad43</color>
+    <color name="accent">#FF4081</color>
+    <color name="darkPopUp">#2f333f</color>
+
 </resources>
