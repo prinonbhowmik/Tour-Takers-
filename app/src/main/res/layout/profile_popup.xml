@@ -89,21 +89,23 @@
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_weight="1"
-                android:background="@color/orange"
+                android:background="@color/green"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="4.5"
+                    android:fontFamily="@font/amarante"
+                    android:text="19"
                     android:textColor="@color/defaultTextColor"
                     android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Rating"
+                    android:fontFamily="@font/amarante"
+                    android:text="Tour"
                     android:textColor="@color/defaultTextColor"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -112,21 +114,23 @@
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_weight="1"
-                android:background="@color/green"
+                android:background="@color/orange"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="19"
+                    android:fontFamily="@font/amarante"
+                    android:text="4.5"
                     android:textColor="@color/defaultTextColor"
                     android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tour"
+                    android:fontFamily="@font/amarante"
+                    android:text="Rating"
                     android:textColor="@color/defaultTextColor"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -142,6 +146,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/amarante"
                     android:text="10"
                     android:textColor="@color/defaultTextColor"
                     android:textSize="18sp" />
@@ -149,6 +154,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/amarante"
                     android:text="Event"
                     android:textColor="@color/defaultTextColor"
                     android:textSize="18sp" />

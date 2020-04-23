@@ -49,7 +49,7 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
     private String userId;
     private FirebaseAuth auth;
     private DrawerLayout mdrawrelayout;
-    private ImageView event_nav_icon;
+    private ImageView event_nav_icon, searchAction;
     View view;
 
     public EventFragment() {
@@ -89,6 +89,12 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
 
         getData(view);
 
+        searchAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                search(eventSearch.getText().toString());
+            }
+        });
         //eventAdapter.notifyDataSetChanged();
         return view;
     }
@@ -126,6 +132,39 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
 
     }
 
+    private void search(final String value){
+        if(!value.isEmpty()) {
+            DatabaseReference eventInfoRef = databaseReference.child("event");
+            eventInfoRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        eventList.clear();
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            Map values = (Map) data.getValue();
+                            String s = value.substring(0, 1).toUpperCase() + value.substring(1);
+                            if (values.get("place").toString().matches(s) || values.get("groupName").toString().matches(value)) {
+                                Event event = data.getValue(Event.class);
+                                eventList.add(event);
+                                //eventAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        Collections.reverse(eventList);
+                        eventAdapter.notifyDataSetChanged();
+                        if(eventList.size() == 0){
+                            Toasty.info(view.getContext(),"No event found. Please check your input!",Toasty.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+
+
+        }
+    }
 
     private void init(View view) {
         eventSearch=view.findViewById(R.id.event_searchET);
@@ -139,7 +178,7 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
         auth = FirebaseAuth.getInstance();
         event_nav_icon = view.findViewById(R.id.event_nav_icon);
         //mdrawrelayout=view.findViewById(R.id.nav_view);
-
+        searchAction = view.findViewById(R.id.searchIV);
     }
 
     @Override

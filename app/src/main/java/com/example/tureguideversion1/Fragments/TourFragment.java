@@ -322,7 +322,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 s_date = startDateET.getText().toString();
                 r_date = endDateET.getText().toString();
                 time = eventTime.getText().toString();
-                place = locationEt.getText().toString();
+                place = locationEt.getText().toString().substring(0,1).toUpperCase()+locationEt.getText().toString().substring(1);
                 description = eventDescription_ET.getText().toString();
                 meetPlace = meetingPlace_ET.getText().toString();
                 group_name = groupName_ET.getText().toString();
@@ -426,7 +426,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     }
 
     public void district(String d) {
-        districtFromLocationSelection = d;
+        districtFromLocationSelection = d.substring(0,1).toUpperCase()+d.substring(1);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

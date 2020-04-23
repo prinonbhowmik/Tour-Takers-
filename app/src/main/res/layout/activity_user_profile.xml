@@ -72,7 +72,7 @@
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:layout_gravity="bottom|end"
-                        android:background="@drawable/custom_round"
+                        android:background="@drawable/custom_round2"
                         android:padding="12dp"
                         android:src="@drawable/ic_photo_camera_black_24dp" />
                 </FrameLayout>
