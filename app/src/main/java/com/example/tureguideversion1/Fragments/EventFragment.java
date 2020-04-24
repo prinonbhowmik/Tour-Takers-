@@ -1,5 +1,7 @@
 package com.example.tureguideversion1.Fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tureguideversion1.Adapters.EventAdapter;
+import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -99,6 +102,15 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
             @Override
             public void onClick(View v) {
                 eventSearch.setCursorVisible(true);
+                radioLayout.setVisibility(View.VISIBLE);
+                radioLayout.setAlpha(0.0f);
+
+                // Start the animation
+                radioLayout.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(200)
+                        .setListener(null);
             }
         });
 
@@ -107,32 +119,73 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
         searchAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(radioLayout.getVisibility() == View.VISIBLE){
-                    radioLayout.setVisibility(View.GONE);
-                }else if(radioLayout.getVisibility() == View.GONE){
-                    radioLayout.setVisibility(View.VISIBLE);
-                }
+            if(radioLayout.getVisibility() == View.GONE) {
+                radioLayout.setVisibility(View.VISIBLE);
+                radioLayout.setAlpha(0.0f);
+
+                // Start the animation
+                radioLayout.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(200)
+                        .setListener(null);
+            }else if(radioLayout.getVisibility() == View.VISIBLE) {
+                radioLayout.animate()
+                        .translationY(-150)
+                        .alpha(0.0f)
+                        .setDuration(200)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                radioLayout.setVisibility(View.GONE);
+                            }
+                        });
+            }
             }
         });
 
         eventSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(radioLayout.getVisibility() == View.GONE) {
+                    radioLayout.setVisibility(View.VISIBLE);
+                    radioLayout.setAlpha(0.0f);
 
+                    // Start the animation
+                    radioLayout.animate()
+                            .translationY(0)
+                            .alpha(1.0f)
+                            .setDuration(200)
+                            .setListener(null);
+                }
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(!eventSearch.getText().toString().isEmpty()) {
                     search(eventSearch.getText().toString());
-                }else {
-                    getData(view);
                 }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                if(eventSearch.getText().toString().isEmpty()) {
+                    if(radioLayout.getVisibility() == View.VISIBLE) {
+                        radioLayout.animate()
+                                .translationY(-150)
+                                .alpha(0.0f)
+                                .setDuration(200)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        radioLayout.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
+                    getData(view);
+                }
             }
         });
 
@@ -304,6 +357,7 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
         anim.setDuration(200);
         anim.setRepeatCount(1);
         anim.setRepeatMode(Animation.REVERSE);
+        radioLayout.setTranslationY(-150);
     }
 
     @Override
