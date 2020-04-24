@@ -66,77 +66,76 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                         //Get map of users in datasnapshot
                         Map<String, Object> locationList = (Map<String, Object>) dataSnapshot.getValue();
                         if (locationList != null) {
-                            //holder.locationWillBeVisit.clear();
+                            holder.locationWillBeVisit.clear();
                             for (Map.Entry<String, Object> entry : locationList.entrySet()) {
                                 //Get user map
                                 Map singleUser = (Map) entry.getValue();
                                 //Get location field and append to list
                                 holder.locationWillBeVisit.add((String) singleUser.get("locationName"));
                             }
-                        }
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(event.getPlace().toLowerCase());
+                            ref.addListenerForSingleValueEvent(
+                                    new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            //Get map of users in datasnapshot
+                                            Map<String, Object> collectImageNInfo = (Map<String, Object>) dataSnapshot.getValue();
+                                            ArrayList<String> location = new ArrayList<>();
+                                            ArrayList<String> image = new ArrayList<>();
+                                            if (collectImageNInfo != null) {
+                                                for (Map.Entry<String, Object> entry : collectImageNInfo.entrySet()) {
+                                                    //Get user map
+                                                    Map singleUser = (Map) entry.getValue();
+                                                    //Get phone field and append to list
+                                                    if (holder.locationWillBeVisit.contains(singleUser.get("locationName").toString())) {
+                                                        location.add((String) singleUser.get("locationName"));
+                                                        image.add((String) singleUser.get("image"));
+                                                    }
+                                                }
 
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(event.getPlace().toLowerCase());
-                        ref.addListenerForSingleValueEvent(
-                                new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        //Get map of users in datasnapshot
-                                        Map<String, Object> collectImageNInfo = (Map<String, Object>) dataSnapshot.getValue();
-                                        ArrayList<String> location = new ArrayList<>();
-                                        ArrayList<String> image = new ArrayList<>();
-                                        if (collectImageNInfo != null) {
-                                            for (Map.Entry<String, Object> entry : collectImageNInfo.entrySet()) {
-                                                //Get user map
-                                                Map singleUser = (Map) entry.getValue();
-                                                //Get phone field and append to list
-                                                if (holder.locationWillBeVisit.contains(singleUser.get("locationName").toString())) {
-                                                    location.add((String) singleUser.get("locationName"));
-                                                    image.add((String) singleUser.get("image"));
+                                                RequestOptions requestOptions = new RequestOptions();
+                                                requestOptions.centerCrop();
+                                                //.diskCacheStrategy(DiskCacheStrategy.NONE);
+                                                //.placeholder(R.drawable.placeholder)
+                                                //.error(R.drawable.placeholder);
+                                                holder.imageSlider.removeAllSliders();
+
+                                                for (int i = 0; i < image.size(); i++) {
+                                                    TextSliderView sliderView = new TextSliderView(context);
+                                                    // initialize SliderLayout
+                                                    sliderView
+                                                            .image(image.get(i))
+                                                            .description(location.get(i))
+                                                            .setRequestOption(requestOptions)
+                                                            .setProgressBarVisible(false);
+
+                                                    holder.imageSlider.addSlider(sliderView);
+                                                }
+                                                // set Slider Transition Animation
+                                                if (holder.imageSlider.getSliderImageCount() < 2) {
+                                                    holder.imageSlider.stopAutoCycle();
+                                                    holder.imageSlider.setPagerTransformer(false, new BaseTransformer() {
+                                                        @Override
+                                                        protected void onTransform(View view, float v) {
+                                                        }
+                                                    });
+                                                    holder.imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
+                                                } else {
+                                                    holder.imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
+                                                    holder.imageSlider.startAutoCycle();
+                                                    holder.imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
+                                                    holder.imageSlider.setCustomAnimation(new DescriptionAnimation());
+                                                    holder.imageSlider.setDuration(4000);
                                                 }
                                             }
-
-                                            RequestOptions requestOptions = new RequestOptions();
-                                            requestOptions.centerCrop();
-                                            //.diskCacheStrategy(DiskCacheStrategy.NONE);
-                                            //.placeholder(R.drawable.placeholder)
-                                            //.error(R.drawable.placeholder);
-                                            holder.imageSlider.removeAllSliders();
-
-                                            for (int i = 0; i < image.size(); i++) {
-                                                TextSliderView sliderView = new TextSliderView(context);
-                                                // initialize SliderLayout
-                                                sliderView
-                                                        .image(image.get(i))
-                                                        .description(location.get(i))
-                                                        .setRequestOption(requestOptions)
-                                                        .setProgressBarVisible(false);
-
-                                                holder.imageSlider.addSlider(sliderView);
-                                            }
-                                            // set Slider Transition Animation
-                                            if (holder.imageSlider.getSliderImageCount() < 2) {
-                                                holder.imageSlider.stopAutoCycle();
-                                                holder.imageSlider.setPagerTransformer(false, new BaseTransformer() {
-                                                    @Override
-                                                    protected void onTransform(View view, float v) {
-                                                    }
-                                                });
-                                                holder.imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
-                                            } else {
-                                                holder.imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
-                                                holder.imageSlider.startAutoCycle();
-                                                holder.imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
-                                                holder.imageSlider.setCustomAnimation(new DescriptionAnimation());
-                                                holder.imageSlider.setDuration(4000);
-                                            }
                                         }
-                                    }
 
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        //handle databaseError
-                                    }
-                                });
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            //handle databaseError
+                                        }
+                                    });
+                        }
                     }
 
                     @Override

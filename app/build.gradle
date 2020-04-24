@@ -98,4 +98,7 @@ dependencies {
 
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
 
+    //radioButton
+    implementation 'com.github.patgdut:RadioRealButton:v2.1.2'
+
 }

@@ -1,12 +1,20 @@
 package com.example.tureguideversion1.Fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +41,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import co.ceryle.radiorealbutton.RadioRealButton;
+import co.ceryle.radiorealbutton.RadioRealButtonGroup;
 import es.dmoral.toasty.Toasty;
 
 /**
@@ -50,6 +60,10 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
     private FirebaseAuth auth;
     private DrawerLayout mdrawrelayout;
     private ImageView event_nav_icon, searchAction;
+    private int d,g;
+    private RadioRealButtonGroup radioGroup;
+    private LinearLayout radioLayout;
+    private Animation anim;
     View view;
 
     public EventFragment() {
@@ -77,13 +91,14 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
             @Override
             public void onClick(View v) {
                 mdrawrelayout.openDrawer(GravityCompat.START);
+                hideKeyboardFrom(view.getContext());
             }
         });
 
         eventSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    eventSearch.setCursorVisible(true);
+                eventSearch.setCursorVisible(true);
             }
         });
 
@@ -92,10 +107,83 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
         searchAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                search(eventSearch.getText().toString());
+                if(radioLayout.getVisibility() == View.VISIBLE){
+                    radioLayout.setVisibility(View.GONE);
+                }else if(radioLayout.getVisibility() == View.GONE){
+                    radioLayout.setVisibility(View.VISIBLE);
+                }
             }
         });
-        //eventAdapter.notifyDataSetChanged();
+
+        eventSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(!eventSearch.getText().toString().isEmpty()) {
+                    search(eventSearch.getText().toString());
+                }else {
+                    getData(view);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        radioGroup.setOnClickedButtonListener(new RadioRealButtonGroup.OnClickedButtonListener() {
+            @Override
+            public void onClickedButton(RadioRealButton button, int position) {
+                if(position == 0){
+                    d = 1;
+                    g = 0;
+                    anim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                            eventSearch.setHint("District");
+                        }
+                    });
+                    eventSearch.startAnimation(anim);
+                }else if(position == 1){
+                    d = 0;
+                    g = 1;
+                    anim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                            eventSearch.setHint("Group Name");
+                        }
+                    });
+                    eventSearch.startAnimation(anim);
+                }
+                //Toast.makeText(getContext(), "Clicked! Position: " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return view;
     }
 
@@ -134,33 +222,63 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
 
     private void search(final String value){
         if(!value.isEmpty()) {
-            DatabaseReference eventInfoRef = databaseReference.child("event");
-            eventInfoRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        eventList.clear();
-                        for (DataSnapshot data : dataSnapshot.getChildren()) {
-                            Map values = (Map) data.getValue();
-                            String s = value.substring(0, 1).toUpperCase() + value.substring(1);
-                            if (values.get("place").toString().matches(s) || values.get("groupName").toString().matches(value)) {
+            if(d == 1){
+                String s = value.substring(0, 1).toUpperCase() + value.substring(1);
+                DatabaseReference eventInfoRef = databaseReference.child("event");
+                eventInfoRef.orderByChild("place").startAt(s).endAt(s+"\uf8ff").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            eventList.clear();
+                            for (DataSnapshot data : dataSnapshot.getChildren()) {
+
                                 Event event = data.getValue(Event.class);
                                 eventList.add(event);
-                                //eventAdapter.notifyDataSetChanged();
+
                             }
-                        }
-                        Collections.reverse(eventList);
-                        eventAdapter.notifyDataSetChanged();
-                        if(eventList.size() == 0){
-                            Toasty.info(view.getContext(),"No event found. Please check your input!",Toasty.LENGTH_SHORT).show();
+                            Collections.reverse(eventList);
+                            eventAdapter.notifyDataSetChanged();
+                        }else {
+                            eventList.clear();
+                            eventAdapter.notifyDataSetChanged();
+                            //Toasty.info(view.getContext(),"No events found!",Toasty.LENGTH_SHORT).show();
                         }
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+            }else if(g == 1){
+                DatabaseReference eventInfoRef = databaseReference.child("event");
+                eventInfoRef.orderByChild("groupName").startAt(value).endAt(value+"\uf8ff").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            eventList.clear();
+                            for (DataSnapshot data : dataSnapshot.getChildren()) {
+
+                                Event event = data.getValue(Event.class);
+                                eventList.add(event);
+
+                            }
+                            Collections.reverse(eventList);
+                            eventAdapter.notifyDataSetChanged();
+                        }else {
+                            eventList.clear();
+                            eventAdapter.notifyDataSetChanged();
+                            //Toasty.info(view.getContext(),"No events found!",Toasty.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+            }else {
+                Toasty.info(view.getContext(),"Select search option!",Toasty.LENGTH_SHORT).show();
+            }
+
 
 
         }
@@ -179,6 +297,13 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
         event_nav_icon = view.findViewById(R.id.event_nav_icon);
         //mdrawrelayout=view.findViewById(R.id.nav_view);
         searchAction = view.findViewById(R.id.searchIV);
+        radioGroup = view.findViewById(R.id.radioGroup);
+        radioLayout = view.findViewById(R.id.radioLayout);
+        d = 1;
+        anim = new AlphaAnimation(1.0f, 0.0f);
+        anim.setDuration(200);
+        anim.setRepeatCount(1);
+        anim.setRepeatMode(Animation.REVERSE);
     }
 
     @Override
@@ -216,5 +341,10 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
             default:
                 return false;
         }
+    }
+
+    private void hideKeyboardFrom(Context context) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getRootView().getWindowToken(), 0);
     }
 }

@@ -55,7 +55,7 @@
                         android:background="@null"
                         android:cursorVisible="false"
                         android:gravity="center_vertical"
-                        android:hint="District or Group Name"
+                        android:hint="@string/district"
                         android:paddingStart="15dp"
                         android:paddingEnd="15dp"
                         android:textColor="@android:color/black"
@@ -66,10 +66,10 @@
                         android:id="@+id/searchIV"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toStartOf="@+id/moreTV"
-                        android:background="@drawable/custom_round"
                         android:layout_centerVertical="true"
                         android:layout_marginStart="5dp"
+                        android:layout_toStartOf="@+id/moreTV"
+                        android:background="@drawable/custom_round"
                         android:padding="8dp"
                         android:src="@drawable/ic_search" />
 
@@ -77,14 +77,65 @@
                         android:id="@+id/moreTV"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
                         android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
                         android:drawableStart="@drawable/ic_more_black_24dp"
                         android:visibility="visible" />
 
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
         </androidx.appcompat.widget.Toolbar>
+
+        <LinearLayout
+            android:id="@+id/radioLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="sans-serif"
+                android:text="Search By:"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+
+            <co.ceryle.radiorealbutton.RadioRealButtonGroup
+                android:id="@+id/radioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:rrbg_animateTexts_enter="anticipateOvershoot"
+                app:rrbg_dividerColor="@color/colorBlack"
+                app:rrbg_dividerSize="1dp"
+                app:rrbg_selectorColor="@color/colorGreen"
+                app:rrbg_selectorRadius="10dp"
+                app:rrbg_selectorSize="3dp">
+
+                <co.ceryle.radiorealbutton.RadioRealButton
+                    android:id="@+id/radioBTN1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:rrb_checked="true"
+                    app:rrb_text="District"
+                    app:rrb_textColor="@color/colorBlack" />
+
+                <co.ceryle.radiorealbutton.RadioRealButton
+                    android:id="@+id/radioBTN2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:rrb_text="Group Name"
+                    app:rrb_textColor="@color/colorBlack" />
+
+
+            </co.ceryle.radiorealbutton.RadioRealButtonGroup>
+        </LinearLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
