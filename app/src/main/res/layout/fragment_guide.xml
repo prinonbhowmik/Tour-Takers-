@@ -26,20 +26,22 @@
 
             <ImageView
                 android:id="@+id/guide_nav_icon"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:padding="10dp"
-                android:src="@drawable/ic_menu_black_24dp" />
+                android:padding="15dp"
+                android:src="@drawable/ic_menu2" />
 
             <EditText
                 android:id="@+id/guide_searchET"
-                android:layout_width="275dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:background="@null"
                 android:cursorVisible="false"
                 android:gravity="center_vertical"
+                android:layout_toStartOf="@+id/searchIV"
+                android:layout_toEndOf="@+id/guide_nav_icon"
                 android:hint="Search Guide"
                 android:paddingStart="15dp"
                 android:paddingEnd="15dp"
