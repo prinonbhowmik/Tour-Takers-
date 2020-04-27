@@ -1,5 +1,7 @@
 package com.example.tureguideversion1.Fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -143,11 +145,22 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                             @Override
                             public void onAnimationRepeat(Animation animation) {
                                 tourTitle.setText("Tour");
-                                eventLayout.setVisibility(View.GONE);
                             }
                         });
                         tourTitle.startAnimation(anim);
-                        eventLayout.startAnimation(anim);
+                        if(eventLayout.getVisibility() == View.VISIBLE) {
+                            eventLayout.animate()
+                                    .translationY(view.getHeight())
+                                    .alpha(0.0f)
+                                    .setDuration(200)
+                                    .setListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            eventLayout.setVisibility(View.GONE);
+                                        }
+                                    });
+                        }
                         break;
                     case RIGHT:
                         anim.setAnimationListener(new Animation.AnimationListener() {
@@ -162,11 +175,20 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                             @Override
                             public void onAnimationRepeat(Animation animation) {
                                 tourTitle.setText("Event");
-                                eventLayout.setVisibility(View.VISIBLE);
                             }
                         });
                         tourTitle.startAnimation(anim);
+                        if(eventLayout.getVisibility() == View.GONE) {
+                            eventLayout.setVisibility(View.VISIBLE);
+                            eventLayout.setAlpha(0.0f);
 
+                            // Start the animation
+                            eventLayout.animate()
+                                    .translationY(0)
+                                    .alpha(1.0f)
+                                    .setDuration(200)
+                                    .setListener(null);
+                        }
                         break;
                 }
             }
@@ -207,6 +229,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 if (selectedLocation.isEmpty()) {
                     if (locationEt.getText().toString().isEmpty()) {
                         locationSelection.setVisibility(View.GONE);
+                        locationSelection.setTranslationY(-150);
                     }
                 }
             }
@@ -524,7 +547,18 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 imageSlider.addSlider(sliderView);
                 //loading.setVisibility(View.INVISIBLE);
             }
-            locationSelection.setVisibility(View.VISIBLE);
+            //locationSelection.setVisibility(View.VISIBLE);
+            if(locationSelection.getVisibility() == View.GONE) {
+                locationSelection.setVisibility(View.VISIBLE);
+                locationSelection.setAlpha(0.0f);
+
+                // Start the animation
+                locationSelection.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(200)
+                        .setListener(null);
+            }
             // set Slider Transition Animation
             districtForLocationImage = locationEt.getText().toString().toLowerCase();
             selectedLocation.clear();
@@ -633,6 +667,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         logo = view.findViewById(R.id.logoT);
         loading = view.findViewById(R.id.loading);
         locationSelection = view.findViewById(R.id.locationSelection);
+        locationSelection.setTranslationY(-150);
         selectedLocation = new ArrayList<>();
         iconSwitch = view.findViewById(R.id.tourSwitch);
         tourTitle = view.findViewById(R.id.tourTitle);
@@ -641,6 +676,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         anim.setRepeatCount(1);
         anim.setRepeatMode(Animation.REVERSE);
         eventLayout = view.findViewById(R.id.eventLayout);
+        eventLayout.setTranslationY(view.getHeight());
         eventTime = view.findViewById(R.id.eventTime_ET);
         auth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
