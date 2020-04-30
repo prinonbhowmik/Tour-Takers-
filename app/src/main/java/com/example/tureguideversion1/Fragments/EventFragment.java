@@ -102,15 +102,17 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
             @Override
             public void onClick(View v) {
                 eventSearch.setCursorVisible(true);
-                radioLayout.setVisibility(View.VISIBLE);
-                radioLayout.setAlpha(0.0f);
+                if(radioLayout.getVisibility() == View.GONE) {
+                    radioLayout.setVisibility(View.VISIBLE);
+                    radioLayout.setAlpha(0.0f);
 
-                // Start the animation
-                radioLayout.animate()
-                        .translationY(0)
-                        .alpha(1.0f)
-                        .setDuration(200)
-                        .setListener(null);
+                    // Start the animation
+                    radioLayout.animate()
+                            .translationY(0)
+                            .alpha(1.0f)
+                            .setDuration(200)
+                            .setListener(null);
+                }
             }
         });
 
@@ -212,6 +214,9 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
                         }
                     });
                     eventSearch.startAnimation(anim);
+                    if(!eventSearch.getText().toString().isEmpty()) {
+                        search(eventSearch.getText().toString());
+                    }
                 }else if(position == 1){
                     d = 0;
                     g = 1;
@@ -232,6 +237,9 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
                         }
                     });
                     eventSearch.startAnimation(anim);
+                    if(!eventSearch.getText().toString().isEmpty()) {
+                        search(eventSearch.getText().toString());
+                    }
                 }
                 //Toast.makeText(getContext(), "Clicked! Position: " + position, Toast.LENGTH_SHORT).show();
             }

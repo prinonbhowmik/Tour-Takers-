@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -16,6 +17,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
@@ -27,8 +29,11 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -100,6 +105,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private static String eventId;
     private int joinMemberCount;
     private navDrawerCheck check;
+    private ScrollView tScrollView;
 
     public TourFragment() {
         // Required empty public constructor
@@ -111,9 +117,37 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_tour, container, false);
-
         init(view);
         userID = auth.getUid();
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                tScrollView.post(new Runnable() {
+                    public void run() {
+                        eventLayout.setTranslationY(view.getHeight());
+                    }
+                });
+            }
+        });
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("locationList");
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+
+                        //loading.setVisibility(View.VISIBLE);
+                        fillLocationList((Map<String, Object>) dataSnapshot.getValue());
+                        //collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
+
         startDateET.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,7 +161,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             }
         });
         loading.setVisibility(View.INVISIBLE);
-        eventLayout.setVisibility(View.GONE);
         iconSwitch.setCheckedChangeListener(new IconSwitch.CheckedChangeListener() {
             @Override
             public void onCheckChanged(IconSwitch.Checked current) {
@@ -152,7 +185,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                             eventLayout.animate()
                                     .translationY(view.getHeight())
                                     .alpha(0.0f)
-                                    .setDuration(200)
+                                    .setDuration(300)
                                     .setListener(new AnimatorListenerAdapter() {
                                         @Override
                                         public void onAnimationEnd(Animator animation) {
@@ -186,7 +219,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                             eventLayout.animate()
                                     .translationY(0)
                                     .alpha(1.0f)
-                                    .setDuration(200)
+                                    .setDuration(300)
                                     .setListener(null);
                         }
                         break;
@@ -200,24 +233,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 timePickers();
             }
         });
-
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("locationList");
-        ref.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        //Get map of users in datasnapshot
-
-                        //loading.setVisibility(View.VISIBLE);
-                        fillLocationList((Map<String, Object>) dataSnapshot.getValue());
-                        //collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        //handle databaseError
-                    }
-                });
 
         locationEt.addTextChangedListener(new TextWatcher() {
             @Override
@@ -676,7 +691,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         anim.setRepeatCount(1);
         anim.setRepeatMode(Animation.REVERSE);
         eventLayout = view.findViewById(R.id.eventLayout);
-        eventLayout.setTranslationY(view.getHeight());
         eventTime = view.findViewById(R.id.eventTime_ET);
         auth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -685,6 +699,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         eventCost_ET = view.findViewById(R.id.eventCost_ET);
         meetingPlace_ET = view.findViewById(R.id.meetingPlace_ET);
         eventDescription_ET = view.findViewById(R.id.eventDescription_ET);
+        tScrollView = view.findViewById(R.id.tScrollView);
     }
 
     private void getDate() {

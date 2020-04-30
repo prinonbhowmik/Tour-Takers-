@@ -30,6 +30,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.tureguideversion1.Fragments.EventFragment;
 import com.example.tureguideversion1.Fragments.GuideFragment;
+import com.example.tureguideversion1.Fragments.LoaderFragment;
 import com.example.tureguideversion1.Fragments.MapFragment;
 import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             storageReference = FirebaseStorage.getInstance().getReference();
             if (savedInstanceState == null) {
                 FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
-                tour.replace(R.id.fragment_container, new TourFragment());
+                tour.replace(R.id.fragment_container, new LoaderFragment());
                 tour.commit();
                 navigationView.getMenu().getItem(0).setChecked(true);
             }

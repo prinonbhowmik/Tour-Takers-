@@ -57,6 +57,7 @@
     </androidx.cardview.widget.CardView>
 
     <ScrollView
+        android:id="@+id/tScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tour_searchCV"
@@ -221,7 +222,8 @@
                 android:id="@+id/eventLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/groupName"
