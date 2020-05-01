@@ -11,9 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.tureguideversion1.R;
 
 public class LoaderFragment extends Fragment {
+    private LottieAnimationView loadinAmin;
+
     public LoaderFragment() {
         // Required empty public constructor
     }
@@ -23,7 +26,7 @@ public class LoaderFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_loader, container, false);
-
+        loadinAmin = view.findViewById(R.id.loadinAmin);
         new CountDownTimer(5000, 1000) {
 
             public void onTick(long millisUntilFinished) {

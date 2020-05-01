@@ -30,6 +30,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
 
@@ -37,10 +44,11 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
 
     private EditText passEt;
     private Button singin;
-    private String email, password;
+    private String email, password, userType;
     private TextView txt1;
     private ImageView logo;
     private FirebaseAuth auth;
+    private DatabaseReference reference;
     Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim,blink;
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
@@ -56,6 +64,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
         passEt = findViewById(R.id.password_ET);
         passEt.setSelected(false);
         auth = FirebaseAuth.getInstance();
+        reference = FirebaseDatabase.getInstance().getReference("profile");
         txt1 = findViewById(R.id.txt1);
         logo = findViewById(R.id.logoG);
         animation();
@@ -113,12 +122,44 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                     logo.clearAnimation();
                     if (auth.getCurrentUser().isEmailVerified()) {
                         singin.setText("Login");
-                        unregisterReceiver(connectivityReceiver);
-                        Intent intent = new Intent(SignInGrantAccess.this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        finish();
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        startActivity(intent);
+                        String ID = auth.getCurrentUser().getUid();
+                        DatabaseReference showref = reference.child(ID);
+                        showref.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Map data = (Map) dataSnapshot.getValue();
+                                userType = (String) data.get("userType");
+                                if(userType.matches("tourist")){
+                                    unregisterReceiver(connectivityReceiver);
+                                    Intent intent = new Intent(SignInGrantAccess.this, MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    finish();
+                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                                    startActivity(intent);
+                                }else if(userType.matches("guide")){
+                                    Toasty.error(getApplicationContext(),"You can't use guide account to this app!",Toasty.LENGTH_SHORT).show();
+                                    FirebaseAuth.getInstance().signOut();
+                                    Intent intent = new Intent(SignInGrantAccess.this, SignIn.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                }else {
+                                    Toasty.error(getApplicationContext(),"Something wrong with this account. Please contact to support center!",Toasty.LENGTH_SHORT).show();
+                                    FirebaseAuth.getInstance().signOut();
+                                    Intent intent = new Intent(SignInGrantAccess.this, SignIn.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
                     } else {
                         singin.setText("Login");
                         Toasty.info(getApplicationContext(), "Please verify your email address!", Toasty.LENGTH_LONG).show();
