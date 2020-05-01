@@ -24,19 +24,21 @@
 
             <ImageView
                 android:id="@+id/nav_icon"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:padding="10dp"
-                android:src="@drawable/ic_menu_black_24dp" />
+                android:padding="15dp"
+                android:src="@drawable/ic_menu4" />
 
             <TextView
                 android:id="@+id/tourTitle"
-                android:layout_width="250dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:background="@null"
                 android:fontFamily="@font/amarante"
+                android:layout_toStartOf="@+id/tourSwitch"
+                android:layout_toEndOf="@+id/nav_icon"
                 android:gravity="center"
                 android:text="@string/tour"
                 android:textColor="@android:color/darker_gray"

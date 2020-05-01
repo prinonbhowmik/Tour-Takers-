@@ -81,5 +81,14 @@
         <item name="android:fontFamily">@font/amarante</item>
     </style>
 
+    <style name="radio_design" parent="Widget.AppCompat.CompoundButton.RadioButton">
+
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorControlNormal">@color/colorYellow</item>
+        <item name="colorAccent">@android:color/holo_red_light</item>
+
+    </style>
+
 
 </resources>
