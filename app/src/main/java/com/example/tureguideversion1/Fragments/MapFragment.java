@@ -1,23 +1,23 @@
 package com.example.tureguideversion1.Fragments;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import com.example.tureguideversion1.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -35,8 +35,8 @@ import com.google.android.gms.tasks.Task;
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    private String [] permission={Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
-    private double latitude,longtitude;
+    private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+    private double latitude, longtitude;
     private GoogleMap map;
     private ImageView map_nav;
     private DrawerLayout mdrawrelayout;
@@ -61,7 +61,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void init(View view) {
         getActivity().getSupportFragmentManager();
 
-        SupportMapFragment supportMapFragment =(SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment supportMapFragment = (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.map);
         supportMapFragment.getMapAsync(this);
 
         map_nav = view.findViewById(R.id.map_nav);
@@ -71,6 +71,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View view) {
                 mdrawrelayout.openDrawer(GravityCompat.START);
+                hideKeyboardFrom(view.getContext());
 
             }
         });
@@ -90,30 +91,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void currentLocation() {
-       if (checkLocationPermission()){
-           FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(getContext());
-           Task location = fusedLocationProviderClient.getLastLocation();
-           location.addOnCompleteListener(new OnCompleteListener() {
-               @Override
-               public void onComplete(@NonNull Task task) {
-                   Location curentlocation =(Location)  task.getResult();
-                   latitude = curentlocation.getLatitude();
-                   longtitude = curentlocation.getLongitude();
-                   map.addMarker(new MarkerOptions().position(new LatLng(latitude,longtitude)));
-                   map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curentlocation.getLatitude(),curentlocation.getLongitude()),15));
-               }
-           });
-       }
+        if (checkLocationPermission()) {
+            FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(getContext());
+            Task location = fusedLocationProviderClient.getLastLocation();
+            location.addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    Location curentlocation = (Location) task.getResult();
+                    latitude = curentlocation.getLatitude();
+                    longtitude = curentlocation.getLongitude();
+                    map.addMarker(new MarkerOptions().position(new LatLng(latitude, longtitude)));
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curentlocation.getLatitude(), curentlocation.getLongitude()), 15));
+                }
+            });
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private boolean checkLocationPermission(){
-        if(getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED){
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},123);
+    private boolean checkLocationPermission() {
+        if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
             return false;
         }
 
         return true;
+    }
+
+    private void hideKeyboardFrom(Context context) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getRootView().getWindowToken(), 0);
     }
 }

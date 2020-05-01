@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -29,13 +28,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -85,7 +84,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
     private EditText startDateET, endDateET, eventTime, groupName_ET, eventCost_ET, meetingPlace_ET, eventDescription_ET;
     private SliderLayout imageSlider;
-    private ImageView logo;
+    private ImageView logo, tour_nav_icon;
     private LottieAnimationView loading;
     private List<LocationItem> locationList;
     private List<String> selectedLocation;
@@ -95,7 +94,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             userID, publishDate, s_date, r_date, time, place, description, meetPlace, group_name, cost;
     private Button locationSelection, createEvent;
     private int slide;
-    private View view;
+    View view;
     private IconSwitch iconSwitch;
     private Animation anim;
     private TextView tourTitle;
@@ -106,6 +105,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private int joinMemberCount;
     private navDrawerCheck check;
     private ScrollView tScrollView;
+    private DrawerLayout tDrawerLayout;
 
     public TourFragment() {
         // Required empty public constructor
@@ -119,6 +119,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         view = inflater.inflate(R.layout.fragment_tour, container, false);
         init(view);
         userID = auth.getUid();
+        tDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -147,6 +148,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         //handle databaseError
                     }
                 });
+        tour_nav_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tDrawerLayout.openDrawer(GravityCompat.START);
+                hideKeyboardFrom(view.getContext());
+            }
+        });
 
         startDateET.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -700,6 +708,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         meetingPlace_ET = view.findViewById(R.id.meetingPlace_ET);
         eventDescription_ET = view.findViewById(R.id.eventDescription_ET);
         tScrollView = view.findViewById(R.id.tScrollView);
+        tour_nav_icon = view.findViewById(R.id.nav_icon);
     }
 
     private void getDate() {
@@ -817,6 +826,12 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             throw new ClassCastException(context.toString()
                     + " must implement BottomSheetListener");
         }
+    }
+
+
+    private void hideKeyboardFrom(Context context) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getRootView().getWindowToken(), 0);
     }
 
 }
