@@ -44,12 +44,12 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
 
     private EditText passEt;
     private Button singin;
-    private String email, password, userType;
+    private String email, password;
     private TextView txt1;
     private ImageView logo;
     private FirebaseAuth auth;
     private DatabaseReference reference;
-    Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim,blink;
+    Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim, blink;
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
@@ -80,9 +80,9 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                 email = intent.getExtras().getString("email");
                 password = passEt.getText().toString();
                 if (TextUtils.isEmpty(password)) {
-                    passEt.setError("Please enter password!",null);
+                    passEt.setError("Please enter password!", null);
                 } else if (passEt.length() < 6) {
-                    passEt.setError("At least 6 characters!",null);
+                    passEt.setError("At least 6 characters!", null);
                 } else {
                     singin.setText("Connecting");
                     logo.startAnimation(blink);
@@ -122,34 +122,46 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                     logo.clearAnimation();
                     if (auth.getCurrentUser().isEmailVerified()) {
                         singin.setText("Login");
-                        String ID = auth.getCurrentUser().getUid();
+                        final String ID = auth.getCurrentUser().getUid();
                         DatabaseReference showref = reference.child(ID);
                         showref.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                Map data = (Map) dataSnapshot.getValue();
-                                userType = (String) data.get("userType");
-                                if(userType.matches("tourist")){
+                                if (dataSnapshot.exists()) {
                                     unregisterReceiver(connectivityReceiver);
                                     Intent intent = new Intent(SignInGrantAccess.this, MainActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     finish();
                                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                                     startActivity(intent);
-                                }else if(userType.matches("guide")){
-                                    Toasty.error(getApplicationContext(),"You can't use guide account to this app!",Toasty.LENGTH_SHORT).show();
-                                    FirebaseAuth.getInstance().signOut();
-                                    Intent intent = new Intent(SignInGrantAccess.this, SignIn.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                    finish();
-                                }else {
-                                    Toasty.error(getApplicationContext(),"Something wrong with this account. Please contact to support center!",Toasty.LENGTH_SHORT).show();
-                                    FirebaseAuth.getInstance().signOut();
-                                    Intent intent = new Intent(SignInGrantAccess.this, SignIn.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                    finish();
+
+                                } else {
+                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("GuideProfile").child(ID);
+                                    ref.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if(dataSnapshot.exists()){
+                                                Toasty.error(getApplicationContext(), "You can't use guide account to this app!", Toasty.LENGTH_LONG).show();
+                                                FirebaseAuth.getInstance().signOut();
+                                                Intent intent = new Intent(SignInGrantAccess.this, SignIn.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                                finish();
+                                            }else {
+                                                Toasty.error(getApplicationContext(),"Sign In failed. Please contact to the support!",Toasty.LENGTH_LONG).show();
+                                                FirebaseAuth.getInstance().signOut();
+                                                Intent intent = new Intent(SignInGrantAccess.this, SignIn.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
                                 }
                             }
 
