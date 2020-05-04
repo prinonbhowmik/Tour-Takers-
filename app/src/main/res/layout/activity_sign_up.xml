@@ -171,21 +171,20 @@
                     android:id="@+id/gender_txt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gender  :"
+                    android:text="Gender :"
                     android:textSize="21sp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
                     android:layout_centerVertical="true"
                     android:textColor="@color/colorYellow" />
 
                 <RadioGroup
                     android:id="@+id/genderRadioGroup"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:orientation="horizontal"
                     android:theme="@style/radio_design"
-
                     android:layout_toEndOf="@+id/gender_txt">
 
                     <RadioButton
@@ -201,11 +200,11 @@
                         android:id="@+id/radioF"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:checked="false"
                         android:text="Female"
-                        android:layout_marginStart="40dp"
+                        android:layout_marginStart="20dp"
                         android:textColor="@color/colorYellow"
-                        android:textSize="21sp"
-                        android:checked="false" />
+                        android:textSize="21sp" />
 
                 </RadioGroup>
 

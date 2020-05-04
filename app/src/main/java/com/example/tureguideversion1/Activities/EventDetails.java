@@ -21,6 +21,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.tureguideversion1.Adapters.EventLocationListAdapter;
 import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.GlideApp;
+import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.EventLocationList;
 import com.example.tureguideversion1.R;
 import com.glide.slider.library.SliderLayout;
@@ -48,10 +49,11 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
             publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, deleteTV, txt7;
     private ImageView descriptionIV, meetingIV, groupIV, costIV, event_image, event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
-    private String place, s_date, r_date, time, m_place, description, p_date, attend_member_count, g_name, e_cost, publisher_id;
+    private String place, s_date, r_date, time, m_place, description, p_date, g_name, e_cost, publisher_id, counter, place1;
+    private int attend_member_count;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
-    private String userId, event_Id, event_user_id;
+    private String userId, event_Id;
     private String member_name, member_image, member_phone, member_email;
     private String update_des;
     private long count;
@@ -139,7 +141,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 startActivity(intent);
             }
         });
-        setData();
+
 
         descriptionIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -441,18 +443,45 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
 
 
     private void getData() {
-        place = getIntent().getStringExtra("event_place");
-        s_date = getIntent().getStringExtra("event_start_date");
-        r_date = getIntent().getStringExtra("event_return_date");
-        time = getIntent().getStringExtra("event_time");
-        m_place = getIntent().getStringExtra("event_meeting_place");
-        description = getIntent().getStringExtra("event_description");
-        p_date = getIntent().getStringExtra("event_publish_date");
-        attend_member_count = getIntent().getStringExtra("event_join_member_count");
         event_Id = getIntent().getStringExtra("event_id");
         publisher_id = getIntent().getStringExtra("member_id");
-        g_name = getIntent().getStringExtra("group_name");
-        e_cost = getIntent().getStringExtra("cost");
+        place = getIntent().getStringExtra("event_place");
+
+        //for update details
+        DatabaseReference updateref = databaseReference.child("event").child(event_Id);
+        updateref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Event event = dataSnapshot.getValue(Event.class);
+                place1 = event.getPlace();
+                p_date = event.getPublishDate();
+                s_date = event.getStartDate();
+                r_date = event.getReturnDate();
+                time = event.getTime();
+                m_place = event.getPlace();
+                g_name = event.getGroupName();
+                description = event.getDescription();
+                e_cost = event.getCost();
+                attend_member_count = event.getJoinMemberCount();
+
+                event_place.setText(place);
+                publish_date.setText(p_date);
+                event_date.setText(s_date);
+                return_date.setText(r_date);
+                event_time.setText(time);
+                meeting_place.setText(m_place);
+                group_name.setText(g_name);
+                event_description.setText(description);
+                event_cost.setText(e_cost);
+                counter = String.valueOf(attend_member_count);
+                event_attending_member.setText(counter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         //for user name
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -513,19 +542,6 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 locationAdapter.notifyDataSetChanged();
             }
         }
-    }
-
-    private void setData() {
-        event_place.setText(place);
-        event_date.setText(s_date);
-        return_date.setText(r_date);
-        event_time.setText(time);
-        meeting_place.setText(m_place);
-        event_description.setText(description);
-        publish_date.setText(p_date);
-        event_attending_member.setText(attend_member_count);
-        group_name.setText(g_name);
-        event_cost.setText(e_cost);
     }
 
     private void init() {
