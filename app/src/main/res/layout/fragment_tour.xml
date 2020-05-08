@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:padding="15dp"
-                android:src="@drawable/ic_menu4" />
+                android:src="@drawable/ic_menu5" />
 
             <TextView
                 android:id="@+id/tourTitle"

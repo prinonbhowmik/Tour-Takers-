@@ -49,7 +49,7 @@
         app:headerLayout="@layout/navigation_drawer_header"
         app:itemBackground="@drawable/nav_item_drawable"
         app:itemIconTint="@drawable/drawer_item_color"
-        app:itemTextColor="@android:color/black"
+        app:itemTextColor="@drawable/drawer_item_color"
         app:menu="@menu/nav_options" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

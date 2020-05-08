@@ -26,18 +26,19 @@
 
             <ImageView
                 android:id="@+id/map_nav"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:padding="10dp"
-                android:src="@drawable/ic_menu_black_24dp" />
+                android:padding="15dp"
+                android:src="@drawable/ic_menu5" />
 
             <EditText
                 android:id="@+id/location_searchET"
-                android:layout_width="275dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/nav_icon"
+                android:layout_toEndOf="@+id/map_nav"
+                android:layout_toStartOf="@+id/searchIV"
                 android:background="@null"
                 android:gravity="center_vertical"
                 android:cursorVisible="false"
