@@ -3,13 +3,18 @@ package com.example.tureguideversion1.Activities;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -21,6 +26,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.tureguideversion1.Adapters.EventLocationListAdapter;
 import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.GlideApp;
+import com.example.tureguideversion1.Internet.Connection;
+import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.EventLocationList;
 import com.example.tureguideversion1.R;
@@ -30,6 +37,7 @@ import com.glide.slider.library.slidertypes.BaseSliderView;
 import com.glide.slider.library.slidertypes.TextSliderView;
 import com.glide.slider.library.transformers.BaseTransformer;
 import com.glide.slider.library.tricks.ViewPagerEx;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,7 +51,7 @@ import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
 
-public class EventDetails extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
+public class EventDetails extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView event_place, event_date, return_date, event_time, meeting_place, event_description, publish_date,
             publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, deleteTV, txt7;
@@ -65,12 +73,16 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private int slide;
     private TourFragment.navDrawerCheck check;
     private Dialog profileDialog;
+    private Snackbar snackbar;
+    private ConnectivityReceiver connectivityReceiver;
+    private IntentFilter intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
         init();
+        registerReceiver(connectivityReceiver, intentFilter);
         getData();
         userId = auth.getCurrentUser().getUid();
         moreImageShow();
@@ -577,6 +589,9 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         locationRecycleView.setAdapter(locationAdapter);
         imageSlider = findViewById(R.id.sliderFromEventDetails);
         profileDialog = new Dialog(this);
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        connectivityReceiver = new ConnectivityReceiver();
     }
 
 
@@ -595,11 +610,15 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
 
     @Override
     public void onSliderClick(BaseSliderView slider) {
-        Intent i = new Intent(view.getContext(), LocationImage.class)
-                .putExtra("slide", slider.getBundle().getString("extra"))
-                .putExtra("location", place.toLowerCase())
-                .putStringArrayListExtra("willVisit", (ArrayList<String>) locationWillBeVisit);
-        startActivityForResult(i, 1);
+        if(checkConnection()) {
+            Intent i = new Intent(view.getContext(), LocationImage.class)
+                    .putExtra("slide", slider.getBundle().getString("extra"))
+                    .putExtra("location", place.toLowerCase())
+                    .putStringArrayListExtra("willVisit", (ArrayList<String>) locationWillBeVisit);
+            startActivityForResult(i, 1);
+        }else{
+            startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+        }
     }
 
     @Override
@@ -644,5 +663,81 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         });
         profileDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         profileDialog.show();
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
+    }
+
+    public boolean checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        return isConnected;
+    }
+
+    // Showing the status in Snackbar
+    private void showSnack(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            if (snackbar != null) {
+                snackbar.dismiss();
+//                Intent i = new Intent(EventDetails.this, EventDetails.class);
+//                finish();
+//                overridePendingTransition(0, 0);
+//                startActivity(i);
+//                overridePendingTransition(0, 0);
+            }
+        } else {
+            message = "No internet! Please connect to network.";
+            snackbar(message);
+            //unregisterReceiver(connectivityReceiver);
+            //startActivity(new Intent(MainActivity.this, NoInternetConnection.class));
+        }
+
+
+    }
+
+    private void snackbar(String text) {
+        snackbar = Snackbar
+                .make(findViewById(R.id.relative1), text, Snackbar.LENGTH_INDEFINITE);
+
+        View sbView = snackbar.getView();
+        sbView.setBackgroundColor(Color.RED);
+        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        } else {
+            textView.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        snackbar.show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(connectivityReceiver, intentFilter);
+        Connection.getInstance().setConnectivityListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            if (connectivityReceiver != null)
+                unregisterReceiver(connectivityReceiver);
+
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            if (connectivityReceiver != null)
+                unregisterReceiver(connectivityReceiver);
+
+        } catch (Exception e) {
+        }
     }
 }

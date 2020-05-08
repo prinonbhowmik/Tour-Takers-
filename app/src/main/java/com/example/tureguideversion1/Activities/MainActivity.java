@@ -1,6 +1,7 @@
 package com.example.tureguideversion1.Activities;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -22,10 +24,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.tureguideversion1.Fragments.EventFragment;
@@ -51,12 +55,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.List;
+
 import es.dmoral.toasty.Toasty;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         ConnectivityReceiver.ConnectivityReceiverListener,
         LocationSelection_bottomSheet.BottomSheetListener,
-        TourFragment.navDrawerCheck{
+        TourFragment.navDrawerCheck {
 
     boolean doubleBackToExitPressedOnce = false;
     private ImageView nav_icon;
@@ -69,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DatabaseReference reference;
     private StorageReference storageReference;
     private FirebaseAuth auth;
-    private String userId, name, email, image, phone;
+    private String userId, name, email, image, currentFragment;
     private Uri imageUri;
     private ImageView circularImageView;
     private TextView UserName, userEmail;
@@ -80,13 +86,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-        intentFilter = new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        connectivityReceiver = new ConnectivityReceiver();
         registerReceiver(connectivityReceiver, intentFilter);
         if (checkConnection()) {
             storageReference = FirebaseStorage.getInstance().getReference();
             if (savedInstanceState == null) {
+                currentFragment = "tour";
                 FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
                 tour.replace(R.id.fragment_container, new LoaderFragment());
                 tour.commit();
@@ -123,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     } catch (NullPointerException e) {
                         e.printStackTrace();
-                        Toasty.error(getApplicationContext(),"Data has changed!",Toasty.LENGTH_LONG).show();
+                        Toasty.error(getApplicationContext(), "Data has changed!", Toasty.LENGTH_LONG).show();
                         FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(MainActivity.this, SignIn.class));
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -167,6 +171,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void init() {
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        connectivityReceiver = new ConnectivityReceiver();
         toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
         nav_icon = findViewById(R.id.nav_icon);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -195,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.tour:
                 if (checkConnection()) {
+                    currentFragment = "tour";
                     FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
                     tour.replace(R.id.fragment_container, new TourFragment());
                     tour.commit();
@@ -207,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.map:
                 if (checkConnection()) {
+                    currentFragment = "map";
                     FragmentTransaction map = getSupportFragmentManager().beginTransaction();
                     map.replace(R.id.fragment_container, new MapFragment());
                     map.commit();
@@ -220,6 +229,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.event:
                 if (checkConnection()) {
+                    currentFragment = "event";
                     FragmentTransaction event = getSupportFragmentManager().beginTransaction();
                     event.replace(R.id.fragment_container, new EventFragment());
                     event.commit();
@@ -233,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.weather:
                 if (checkConnection()) {
+                    currentFragment = "weather";
                     FragmentTransaction weather = getSupportFragmentManager().beginTransaction();
                     weather.replace(R.id.fragment_container, new WeatherFragment());
                     weather.commit();
@@ -283,13 +294,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //message = "Connected to Internet";
             if (snackbar != null) {
                 snackbar.dismiss();
+                if (currentFragment.matches("tour") || currentFragment == null) {
 
+                } else {
+                    ActivityManager mgr = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+                    if (mgr != null) {
+                        List<ActivityManager.AppTask> tasks = mgr.getAppTasks();
+                        String className = "";
+                        if (tasks != null && !tasks.isEmpty()) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                className = tasks.get(0).getTaskInfo().topActivity.getClassName().substring(41);
+                                if(className.matches("MainActivity")){
+                                    Fragment frag = this.getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                                    fragmentTransaction.detach(frag);
+                                    fragmentTransaction.attach(frag);
+                                    fragmentTransaction.commit();
+                                }
+                            }
+                        }
+                    }
+
+
+                }
             }
         } else {
-//            message = "No internet! Please connect to network.";
-//            snackbar(message);
+            message = "No internet! Please connect to network.";
+            snackbar(message);
             //unregisterReceiver(connectivityReceiver);
-            startActivity(new Intent(MainActivity.this, NoInternetConnection.class));
+            //startActivity(new Intent(MainActivity.this, NoInternetConnection.class));
         }
 
 
@@ -323,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Connection.getInstance().setConnectivityListener(this);
 
         Intent intent = getIntent();
-        if(intent.getExtras() != null) {
+        if (intent.getExtras() != null) {
             if (intent.getExtras().getString("EventDetails").matches("event")) {
                 FragmentTransaction event = getSupportFragmentManager().beginTransaction();
                 event.replace(R.id.fragment_container, new EventFragment());
@@ -339,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
-        //showSnack(isConnected);
+        showSnack(isConnected);
     }
 
     @Override
@@ -366,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             toast = Toasty.custom(getApplicationContext(),
                     R.string.exit_toast,
                     ResourcesCompat.getDrawable(getResources(),
-                    R.drawable.shutdown,null),
+                            R.drawable.shutdown, null),
                     R.color.colorPrimary,
                     R.color.colorYellow,
                     Toasty.LENGTH_SHORT, true,
@@ -402,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void checked(int value) {
-        if(value == 1){
+        if (value == 1) {
             navigationView.getMenu().getItem(2).setChecked(true);
         }
     }

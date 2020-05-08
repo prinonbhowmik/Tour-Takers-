@@ -125,7 +125,11 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             public void onGlobalLayout() {
                 tScrollView.post(new Runnable() {
                     public void run() {
-                        eventLayout.setTranslationY(view.getHeight());
+                        if(eventLayout.getVisibility() == View.GONE) {
+                            eventLayout.setTranslationY(view.getHeight());
+                        }else if(eventLayout.getVisibility() == View.VISIBLE){
+                            eventLayout.setTranslationY(0);
+                        }
                     }
                 });
             }

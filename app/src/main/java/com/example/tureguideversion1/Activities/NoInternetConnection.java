@@ -35,24 +35,9 @@ public class NoInternetConnection extends AppCompatActivity implements Connectiv
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
-        showSnack(isConnected);
-    }
-
-    // Showing the status in Snackbar
-    private void showSnack(boolean isConnected) {
-        String message;
-        if (isConnected) {
-            //message = "Connected to Internet";
-            //unregisterReceiver(connectivityReceiver);
-            //startActivity(new Intent(NoInternetConnection.this, MainActivity.class));
-            onBackPressed();
-        } else {
-//            message = "No internet! Please connect to network.";
-//            snackbar(message);
-            //startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+        if(isConnected){
+            finish();
         }
-
-
     }
 
     @Override
@@ -78,11 +63,6 @@ public class NoInternetConnection extends AppCompatActivity implements Connectiv
                 unregisterReceiver(connectivityReceiver);
 
         }catch(Exception e){}
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     @Override
