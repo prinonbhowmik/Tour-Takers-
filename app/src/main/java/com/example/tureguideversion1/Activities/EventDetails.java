@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -470,7 +469,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 s_date = event.getStartDate();
                 r_date = event.getReturnDate();
                 time = event.getTime();
-                m_place = event.getPlace();
+                m_place = event.getMeetPlace();
                 g_name = event.getGroupName();
                 description = event.getDescription();
                 e_cost = event.getCost();
