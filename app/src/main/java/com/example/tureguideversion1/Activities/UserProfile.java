@@ -1,10 +1,15 @@
 package com.example.tureguideversion1.Activities;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -24,11 +29,14 @@ import com.bumptech.glide.Glide;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.example.tureguideversion1.GlideApp;
+import com.example.tureguideversion1.Internet.Connection;
+import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.Profile_bottom_sheet;
 import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,7 +53,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import es.dmoral.toasty.Toasty;
 
-public class UserProfile extends AppCompatActivity {
+public class UserProfile extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
 
     private LinearLayout ratingLayout, totalTourLayout, totalEventLayout;
     private TextView profilename, profileemail, profilephoneno, n2, p2;
@@ -58,6 +66,9 @@ public class UserProfile extends AppCompatActivity {
     private FirebaseStorage storage;
     private Uri imageUri;
     private ImageView profileImage, n1, e2, e1, p1;
+    private Snackbar snackbar;
+    private ConnectivityReceiver connectivityReceiver;
+    private IntentFilter intentFilter;
     ProgressBar progressBar;
     Animation topAnim, bottomAnim, leftAnim, rightAnim, fadeIn, scaleAnim, ball3Anim, edittext_anim, blink;
 
@@ -67,6 +78,7 @@ public class UserProfile extends AppCompatActivity {
         setContentView(R.layout.activity_user_profile);
         storageReference = FirebaseStorage.getInstance().getReference();
         init();
+        registerReceiver(connectivityReceiver, intentFilter);
         userId = auth.getUid();
         animation();
         DatabaseReference showref = reference.child(userId);
@@ -139,26 +151,34 @@ public class UserProfile extends AppCompatActivity {
         nameUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle args = new Bundle();
-                args.putString("name", "name");
-                args.putString("id", userId);
-                args.putString("nameForHint", name);
-                Profile_bottom_sheet bottom_sheet = new Profile_bottom_sheet();
-                bottom_sheet.setArguments(args);
-                bottom_sheet.show(getSupportFragmentManager(), "bottomSheet");
+                if(checkConnection()) {
+                    Bundle args = new Bundle();
+                    args.putString("name", "name");
+                    args.putString("id", userId);
+                    args.putString("nameForHint", name);
+                    Profile_bottom_sheet bottom_sheet = new Profile_bottom_sheet();
+                    bottom_sheet.setArguments(args);
+                    bottom_sheet.show(getSupportFragmentManager(), "bottomSheet");
+                }else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
             }
         });
 
         phoneUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle args = new Bundle();
-                args.putString("phone", "phone");
-                args.putString("id", userId);
-                args.putString("phoneForHint", phone);
-                Profile_bottom_sheet bottom_sheet = new Profile_bottom_sheet();
-                bottom_sheet.setArguments(args);
-                bottom_sheet.show(getSupportFragmentManager(), "bottomSheet");
+                if(checkConnection()) {
+                    Bundle args = new Bundle();
+                    args.putString("phone", "phone");
+                    args.putString("id", userId);
+                    args.putString("phoneForHint", phone);
+                    Profile_bottom_sheet bottom_sheet = new Profile_bottom_sheet();
+                    bottom_sheet.setArguments(args);
+                    bottom_sheet.show(getSupportFragmentManager(), "bottomSheet");
+                }else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
             }
         });
 
@@ -166,11 +186,15 @@ public class UserProfile extends AppCompatActivity {
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CropImage.activity()
-                        .setFixAspectRatio(true)
-                        .setGuidelines(CropImageView.Guidelines.ON)
-                        .setCropShape(CropImageView.CropShape.OVAL)
-                        .start(UserProfile.this);
+                if(checkConnection()) {
+                    CropImage.activity()
+                            .setFixAspectRatio(true)
+                            .setGuidelines(CropImageView.Guidelines.ON)
+                            .setCropShape(CropImageView.CropShape.OVAL)
+                            .start(UserProfile.this);
+                }else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
             }
         });
 
@@ -187,9 +211,17 @@ public class UserProfile extends AppCompatActivity {
                 imageUri = resultUri;
                 progressBar.setVisibility(View.VISIBLE);
                 if (!image.isEmpty()) {
-                    deleteImage();
+                    if(checkConnection()) {
+                        deleteImage();
+                    }else {
+                        startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                    }
                 } else {
-                    uploadImage();
+                    if(checkConnection()) {
+                        uploadImage();
+                    }else {
+                        startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                    }
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
@@ -316,7 +348,38 @@ public class UserProfile extends AppCompatActivity {
         e2 = findViewById(R.id.e2);
         p1 = findViewById(R.id.p1);
         p2 = findViewById(R.id.p2);
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        connectivityReceiver = new ConnectivityReceiver();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(connectivityReceiver, intentFilter);
+        Connection.getInstance().setConnectivityListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            if (connectivityReceiver != null)
+                unregisterReceiver(connectivityReceiver);
+
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            if (connectivityReceiver != null)
+                unregisterReceiver(connectivityReceiver);
+
+        } catch (Exception e) {
+        }
     }
 
     @Override
@@ -340,4 +403,50 @@ public class UserProfile extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
+    }
+
+    public boolean checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        return isConnected;
+    }
+
+    // Showing the status in Snackbar
+    private void showSnack(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            if (snackbar != null) {
+                snackbar.dismiss();
+                Intent i = new Intent(UserProfile.this, UserProfile.class);
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(i);
+                overridePendingTransition(0, 0);
+            }
+        } else {
+            message = "No internet! Please connect to network.";
+            snackbar(message);
+            //unregisterReceiver(connectivityReceiver);
+            //startActivity(new Intent(MainActivity.this, NoInternetConnection.class));
+        }
+
+
+    }
+
+    private void snackbar(String text) {
+        snackbar = Snackbar
+                .make(findViewById(R.id.profileIV), text, Snackbar.LENGTH_INDEFINITE);
+
+        View sbView = snackbar.getView();
+        sbView.setBackgroundColor(Color.RED);
+        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        } else {
+            textView.setGravity(Gravity.CENTER_HORIZONTAL);
+        }
+        snackbar.show();
+    }
 }

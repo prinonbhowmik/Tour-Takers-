@@ -44,6 +44,7 @@ import com.example.tureguideversion1.Activities.LocationImage;
 import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.Activities.NoInternetConnection;
 import com.example.tureguideversion1.Adapters.AutoCompleteLocationAdapter;
+import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.LocationSelection_bottomSheet;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.LocationItem;
@@ -125,9 +126,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             public void onGlobalLayout() {
                 tScrollView.post(new Runnable() {
                     public void run() {
-                        if(eventLayout.getVisibility() == View.GONE) {
+                        if (eventLayout.getVisibility() == View.GONE) {
                             eventLayout.setTranslationY(view.getHeight());
-                        }else if(eventLayout.getVisibility() == View.VISIBLE){
+                        } else if (eventLayout.getVisibility() == View.VISIBLE) {
                             eventLayout.setTranslationY(0);
                         }
                     }
@@ -193,7 +194,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                             }
                         });
                         tourTitle.startAnimation(anim);
-                        if(eventLayout.getVisibility() == View.VISIBLE) {
+                        if (eventLayout.getVisibility() == View.VISIBLE) {
                             eventLayout.animate()
                                     .translationY(view.getHeight())
                                     .alpha(0.0f)
@@ -223,7 +224,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                             }
                         });
                         tourTitle.startAnimation(anim);
-                        if(eventLayout.getVisibility() == View.GONE) {
+                        if (eventLayout.getVisibility() == View.GONE) {
                             eventLayout.setVisibility(View.VISIBLE);
                             eventLayout.setAlpha(0.0f);
 
@@ -269,29 +270,33 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         locationEt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View v, int i, long l) {
-                selectedLocation.clear();
-                locationSelection.setText("Select tourism places");
-                locationSelection.setTextColor(getResources().getColor(R.color.colorYellow));
-                hideKeyboardFrom(view.getContext(), view);
-                logo.setVisibility(View.INVISIBLE);
-                loading.setVisibility(View.VISIBLE);
-                String location = locationEt.getText().toString();
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location.toLowerCase());
-                ref.addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                //Get map of users in datasnapshot
-                                locationForViewPage = locationEt.getText().toString().toLowerCase();
-                                //loading.setVisibility(View.VISIBLE);
-                                collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
-                            }
+                if (checkConnection()) {
+                    selectedLocation.clear();
+                    locationSelection.setText("Select tourism places");
+                    locationSelection.setTextColor(getResources().getColor(R.color.colorYellow));
+                    hideKeyboardFrom(view.getContext(), view);
+                    logo.setVisibility(View.INVISIBLE);
+                    loading.setVisibility(View.VISIBLE);
+                    String location = locationEt.getText().toString();
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location.toLowerCase());
+                    ref.addListenerForSingleValueEvent(
+                            new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    //Get map of users in datasnapshot
+                                    locationForViewPage = locationEt.getText().toString().toLowerCase();
+                                    //loading.setVisibility(View.VISIBLE);
+                                    collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
+                                }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                //handle databaseError
-                            }
-                        });
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    //handle databaseError
+                                }
+                            });
+                } else {
+                    startActivity(new Intent(view.getContext(), NoInternetConnection.class));
+                }
             }
         });
 
@@ -304,30 +309,34 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                 keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
                                 keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                     if (keyEvent == null || !keyEvent.isShiftPressed()) {
-                        // the user is done typing.
-                        if (!locationEt.getText().toString().matches("")) {
-                            hideKeyboardFrom(view.getContext(), view);
-                            locationEt.dismissDropDown();
-                            logo.setVisibility(View.INVISIBLE);
-                            loading.setVisibility(View.VISIBLE);
-                            String location = locationEt.getText().toString();
-                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location.toLowerCase());
-                            ref.addListenerForSingleValueEvent(
-                                    new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            //Get map of users in datasnapshot
-                                            //loading.setVisibility(View.VISIBLE);
-                                            collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
-                                            locationForViewPage = districtForLocationImage;
-                                        }
+                        if (checkConnection()) {
+                            // the user is done typing.
+                            if (!locationEt.getText().toString().matches("")) {
+                                hideKeyboardFrom(view.getContext(), view);
+                                locationEt.dismissDropDown();
+                                logo.setVisibility(View.INVISIBLE);
+                                loading.setVisibility(View.VISIBLE);
+                                String location = locationEt.getText().toString();
+                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location.toLowerCase());
+                                ref.addListenerForSingleValueEvent(
+                                        new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                //Get map of users in datasnapshot
+                                                //loading.setVisibility(View.VISIBLE);
+                                                collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
+                                                locationForViewPage = districtForLocationImage;
+                                            }
 
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-                                            //handle databaseError
-                                        }
-                                    });
-                            return true; // consume.
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+                                                //handle databaseError
+                                            }
+                                        });
+                                return true; // consume.
+                            }
+                        } else {
+                            startActivity(new Intent(view.getContext(), NoInternetConnection.class));
                         }
                     }
                 }
@@ -339,112 +348,119 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         locationSelection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LocationSelection_bottomSheet bottom_sheet = new LocationSelection_bottomSheet();
-                Bundle args = new Bundle();
-                if (locationEt.getText().toString().isEmpty() && !selectedLocation.isEmpty() || !selectedLocation.isEmpty()) {
-                    locationEt.setFocusable(false);
-                    locationEt.setFocusableInTouchMode(false);
-                    locationEt.setText(districtFromLocationSelection);
-                    int pos = locationEt.getText().length();
-                    locationEt.setSelection(pos);
-                    locationEt.setFocusable(true);
-                    locationEt.setFocusableInTouchMode(true);
+                if (checkConnection()) {
+                    LocationSelection_bottomSheet bottom_sheet = new LocationSelection_bottomSheet();
+                    Bundle args = new Bundle();
+                    if (locationEt.getText().toString().isEmpty() && !selectedLocation.isEmpty() || !selectedLocation.isEmpty()) {
+                        locationEt.setFocusable(false);
+                        locationEt.setFocusableInTouchMode(false);
+                        locationEt.setText(districtFromLocationSelection);
+                        int pos = locationEt.getText().length();
+                        locationEt.setSelection(pos);
+                        locationEt.setFocusable(true);
+                        locationEt.setFocusableInTouchMode(true);
+                    }
+                    args.putString("location", locationEt.getText().toString());
+                    if (selectedLocation != null) {
+                        args.putStringArrayList("selectedLocation", (ArrayList<String>) selectedLocation);
+                    }
+                    bottom_sheet.setArguments(args);
+                    bottom_sheet.show(getParentFragmentManager(), "locationSelection");
+                } else {
+                    startActivity(new Intent(view.getContext(), NoInternetConnection.class));
                 }
-                args.putString("location", locationEt.getText().toString());
-                if (selectedLocation != null) {
-                    args.putStringArrayList("selectedLocation", (ArrayList<String>) selectedLocation);
-                }
-                bottom_sheet.setArguments(args);
-                bottom_sheet.show(getParentFragmentManager(), "locationSelection");
             }
         });
 
         createEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (checkConnection()) {
+                    DatabaseReference eventRef = databaseReference.child("event");
+                    eventId = eventRef.push().getKey();
 
-                DatabaseReference eventRef = databaseReference.child("event");
-                eventId = eventRef.push().getKey();
+                    Calendar calendar = Calendar.getInstance();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh:mm a");
+                    publishDate = simpleDateFormat.format(calendar.getTime());
+                    s_date = startDateET.getText().toString();
+                    r_date = endDateET.getText().toString();
+                    time = eventTime.getText().toString();
+                    place = locationEt.getText().toString().substring(0, 1).toUpperCase() + locationEt.getText().toString().substring(1);
+                    description = eventDescription_ET.getText().toString();
+                    meetPlace = meetingPlace_ET.getText().toString();
+                    group_name = groupName_ET.getText().toString();
+                    cost = eventCost_ET.getText().toString();
+                    joinMemberCount = 1;
 
-                Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh:mm a");
-                publishDate = simpleDateFormat.format(calendar.getTime());
-                s_date = startDateET.getText().toString();
-                r_date = endDateET.getText().toString();
-                time = eventTime.getText().toString();
-                place = locationEt.getText().toString().substring(0,1).toUpperCase()+locationEt.getText().toString().substring(1);
-                description = eventDescription_ET.getText().toString();
-                meetPlace = meetingPlace_ET.getText().toString();
-                group_name = groupName_ET.getText().toString();
-                cost = eventCost_ET.getText().toString();
-                joinMemberCount = 1;
-
-                if (TextUtils.isEmpty(place)) {
-                    if (!selectedLocation.isEmpty()) {
-                        if (!TextUtils.isEmpty(s_date) &&
-                                !TextUtils.isEmpty(r_date) &&
-                                !TextUtils.isEmpty(group_name) &&
-                                !TextUtils.isEmpty(cost) &&
-                                !TextUtils.isEmpty(time) &&
-                                !TextUtils.isEmpty(meetPlace) &&
-                                !TextUtils.isEmpty(description)) {
-                            locationEt.setFocusable(false);
-                            locationEt.setFocusableInTouchMode(false);
-                            locationEt.setText(districtFromLocationSelection);
-                            int pos = locationEt.getText().length();
-                            locationEt.setSelection(pos);
-                            locationEt.setFocusable(true);
-                            locationEt.setFocusableInTouchMode(true);
-                            Toasty.info(view.getContext(), "Press again to create Event!", Toasty.LENGTH_SHORT).show();
+                    if (TextUtils.isEmpty(place)) {
+                        if (!selectedLocation.isEmpty()) {
+                            if (!TextUtils.isEmpty(s_date) &&
+                                    !TextUtils.isEmpty(r_date) &&
+                                    !TextUtils.isEmpty(group_name) &&
+                                    !TextUtils.isEmpty(cost) &&
+                                    !TextUtils.isEmpty(time) &&
+                                    !TextUtils.isEmpty(meetPlace) &&
+                                    !TextUtils.isEmpty(description)) {
+                                locationEt.setFocusable(false);
+                                locationEt.setFocusableInTouchMode(false);
+                                locationEt.setText(districtFromLocationSelection);
+                                int pos = locationEt.getText().length();
+                                locationEt.setSelection(pos);
+                                locationEt.setFocusable(true);
+                                locationEt.setFocusableInTouchMode(true);
+                                Toasty.info(view.getContext(), "Press again to create Event!", Toasty.LENGTH_SHORT).show();
+                            } else {
+                                locationEt.setFocusable(false);
+                                locationEt.setFocusableInTouchMode(false);
+                                locationEt.setText(districtFromLocationSelection);
+                                int pos = locationEt.getText().length();
+                                locationEt.setSelection(pos);
+                                locationEt.setFocusable(true);
+                                locationEt.setFocusableInTouchMode(true);
+                            }
                         } else {
-                            locationEt.setFocusable(false);
-                            locationEt.setFocusableInTouchMode(false);
-                            locationEt.setText(districtFromLocationSelection);
-                            int pos = locationEt.getText().length();
-                            locationEt.setSelection(pos);
-                            locationEt.setFocusable(true);
-                            locationEt.setFocusableInTouchMode(true);
+                            Toasty.error(view.getContext(), "Enter District!", Toasty.LENGTH_SHORT).show();
+                            locationEt.requestFocus();
                         }
-                    }else {
-                        Toasty.error(view.getContext(), "Enter District!", Toasty.LENGTH_SHORT).show();
-                        locationEt.requestFocus();
-                    }
-                } else if (locationSelection.getVisibility() == View.GONE) {
-                    locationSelection.setTextColor(Color.RED);
-                    Toasty.error(view.getContext(), "Select district from suggestion or press done from keyboard!", Toasty.LENGTH_SHORT).show();
-                } else if (selectedLocation.isEmpty()) {
-                    locationSelection.setTextColor(Color.RED);
-                    Toasty.error(view.getContext(), "Select Tourism Places!", Toasty.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(s_date)) {
-                    Toasty.error(view.getContext(), "Pick Start Date!", Toasty.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(r_date)) {
-                    Toasty.error(view.getContext(), "Pick Return Date!", Toasty.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(group_name)) {
-                    Toasty.error(view.getContext(), "Enter Group Name!", Toasty.LENGTH_SHORT).show();
-                    groupName_ET.requestFocus();
-                } else if (TextUtils.isEmpty(cost)) {
-                    Toasty.error(view.getContext(), "Enter Total Cost!", Toasty.LENGTH_SHORT).show();
-                    eventCost_ET.requestFocus();
-                } else if (TextUtils.isEmpty(time)) {
-                    Toasty.error(view.getContext(), "Pick Journey Time!", Toasty.LENGTH_SHORT).show();
-                    eventTime.requestFocus();
-                } else if (TextUtils.isEmpty(meetPlace)) {
-                    Toasty.error(view.getContext(), "Enter Meeting Places!", Toasty.LENGTH_SHORT).show();
-                    meetingPlace_ET.requestFocus();
-                } else if (TextUtils.isEmpty(description)) {
-                    Toasty.error(view.getContext(), "Enter Description about tour!", Toasty.LENGTH_SHORT).show();
-                    eventDescription_ET.requestFocus();
-                } else {
-                    if (!place.matches(districtFromLocationSelection)) {
-                        place = districtFromLocationSelection;
-                        addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
-                                userID, group_name, cost);
-                    } else if (place.matches(districtFromLocationSelection)) {
-                        addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
-                                userID, group_name, cost);
+                    } else if (locationSelection.getVisibility() == View.GONE) {
+                        locationSelection.setTextColor(Color.RED);
+                        Toasty.error(view.getContext(), "Select district from suggestion or press done from keyboard!", Toasty.LENGTH_SHORT).show();
+                    } else if (selectedLocation.isEmpty()) {
+                        locationSelection.setTextColor(Color.RED);
+                        Toasty.error(view.getContext(), "Select Tourism Places!", Toasty.LENGTH_SHORT).show();
+                    } else if (TextUtils.isEmpty(s_date)) {
+                        Toasty.error(view.getContext(), "Pick Start Date!", Toasty.LENGTH_SHORT).show();
+                    } else if (TextUtils.isEmpty(r_date)) {
+                        Toasty.error(view.getContext(), "Pick Return Date!", Toasty.LENGTH_SHORT).show();
+                    } else if (TextUtils.isEmpty(group_name)) {
+                        Toasty.error(view.getContext(), "Enter Group Name!", Toasty.LENGTH_SHORT).show();
+                        groupName_ET.requestFocus();
+                    } else if (TextUtils.isEmpty(cost)) {
+                        Toasty.error(view.getContext(), "Enter Total Cost!", Toasty.LENGTH_SHORT).show();
+                        eventCost_ET.requestFocus();
+                    } else if (TextUtils.isEmpty(time)) {
+                        Toasty.error(view.getContext(), "Pick Journey Time!", Toasty.LENGTH_SHORT).show();
+                        eventTime.requestFocus();
+                    } else if (TextUtils.isEmpty(meetPlace)) {
+                        Toasty.error(view.getContext(), "Enter Meeting Places!", Toasty.LENGTH_SHORT).show();
+                        meetingPlace_ET.requestFocus();
+                    } else if (TextUtils.isEmpty(description)) {
+                        Toasty.error(view.getContext(), "Enter Description about tour!", Toasty.LENGTH_SHORT).show();
+                        eventDescription_ET.requestFocus();
                     } else {
-                        Toasty.error(view.getContext(), "Location mismatching!", Toasty.LENGTH_SHORT).show();
+                        if (!place.matches(districtFromLocationSelection)) {
+                            place = districtFromLocationSelection;
+                            addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                                    userID, group_name, cost);
+                        } else if (place.matches(districtFromLocationSelection)) {
+                            addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
+                                    userID, group_name, cost);
+                        } else {
+                            Toasty.error(view.getContext(), "Location mismatching!", Toasty.LENGTH_SHORT).show();
+                        }
                     }
+                } else {
+                    startActivity(new Intent(view.getContext(), NoInternetConnection.class));
                 }
             }
         });
@@ -476,7 +492,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     }
 
     public void district(String d) {
-        districtFromLocationSelection = d.substring(0,1).toUpperCase()+d.substring(1);
+        districtFromLocationSelection = d.substring(0, 1).toUpperCase() + d.substring(1);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -575,7 +591,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 //loading.setVisibility(View.INVISIBLE);
             }
             //locationSelection.setVisibility(View.VISIBLE);
-            if(locationSelection.getVisibility() == View.GONE) {
+            if (locationSelection.getVisibility() == View.GONE) {
                 locationSelection.setVisibility(View.VISIBLE);
                 locationSelection.setAlpha(0.0f);
 
@@ -809,6 +825,11 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         }, hour, minute, true);//Yes 24 hour time
         mTimePicker.show();
 
+    }
+
+    public boolean checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        return isConnected;
     }
 
     private static void hideKeyboardFrom(Context context, View view) {

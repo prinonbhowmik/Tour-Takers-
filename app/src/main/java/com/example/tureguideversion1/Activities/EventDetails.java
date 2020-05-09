@@ -103,42 +103,51 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         deleteTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deletealertmessage();
-
+                if(checkConnection()) {
+                    deletealertmessage();
+                }else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
             }
         });
 
         joinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                joinAlertDialog();
-                DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
-                memberRef.child("id").setValue(userId);
-                DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
-                memberRef2.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        count = dataSnapshot.getChildrenCount();
-                        DatabaseReference e_Ref = databaseReference.child("event").child(event_Id);
-                        e_Ref.child("joinMemberCount").setValue(count);
-                        String c = String.valueOf(count);
-                        event_attending_member.setText(c);
-                    }
+                if(checkConnection()) {
+                    joinAlertDialog();
+                    DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
+                    memberRef.child("id").setValue(userId);
+                    DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
+                    memberRef2.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            count = dataSnapshot.getChildrenCount();
+                            DatabaseReference e_Ref = databaseReference.child("event").child(event_Id);
+                            e_Ref.child("joinMemberCount").setValue(count);
+                            String c = String.valueOf(count);
+                            event_attending_member.setText(c);
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
-                joinBtn.setVisibility(View.GONE);
-
+                        }
+                    });
+                    joinBtn.setVisibility(View.GONE);
+                }else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
             }
         });
         cancel_joinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cancelAlertDialog();
-
+                if(checkConnection()) {
+                    cancelAlertDialog();
+                }else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
             }
         });
 
@@ -157,52 +166,68 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         descriptionIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle args = new Bundle();
-                args.putString("description", "Description");
-                args.putString("event_id", event_Id);
-                args.putString("input_d", description);
-                EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
-                bottomSheet.setArguments(args);
-                bottomSheet.show(getSupportFragmentManager(), "test");
+                if(checkConnection()) {
+                    Bundle args = new Bundle();
+                    args.putString("description", "Description");
+                    args.putString("event_id", event_Id);
+                    args.putString("input_d", description);
+                    EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
+                    bottomSheet.setArguments(args);
+                    bottomSheet.show(getSupportFragmentManager(), "test");
+                }else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
             }
         });
 
         meetingIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle args = new Bundle();
-                args.putString("meeting_place", "Meeting Place");
-                args.putString("event_id", event_Id);
-                args.putString("input_m", m_place);
-                EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
-                bottomSheet.setArguments(args);
-                bottomSheet.show(getSupportFragmentManager(), "test");
+                if(checkConnection()) {
+                    Bundle args = new Bundle();
+                    args.putString("meeting_place", "Meeting Place");
+                    args.putString("event_id", event_Id);
+                    args.putString("input_m", m_place);
+                    EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
+                    bottomSheet.setArguments(args);
+                    bottomSheet.show(getSupportFragmentManager(), "test");
+                }else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
             }
         });
 
         groupIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle args = new Bundle();
-                args.putString("group_name", "Group Name");
-                args.putString("event_id", event_Id);
-                args.putString("input_g", g_name);
-                EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
-                bottomSheet.setArguments(args);
-                bottomSheet.show(getSupportFragmentManager(), "test");
+                if(checkConnection()) {
+                    Bundle args = new Bundle();
+                    args.putString("group_name", "Group Name");
+                    args.putString("event_id", event_Id);
+                    args.putString("input_g", g_name);
+                    EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
+                    bottomSheet.setArguments(args);
+                    bottomSheet.show(getSupportFragmentManager(), "test");
+                }else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
             }
         });
 
         costIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle args = new Bundle();
-                args.putString("cost", "Total Cost");
-                args.putString("event_id", event_Id);
-                args.putString("input_c", e_cost);
-                EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
-                bottomSheet.setArguments(args);
-                bottomSheet.show(getSupportFragmentManager(), "test");
+                if(checkConnection()) {
+                    Bundle args = new Bundle();
+                    args.putString("cost", "Total Cost");
+                    args.putString("event_id", event_Id);
+                    args.putString("input_c", e_cost);
+                    EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
+                    bottomSheet.setArguments(args);
+                    bottomSheet.show(getSupportFragmentManager(), "test");
+                }else {
+                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                }
             }
         });
 
