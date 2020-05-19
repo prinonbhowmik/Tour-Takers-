@@ -99,7 +99,7 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
                 profilename.setText(name);
                 profileemail.setText(email);
                 profilephoneno.setText(phone);
-                if (!image.isEmpty()) {
+                if (!image.isEmpty() || !image.matches("")) {
                     try {
                         GlideApp.with(UserProfile.this)
                                 .load(image)
@@ -108,6 +108,19 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
                     } catch (Exception e) {
                         e.printStackTrace();
                         //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                    }
+                }else {
+                    String sex = profile.getSex();
+                    if(sex.matches("male")){
+                        GlideApp.with(UserProfile.this)
+                                .load(getImageFromDrawable("man"))
+                                .centerInside()
+                                .into(profileImage);
+                    }else if(sex.matches("female")){
+                        GlideApp.with(UserProfile.this)
+                                .load(getImageFromDrawable("woman"))
+                                .centerInside()
+                                .into(profileImage);
                     }
                 }
 
@@ -448,5 +461,12 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
             textView.setGravity(Gravity.CENTER_HORIZONTAL);
         }
         snackbar.show();
+    }
+
+    public int getImageFromDrawable(String imageName) {
+
+        int drawableResourceId = this.getResources().getIdentifier(imageName, "drawable", this.getPackageName());
+
+        return drawableResourceId;
     }
 }

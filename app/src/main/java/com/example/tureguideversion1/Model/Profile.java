@@ -8,6 +8,7 @@ public class Profile {
     String address;
     String phone;
     String image;
+    String sex;
 
     public Profile() {
     }
@@ -20,13 +21,18 @@ public class Profile {
 //        this.phone = phone;
 //    }
 
-    public Profile(String name, String email, String password, String address, String phone, String image) {
+    public Profile(String name, String email, String password, String address, String phone, String image, String sex) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.address = address;
         this.phone = phone;
         this.image = image;
+        this.sex = sex;
+    }
+
+    public String getSex() {
+        return sex;
     }
 
     public String getName() {

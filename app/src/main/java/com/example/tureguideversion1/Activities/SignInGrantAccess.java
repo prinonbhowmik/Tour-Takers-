@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -128,7 +129,12 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
-                                    unregisterReceiver(connectivityReceiver);
+                                    try {
+                                        if (connectivityReceiver != null)
+                                            unregisterReceiver(connectivityReceiver);
+                                    } catch (Exception e) {
+                                        Log.d(null, "Login: " + e);
+                                    }
                                     Intent intent = new Intent(SignInGrantAccess.this, MainActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     finish();
@@ -140,15 +146,15 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                                     ref.addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if(dataSnapshot.exists()){
+                                            if (dataSnapshot.exists()) {
                                                 Toasty.error(getApplicationContext(), "You can't use guide account to this app!", Toasty.LENGTH_LONG).show();
                                                 FirebaseAuth.getInstance().signOut();
                                                 Intent intent = new Intent(SignInGrantAccess.this, SignIn.class);
                                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                 startActivity(intent);
                                                 finish();
-                                            }else {
-                                                Toasty.error(getApplicationContext(),"Sign In failed. Please contact to the support!",Toasty.LENGTH_LONG).show();
+                                            } else {
+                                                Toasty.error(getApplicationContext(), "Sign In failed. Please contact to the support!", Toasty.LENGTH_LONG).show();
                                                 FirebaseAuth.getInstance().signOut();
                                                 Intent intent = new Intent(SignInGrantAccess.this, SignIn.class);
                                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -44,6 +44,8 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.HashMap;
 
+import co.ceryle.radiorealbutton.RadioRealButton;
+import co.ceryle.radiorealbutton.RadioRealButtonGroup;
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 
@@ -59,7 +61,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
     private DatabaseReference reference;
     private FirebaseStorage storage;
     private StorageReference storageReference;
-    private String email, name, phone, password, image, rating;
+    private String email, name, phone, password, gender = "";
     Animation topAnim, bottomAnim, leftAnim, rightAnim, ball1Anim, ball2Anim, ball3Anim, edittext_anim;
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
@@ -67,6 +69,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
     private Uri userImage;
     private String userId;
     private ProgressDialog progressDialog;
+    private RadioRealButtonGroup radioGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +90,17 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
         email = intent.getExtras().getString("email");
         emailEt.setText(email);
         progressDialog = new ProgressDialog(this);
+
+        radioGroup.setOnClickedButtonListener(new RadioRealButtonGroup.OnClickedButtonListener() {
+            @Override
+            public void onClickedButton(RadioRealButton button, int position) {
+                if(position == 0){
+                    gender = "male";
+                }else if(position == 1){
+                    gender = "female";
+                }
+            }
+        });
 
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +127,8 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                 } else if (passwordEt.length() < 6) {
                     passwordEt.setError("At least 6 characters!", null);
                     passwordEt.requestFocus();
+                } else if (gender.matches("")) {
+                    Toasty.error(getApplicationContext(),"Please select gender!",Toasty.LENGTH_SHORT).show();
                 }else {
                     signupBtn.setEnabled(false);
                     checkmail();
@@ -132,7 +148,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                         boolean check = !task.getResult().getSignInMethods().isEmpty();
                         if (!check) {
                             //Toast.makeText(getApplicationContext(),"Email not found",Toast.LENGTH_SHORT).show();
-                            signup(email, name, phone, password);
+                            signup(email, name, phone, password, gender);
                         } else {
                             signupBtn.setEnabled(true);
                             emailEt.setError("This email address is already in use by another account!");
@@ -160,7 +176,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
 
     }
 
-    private void signup(final String email, final String name, final String phone, final String password) {
+    private void signup(final String email, final String name, final String phone, final String password, final String gender) {
         progressDialog.setTitle("Signing up...");
         progressDialog.show();
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -177,6 +193,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                     userInfo.put("email", email);
                     userInfo.put("phone", phone);
                     userInfo.put("password", password);
+                    userInfo.put("sex", gender);
                     userInfo.put("image", "");
                     userInfo.put("rating", "");
                     userInfo.put("Id", userId);
@@ -298,7 +315,7 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
         signupBtn = findViewById(R.id.signup_BTN);
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference();
-
+        radioGroup = findViewById(R.id.radioGroupFromSignUp);
     }
 
     @Override

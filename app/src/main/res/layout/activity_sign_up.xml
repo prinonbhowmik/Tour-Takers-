@@ -171,42 +171,57 @@
                     android:id="@+id/gender_txt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gender :"
-                    android:textSize="21sp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"
                     android:layout_centerVertical="true"
-                    android:textColor="@color/colorYellow" />
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/amarante"
+                    android:text="Gender :"
+                    android:textColor="@color/colorYellow"
+                    android:textSize="23sp" />
 
-                <RadioGroup
-                    android:id="@+id/genderRadioGroup"
-                    android:layout_width="match_parent"
+                <co.ceryle.radiorealbutton.RadioRealButtonGroup
+                    android:id="@+id/radioGroupFromSignUp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:orientation="horizontal"
-                    android:theme="@style/radio_design"
-                    android:layout_toEndOf="@+id/gender_txt">
+                    android:layout_gravity="center_vertical"
+                    android:layout_toEndOf="@id/gender_txt"
+                    app:rrbg_animateDrawables_enter="overshoot"
+                    app:rrbg_animateTexts_enter="anticipateOvershoot"
+                    app:rrbg_dividerColor="@color/colorBlack"
+                    app:rrbg_dividerSize="1dp"
+                    app:rrbg_radius="10dp"
+                    app:rrbg_selectorColor="@color/colorYellow"
+                    app:rrbg_selectorRadius="10dp"
+                    app:rrbg_selectorSize="3dp">
 
-                    <RadioButton
-                        android:id="@+id/radioM"
+                    <co.ceryle.radiorealbutton.RadioRealButton
+                        android:id="@+id/radioBTN1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:rrb_drawable="@drawable/man"
+                        app:rrb_drawableHeight="30dp"
+                        app:rrb_drawablePadding="12dp"
+                        app:rrb_drawableWidth="30dp"
+                        app:rrb_ripple="true"
+                        app:rrb_rippleColor="@color/colorBlack"
+                        app:rrb_text="Male"
+                        app:rrb_textColor="@color/colorBlack" />
+
+                    <co.ceryle.radiorealbutton.RadioRealButton
+                        android:id="@+id/radioBTN2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Male"
-                        android:textColor="@color/colorYellow"
-                        android:textSize="21sp"
-                        android:checked="true" />
+                        app:rrb_drawable="@drawable/woman"
+                        app:rrb_drawableHeight="30dp"
+                        app:rrb_drawablePadding="12dp"
+                        app:rrb_drawableWidth="30dp"
+                        app:rrb_ripple="true"
+                        app:rrb_rippleColor="@color/colorBlack"
+                        app:rrb_text="Female"
+                        app:rrb_textColor="@color/colorBlack" />
 
-                    <RadioButton
-                        android:id="@+id/radioF"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="false"
-                        android:text="Female"
-                        android:layout_marginStart="20dp"
-                        android:textColor="@color/colorYellow"
-                        android:textSize="21sp" />
 
-                </RadioGroup>
+                </co.ceryle.radiorealbutton.RadioRealButtonGroup>
 
 
             </RelativeLayout>

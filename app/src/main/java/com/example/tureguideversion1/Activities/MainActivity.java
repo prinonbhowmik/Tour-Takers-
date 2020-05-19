@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                         UserName.setText(name);
                         userEmail.setText(email);
-                        if (!image.isEmpty()) {
+                        if (!image.isEmpty() || !image.matches("")) {
                             try {
                                 GlideApp.with(MainActivity.this)
                                         .load(image)
@@ -123,6 +123,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                            }
+                        }else {
+                            String sex = profile.getSex();
+                            if(sex.matches("male")){
+                                GlideApp.with(MainActivity.this)
+                                        .load(getImageFromDrawable("man"))
+                                        .centerInside()
+                                        .into(circularImageView);
+                            }else if(sex.matches("female")){
+                                GlideApp.with(MainActivity.this)
+                                        .load(getImageFromDrawable("woman"))
+                                        .centerInside()
+                                        .into(circularImageView);
                             }
                         }
                     } catch (NullPointerException e) {
@@ -438,5 +451,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (value == 1) {
             navigationView.getMenu().getItem(2).setChecked(true);
         }
+    }
+
+    public int getImageFromDrawable(String imageName) {
+
+        int drawableResourceId = this.getResources().getIdentifier(imageName, "drawable", this.getPackageName());
+
+        return drawableResourceId;
     }
 }
