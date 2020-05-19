@@ -76,7 +76,7 @@ public class JoinMemberDetails extends AppCompatActivity {
                             //Get map of users in datasnapshot
                             //joinMemberInfoList((Map<String, Object>) dataSnapshot.getValue());
                             Map<String,Object> values = (Map<String, Object>) dataSnapshot.getValue();
-                            EventJoinMemberList members = new EventJoinMemberList((String) values.get("name"),(String) values.get("email"),(String) values.get("image"));
+                            EventJoinMemberList members = new EventJoinMemberList((String) values.get("name"),(String) values.get("email"),(String) values.get("image"),(String) values.get("sex"));
                             eventJoinMemberListList.add(members);
                             eventJoinMemberAdapter.notifyDataSetChanged();
                         }

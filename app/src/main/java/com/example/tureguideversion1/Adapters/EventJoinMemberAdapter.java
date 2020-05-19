@@ -47,8 +47,27 @@ public class EventJoinMemberAdapter extends RecyclerView.Adapter<EventJoinMember
                             .getImage())
                     .fitCenter()
                     .into(holder.member_image);
+        }else {
+            if(event_member.getGender().matches("male")){
+                GlideApp.with(context)
+                        .load(getImageFromDrawable("man"))
+                        .centerInside()
+                        .into(holder.member_image);
+            }else if(event_member.getGender().matches("female")){
+                GlideApp.with(context)
+                        .load(getImageFromDrawable("woman"))
+                        .centerInside()
+                        .into(holder.member_image);
+            }
         }
 
+    }
+
+    public int getImageFromDrawable(String imageName) {
+
+        int drawableResourceId = context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
+
+        return drawableResourceId;
     }
 
     @Override

@@ -477,13 +477,14 @@
                 android:textColor="@android:color/black"
                 android:textSize="12sp" />
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/event_publish_imageIV"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:background="@android:color/darker_gray" />
+                app:civ_border_color="@color/color1"
+                app:civ_border_width="4dp"/>
 
         </RelativeLayout>
 

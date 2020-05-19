@@ -48,20 +48,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 
 public class EventDetails extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView event_place, event_date, return_date, event_time, meeting_place, event_description, publish_date,
             publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, deleteTV, txt7;
-    private ImageView descriptionIV, meetingIV, groupIV, costIV, event_image, event_publisher_image;
+    private ImageView descriptionIV, meetingIV, groupIV, costIV, event_image;
+    private CircleImageView event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
     private String place, s_date, r_date, time, m_place, description, p_date, g_name, e_cost, publisher_id, counter, place1;
     private int attend_member_count;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
     private String userId, event_Id;
-    private String member_name, member_image, member_phone, member_email;
+    private String member_name, member_image, member_phone, member_email, member_gender;
     private String update_des;
     private long count;
     private List<EventLocationList> locationLists;
@@ -519,7 +521,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
             }
         });
 
-        //for user name
+        //for user info
         databaseReference = FirebaseDatabase.getInstance().getReference();
         DatabaseReference ref = databaseReference.child("profile").child(publisher_id);
         ref.addValueEventListener(new ValueEventListener() {
@@ -530,8 +532,9 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                     member_image = (String) dataSnapshot.child("image").getValue();
                     member_phone = (String) dataSnapshot.child("phone").getValue();
                     member_email = (String) dataSnapshot.child("email").getValue();
+                    member_gender = (String) dataSnapshot.child("sex").getValue();
                     publisher_name.setText(member_name);
-                    if (!member_image.isEmpty()) {
+                    if (!member_image.isEmpty() || !member_image.matches("")) {
                         try {
 
                             GlideApp.with(EventDetails.this)
@@ -540,6 +543,18 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                                     .into(event_publisher_image);
                         } catch (Exception e) {
                             e.printStackTrace();
+                        }
+                    }else {
+                        if(member_gender.matches("male")){
+                            GlideApp.with(EventDetails.this)
+                                    .load(getImageFromDrawable("man"))
+                                    .centerInside()
+                                    .into(event_publisher_image);
+                        }else if(member_gender.matches("female")){
+                            GlideApp.with(EventDetails.this)
+                                    .load(getImageFromDrawable("woman"))
+                                    .centerInside()
+                                    .into(event_publisher_image);
                         }
                     }
                 }
@@ -678,6 +693,18 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                     .load(member_image)
                     .fitCenter()
                     .into(pic);
+        }else {
+            if(member_gender.matches("male")){
+                GlideApp.with(profileDialog.getContext())
+                        .load(getImageFromDrawable("man"))
+                        .fitCenter()
+                        .into(pic);
+            }else if(member_gender.matches("female")){
+                GlideApp.with(profileDialog.getContext())
+                        .load(getImageFromDrawable("woman"))
+                        .fitCenter()
+                        .into(pic);
+            }
         }
         close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -763,5 +790,12 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
 
         } catch (Exception e) {
         }
+    }
+
+    public int getImageFromDrawable(String imageName) {
+
+        int drawableResourceId = this.getResources().getIdentifier(imageName, "drawable", this.getPackageName());
+
+        return drawableResourceId;
     }
 }

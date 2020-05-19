@@ -9,11 +9,13 @@ public class EventJoinMemberList {
     private String password;
     private String image;
     private String rating;
+    private String gender;
 
-    public EventJoinMemberList(String name, String email, String image) {
+    public EventJoinMemberList(String name, String email, String image, String gender) {
         this.name = name;
         this.email = email;
         this.image = image;
+        this.gender = gender;
     }
 
     public EventJoinMemberList(String id, String name, String phone, String email, String password,
@@ -56,5 +58,9 @@ public class EventJoinMemberList {
 
     public String getRating() {
         return rating;
+    }
+
+    public String getGender() {
+        return gender;
     }
 }
