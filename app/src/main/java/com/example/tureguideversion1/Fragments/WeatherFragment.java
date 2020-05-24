@@ -1,41 +1,29 @@
 package com.example.tureguideversion1.Fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.androdocs.httprequest.HttpRequest;
 import com.example.tureguideversion1.ForApi.ApiInterFace;
 import com.example.tureguideversion1.ForApi.ApiUtils;
 import com.example.tureguideversion1.R;
 import com.example.tureguideversion1.Weather.WeatherResponse;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -47,27 +35,24 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static androidx.core.content.PermissionChecker.checkSelfPermission;
-
 public class WeatherFragment extends Fragment {
 
     String API = "618e3a096dcd96b86ffa64b35ef140e1";
 
     String CITY = "";
 
-    FusedLocationProviderClient providerClient;
+    private FusedLocationProviderClient providerClient;
     private LottieAnimationView weatherAnim;
-    TextView addressTxt, updated_atTxt, statusTxt, tempTxt, feels_like, sunriseTxt,
+    private TextView addressTxt, updated_atTxt, statusTxt, tempTxt, feels_like, sunriseTxt,
             sunsetTxt, windTxt, pressureTxt, humidityTxt;
 
 
     private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
 
-    double lat, lon;
+    private double lat, lon;
 
     int MY_PERMISSION ;
-    ApiInterFace api;
+    private ApiInterFace api;
 
     public WeatherFragment() {
         // Required empty public constructor

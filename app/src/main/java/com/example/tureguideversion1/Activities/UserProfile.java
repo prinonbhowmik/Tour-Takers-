@@ -2,7 +2,6 @@ package com.example.tureguideversion1.Activities;
 
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -25,7 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
-import com.bumptech.glide.Glide;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.example.tureguideversion1.GlideApp;
@@ -47,7 +45,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -70,7 +67,7 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
     ProgressBar progressBar;
-    Animation topAnim, bottomAnim, leftAnim, rightAnim, fadeIn, scaleAnim, ball3Anim, edittext_anim, blink;
+    Animation topAnim, bottomAnim2, leftAnim, rightAnim, fadeIn, scaleAnim, ball3Anim, edittext_anim, blink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -318,7 +315,7 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
     private void animation() {
 
         topAnim = AnimationUtils.loadAnimation(this, R.anim.top_animation);
-        bottomAnim = AnimationUtils.loadAnimation(this, R.anim.bottom_animation);
+        bottomAnim2 = AnimationUtils.loadAnimation(this, R.anim.bottom_animation2);
         leftAnim = AnimationUtils.loadAnimation(this, R.anim.left_animation);
         rightAnim = AnimationUtils.loadAnimation(this, R.anim.right_animation);
         fadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
@@ -336,8 +333,10 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
         n2.setAnimation(rightAnim);
         p1.setAnimation(leftAnim);
         p2.setAnimation(rightAnim);
-        totalEventLayout.setAnimation(bottomAnim);
-        totalTourLayout.setAnimation(bottomAnim);
+        totalEventLayout.setAnimation(bottomAnim2);
+        totalTourLayout.setAnimation(bottomAnim2);
+        ratingLayout.setAnimation(bottomAnim2);
+
     }
 
     private void init() {
