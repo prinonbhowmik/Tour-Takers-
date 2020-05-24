@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.androdocs.httprequest.HttpRequest;
 import com.example.tureguideversion1.ForApi.ApiInterFace;
 import com.example.tureguideversion1.ForApi.ApiUtils;
@@ -55,8 +57,8 @@ public class WeatherFragment extends Fragment {
     String CITY = "";
 
     FusedLocationProviderClient providerClient;
-
-    TextView addressTxt, updated_atTxt, statusTxt, tempTxt, temp_minTxt, temp_maxTxt, sunriseTxt,
+    private LottieAnimationView weatherAnim;
+    TextView addressTxt, updated_atTxt, statusTxt, tempTxt, feels_like, sunriseTxt,
             sunsetTxt, windTxt, pressureTxt, humidityTxt;
 
 
@@ -81,13 +83,13 @@ public class WeatherFragment extends Fragment {
         updated_atTxt = view.findViewById(R.id.updated_at);
         statusTxt = view.findViewById(R.id.status);
         tempTxt = view.findViewById(R.id.temp);
-        temp_minTxt = view.findViewById(R.id.temp_min);
-        temp_maxTxt = view.findViewById(R.id.temp_max);
+        feels_like = view.findViewById(R.id.feels_like);
         sunriseTxt = view.findViewById(R.id.sunrise);
         sunsetTxt = view.findViewById(R.id.sunset);
         windTxt = view.findViewById(R.id.wind);
         pressureTxt = view.findViewById(R.id.pressure);
         humidityTxt = view.findViewById(R.id.humidity);
+        weatherAnim = view.findViewById(R.id.weatherAnim);
         api = ApiUtils.getUserService();
         providerClient = new FusedLocationProviderClient(getContext());
 
@@ -117,7 +119,6 @@ public class WeatherFragment extends Fragment {
                     }else{
                         WeatherResponse weatherResponse = response.body();
                         String address = "";
-
                         Geocoder geocoder = new Geocoder(getContext(),Locale.getDefault());
 
                         List<Address>  addresses;
@@ -139,23 +140,141 @@ public class WeatherFragment extends Fragment {
 
                         Float updatedAt = weatherResponse.dt;
                         // Date time  = new Date(updatedAt.longValue());
+                        if(weatherResponse.weather.get(0).icon.contains("d")) {
+                            if (weatherResponse.weather.get(0).description.matches("light thunderstorm") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm") ||
+                                    weatherResponse.weather.get(0).description.matches("heavy thunderstorm") ||
+                                    weatherResponse.weather.get(0).description.matches("ragged thunderstorm")) {
+                                weatherAnim.setAnimation("thunder.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).description.matches("thunderstorm with light rain") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm with rain") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm with heavy rain") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm with light drizzle") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm with drizzle") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm with heavy drizzle")) {
+                                weatherAnim.setAnimation("stormshowersday.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Drizzle") ||
+                                    weatherResponse.weather.get(0).description.matches("light intensity shower rain") ||
+                                    weatherResponse.weather.get(0).description.matches("shower rain") ||
+                                    weatherResponse.weather.get(0).description.matches("heavy intensity shower rain") ||
+                                    weatherResponse.weather.get(0).description.matches("ragged shower rain")) {
+                                weatherAnim.setAnimation("dizzle.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Snow") ||
+                                    weatherResponse.weather.get(0).description.matches("freezing rain")) {
+                                weatherAnim.setAnimation("snow.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Clear")) {
+                                weatherAnim.setAnimation("sunny.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).description.matches("few clouds")) {
+                                weatherAnim.setAnimation("partly_cloudy.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).description.matches("scattered clouds") ||
+                                    weatherResponse.weather.get(0).description.matches("broken clouds") ||
+                                    weatherResponse.weather.get(0).description.matches("overcast clouds")) {
+                                weatherAnim.setAnimation("windy.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).description.matches("light rain") ||
+                                    weatherResponse.weather.get(0).description.matches("moderate rain") ||
+                                    weatherResponse.weather.get(0).description.matches("heavy intensity rain") ||
+                                    weatherResponse.weather.get(0).description.matches("very heavy rain") ||
+                                    weatherResponse.weather.get(0).description.matches("extreme rain")) {
+                                weatherAnim.setAnimation("partly_shower.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Fog")) {
+                                weatherAnim.setAnimation("foggyDay.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Mist") ||
+                                    weatherResponse.weather.get(0).main.matches("Smoke") ||
+                                    weatherResponse.weather.get(0).main.matches("Haze") ||
+                                    weatherResponse.weather.get(0).main.matches("Dust") ||
+                                    weatherResponse.weather.get(0).main.matches("Sand") ||
+                                    weatherResponse.weather.get(0).main.matches("Ash") ||
+                                    weatherResponse.weather.get(0).main.matches("Squall")) {
+                                weatherAnim.setAnimation("mist.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Tornado")) {
+                                weatherAnim.setAnimation("tornado.json");
+                                weatherAnim.playAnimation();
+                            }
+                        }else if(weatherResponse.weather.get(0).icon.contains("n")) {
+                            if (weatherResponse.weather.get(0).description.matches("light thunderstorm") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm") ||
+                                    weatherResponse.weather.get(0).description.matches("heavy thunderstorm") ||
+                                    weatherResponse.weather.get(0).description.matches("ragged thunderstorm")) {
+                                weatherAnim.setAnimation("thunder.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).description.matches("thunderstorm with light rain") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm with rain") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm with heavy rain") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm with light drizzle") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm with drizzle") ||
+                                    weatherResponse.weather.get(0).description.matches("thunderstorm with heavy drizzle")) {
+                                weatherAnim.setAnimation("storm.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Drizzle") ||
+                                    weatherResponse.weather.get(0).description.matches("light intensity shower rain") ||
+                                    weatherResponse.weather.get(0).description.matches("shower rain") ||
+                                    weatherResponse.weather.get(0).description.matches("heavy intensity shower rain") ||
+                                    weatherResponse.weather.get(0).description.matches("ragged shower rain")) {
+                                weatherAnim.setAnimation("dizzle.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Snow") ||
+                                    weatherResponse.weather.get(0).description.matches("freezing rain")) {
+                                weatherAnim.setAnimation("snow.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Clear")) {
+                                weatherAnim.setAnimation("night.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).description.matches("few clouds")) {
+                                weatherAnim.setAnimation("cloudynight.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).description.matches("scattered clouds") ||
+                                    weatherResponse.weather.get(0).description.matches("broken clouds") ||
+                                    weatherResponse.weather.get(0).description.matches("overcast clouds")) {
+                                weatherAnim.setAnimation("windy.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).description.matches("light rain") ||
+                                    weatherResponse.weather.get(0).description.matches("moderate rain") ||
+                                    weatherResponse.weather.get(0).description.matches("heavy intensity rain") ||
+                                    weatherResponse.weather.get(0).description.matches("very heavy rain") ||
+                                    weatherResponse.weather.get(0).description.matches("extreme rain")) {
+                                weatherAnim.setAnimation("rainynight.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Fog")) {
+                                weatherAnim.setAnimation("mist.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Mist") ||
+                                    weatherResponse.weather.get(0).main.matches("Smoke") ||
+                                    weatherResponse.weather.get(0).main.matches("Haze") ||
+                                    weatherResponse.weather.get(0).main.matches("Dust") ||
+                                    weatherResponse.weather.get(0).main.matches("Sand") ||
+                                    weatherResponse.weather.get(0).main.matches("Ash") ||
+                                    weatherResponse.weather.get(0).main.matches("Squall")) {
+                                weatherAnim.setAnimation("mist.json");
+                                weatherAnim.playAnimation();
+                            } else if (weatherResponse.weather.get(0).main.matches("Tornado")) {
+                                weatherAnim.setAnimation("tornado.json");
+                                weatherAnim.playAnimation();
+                            }
+                        }
                         String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt.longValue() *1000));
                         updated_atTxt.setText(updatedAtText);
                         statusTxt.setText(weatherResponse.weather.get(0).description);
-                        int temp = (int) weatherResponse.main.temp;
-                        tempTxt.setText(String.valueOf(temp)+"°C");
-                        temp_minTxt.setText("Min Temp: "+String.valueOf(weatherResponse.main.temp_min)+"°C");
-                        temp_maxTxt.setText("Max Temp: "+String.valueOf(weatherResponse.main.temp_max)+"°C");
-
+                        tempTxt.setText(Math.round(weatherResponse.main.temp)+"°C");
+                        feels_like.setText("Feels Like: "+Math.round(weatherResponse.main.feels_like)+"°C");
                         long sunrise = weatherResponse.sys.sunrise;
                         String sunrisetime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunrise*1000));
                         sunriseTxt.setText(sunrisetime);
                         long sunset = weatherResponse.sys.sunset;
                         String sunsettime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunset*1000));
                         sunsetTxt.setText(sunsettime);
-                        windTxt.setText(String.valueOf(weatherResponse.wind.speed));
+                        windTxt.setText(Math.round(weatherResponse.wind.speed)+" Meter/Sec");
                         pressureTxt.setText(String.valueOf(weatherResponse.main.pressure));
-                        humidityTxt.setText(String.valueOf(weatherResponse.main.humidity));
+                        humidityTxt.setText(Math.round(weatherResponse.main.humidity)+"%");
                     }
                 }
             }
