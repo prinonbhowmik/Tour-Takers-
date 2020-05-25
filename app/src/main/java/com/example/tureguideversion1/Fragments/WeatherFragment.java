@@ -16,10 +16,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.tureguideversion1.Adapters.HourlyForcastAdapter;
 import com.example.tureguideversion1.ForApi.ApiInterFace;
 import com.example.tureguideversion1.ForApi.ApiUtils;
+import com.example.tureguideversion1.Model.HourlyForcastList;
 import com.example.tureguideversion1.R;
 import com.example.tureguideversion1.Weather.WeatherResponse;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -28,6 +32,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -44,15 +49,16 @@ public class WeatherFragment extends Fragment {
 
     private FusedLocationProviderClient providerClient;
     private LottieAnimationView weatherAnim;
-    private TextView addressTxt, updated_atTxt, statusTxt, tempTxt, feels_like, sunriseTxt,
-            sunsetTxt, windTxt, pressureTxt, humidityTxt;
+    private TextView addressTxt, updated_atTxt, statusTxt, tempTxt, feels_like, windTxt, pressureTxt, humidityTxt;
+    private RecyclerView hourlyRecycleView;
+    private HourlyForcastAdapter hourlyForcastAdapter;
+    private List<HourlyForcastList> hourlyForcastLists;
 
-
-    private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+    private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
 
     private double lat, lon;
 
-    int MY_PERMISSION ;
+    int MY_PERMISSION;
     private ApiInterFace api;
 
     public WeatherFragment() {
@@ -64,22 +70,25 @@ public class WeatherFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view =  inflater.inflate(R.layout.fragment_weather, container, false);
+        final View view = inflater.inflate(R.layout.fragment_weather, container, false);
         addressTxt = view.findViewById(R.id.address);
         updated_atTxt = view.findViewById(R.id.updated_at);
         statusTxt = view.findViewById(R.id.status);
         tempTxt = view.findViewById(R.id.temp);
         feels_like = view.findViewById(R.id.feels_like);
-        sunriseTxt = view.findViewById(R.id.sunrise);
-        sunsetTxt = view.findViewById(R.id.sunset);
         windTxt = view.findViewById(R.id.wind);
         pressureTxt = view.findViewById(R.id.pressure);
         humidityTxt = view.findViewById(R.id.humidity);
         weatherAnim = view.findViewById(R.id.weatherAnim);
         api = ApiUtils.getUserService();
         providerClient = new FusedLocationProviderClient(getContext());
-
-        if (checkLocationPermission()){
+        hourlyForcastLists = new ArrayList<>();
+        hourlyRecycleView = view.findViewById(R.id.hourlyForcastRecycleView);
+        hourlyForcastAdapter = new HourlyForcastAdapter(hourlyForcastLists, getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        hourlyRecycleView.setLayoutManager(layoutManager);
+        hourlyRecycleView.setAdapter(hourlyForcastAdapter);
+        if (checkLocationPermission()) {
             Task location = providerClient.getLastLocation();
             location.addOnCompleteListener(new OnCompleteListener() {
                 @Override
@@ -87,7 +96,7 @@ public class WeatherFragment extends Fragment {
                     Location currentLocation = (Location) task.getResult();
                     lat = currentLocation.getLatitude();
                     lon = currentLocation.getLongitude();
-                    findweather(lat,lon);
+                    findweather(lat, lon);
                 }
             });
         }
@@ -95,23 +104,23 @@ public class WeatherFragment extends Fragment {
     }
 
     private void findweather(final double lat, final double lon) {
-        Call<WeatherResponse> call = api.getWeather(lat,lon,"metric",API);
+        Call<WeatherResponse> call = api.getWeather(lat, lon, "metric", API);
         call.enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
-                if (response.isSuccessful()){
-                    if (response.body()==null){
+                if (response.isSuccessful()) {
+                    if (response.body() == null) {
                         return;
-                    }else{
+                    } else {
                         WeatherResponse weatherResponse = response.body();
                         String address = "";
-                        Geocoder geocoder = new Geocoder(getContext(),Locale.getDefault());
+                        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
 
-                        List<Address>  addresses;
+                        List<Address> addresses;
 
                         try {
-                            addresses = geocoder.getFromLocation(lat,lon,1);
-                            if(addresses.size()>0){
+                            addresses = geocoder.getFromLocation(lat, lon, 1);
+                            if (addresses.size() > 0) {
                                 address = addresses.get(0).getLocality();
                                 addressTxt.setText(address);
                             }
@@ -122,10 +131,10 @@ public class WeatherFragment extends Fragment {
                         }
 
 
-                      //  addressTxt.setText(weatherResponse.name+","+weatherResponse.sys.country);
+                        //  addressTxt.setText(weatherResponse.name+","+weatherResponse.sys.country);
                         Float updatedAt = weatherResponse.currentWeather.dt;
                         // Date time  = new Date(updatedAt.longValue());
-                        if(weatherResponse.currentWeather.weather.get(0).icon.contains("d")) {
+                        if (weatherResponse.currentWeather.weather.get(0).icon.contains("d")) {
                             if (weatherResponse.currentWeather.weather.get(0).description.matches("light thunderstorm") ||
                                     weatherResponse.currentWeather.weather.get(0).description.matches("thunderstorm") ||
                                     weatherResponse.currentWeather.weather.get(0).description.matches("heavy thunderstorm") ||
@@ -185,7 +194,7 @@ public class WeatherFragment extends Fragment {
                                 weatherAnim.setAnimation("tornado.json");
                                 weatherAnim.playAnimation();
                             }
-                        }else if(weatherResponse.currentWeather.weather.get(0).icon.contains("n")) {
+                        } else if (weatherResponse.currentWeather.weather.get(0).icon.contains("n")) {
                             if (weatherResponse.currentWeather.weather.get(0).description.matches("light thunderstorm") ||
                                     weatherResponse.currentWeather.weather.get(0).description.matches("thunderstorm") ||
                                     weatherResponse.currentWeather.weather.get(0).description.matches("heavy thunderstorm") ||
@@ -246,20 +255,24 @@ public class WeatherFragment extends Fragment {
                                 weatherAnim.playAnimation();
                             }
                         }
-                        String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt.longValue() *1000));
+                        String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt.longValue() * 1000));
                         updated_atTxt.setText(updatedAtText);
                         statusTxt.setText(weatherResponse.currentWeather.weather.get(0).description);
-                        tempTxt.setText(Math.round(weatherResponse.currentWeather.temp)+"°C");
-                        feels_like.setText("Feels Like: "+Math.round(weatherResponse.currentWeather.feels_like)+"°C");
-                        long sunrise = weatherResponse.currentWeather.sunrise;
-                        String sunrisetime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunrise*1000));
-                        sunriseTxt.setText(sunrisetime);
-                        long sunset = weatherResponse.currentWeather.sunset;
-                        String sunsettime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunset*1000));
-                        sunsetTxt.setText(sunsettime);
-                        windTxt.setText(Math.round(weatherResponse.currentWeather.wind_speed)+" Meter/Sec");
+                        tempTxt.setText(Math.round(weatherResponse.currentWeather.temp) + "°C");
+                        feels_like.setText("Feels Like: " + Math.round(weatherResponse.currentWeather.feels_like) + "°C");
+                        windTxt.setText(Math.round(weatherResponse.currentWeather.wind_speed) + " Meter/Sec");
                         pressureTxt.setText(String.valueOf(weatherResponse.currentWeather.pressure));
-                        humidityTxt.setText(Math.round(weatherResponse.currentWeather.humidity)+"%");
+                        humidityTxt.setText(Math.round(weatherResponse.currentWeather.humidity) + "%");
+
+                        for (int i = 0; i < 24; i++) {
+                            HourlyForcastList forcastList = new HourlyForcastList(
+                                    weatherResponse.hourlyWeather.get(i).hourlyWeatherForcasts.get(0).icon,
+                                    weatherResponse.hourlyWeather.get(i).temp,
+                                    weatherResponse.hourlyWeather.get(i).hourlyWeatherForcasts.get(0).description,
+                                    weatherResponse.hourlyWeather.get(i).dt);
+                            hourlyForcastLists.add(forcastList);
+                            hourlyForcastAdapter.notifyDataSetChanged();
+                        }
                     }
                 }
             }
@@ -272,10 +285,10 @@ public class WeatherFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private boolean checkLocationPermission(){
-        if(getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED){
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},123);
+    private boolean checkLocationPermission() {
+        if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
             return false;
         }
 
