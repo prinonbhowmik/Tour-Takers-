@@ -1,5 +1,6 @@
 package com.example.tureguideversion1.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.tureguideversion1.Activities.EventDetails;
+import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.R;
 
 public class LoaderFragment extends Fragment {
@@ -34,6 +37,7 @@ public class LoaderFragment extends Fragment {
             }
 
             public void onFinish() {
+                //startActivity(new Intent(getContext(), MainActivity.class).putExtra("FromLoader","tour"));
                 FragmentTransaction event = getParentFragmentManager().beginTransaction();
                 event.replace(R.id.fragment_container, new TourFragment());
                 event.commit();

@@ -311,8 +311,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 lRef.setValue(null);
                 Toasty.success(getApplicationContext(), "Delete Success", Toasty.LENGTH_SHORT).show();
                 //startActivity(new Intent(EventDetails.this, MainActivity.class));
-                startActivity(new Intent(EventDetails.this, MainActivity.class).putExtra("EventDetails","event"));
-
+                //startActivity(new Intent(EventDetails.this, MainActivity.class).putExtra("EventDetails","event"));
+                finish();
             }
         });
         dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -490,29 +490,31 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         updateref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Event event = dataSnapshot.getValue(Event.class);
-                place1 = event.getPlace();
-                p_date = event.getPublishDate();
-                s_date = event.getStartDate();
-                r_date = event.getReturnDate();
-                time = event.getTime();
-                m_place = event.getMeetPlace();
-                g_name = event.getGroupName();
-                description = event.getDescription();
-                e_cost = event.getCost();
-                attend_member_count = event.getJoinMemberCount();
+                if(dataSnapshot.exists()) {
+                    Event event = dataSnapshot.getValue(Event.class);
+                    place1 = event.getPlace();
+                    p_date = event.getPublishDate();
+                    s_date = event.getStartDate();
+                    r_date = event.getReturnDate();
+                    time = event.getTime();
+                    m_place = event.getMeetPlace();
+                    g_name = event.getGroupName();
+                    description = event.getDescription();
+                    e_cost = event.getCost();
+                    attend_member_count = event.getJoinMemberCount();
 
-                event_place.setText(place);
-                publish_date.setText(p_date);
-                event_date.setText(s_date);
-                return_date.setText(r_date);
-                event_time.setText(time);
-                meeting_place.setText(m_place);
-                group_name.setText(g_name);
-                event_description.setText(description);
-                event_cost.setText(e_cost);
-                counter = String.valueOf(attend_member_count);
-                event_attending_member.setText(counter);
+                    event_place.setText(place);
+                    publish_date.setText(p_date);
+                    event_date.setText(s_date);
+                    return_date.setText(r_date);
+                    event_time.setText(time);
+                    meeting_place.setText(m_place);
+                    group_name.setText(g_name);
+                    event_description.setText(description);
+                    event_cost.setText(e_cost);
+                    counter = String.valueOf(attend_member_count);
+                    event_attending_member.setText(counter);
+                }
             }
 
             @Override

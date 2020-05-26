@@ -66,6 +66,7 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
+    private CardView activityCard;
     ProgressBar progressBar;
     Animation topAnim, bottomAnim2, leftAnim, rightAnim, fadeIn, scaleAnim, ball3Anim, edittext_anim, blink;
 
@@ -128,20 +129,6 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
 
             }
         });
-
-        new CountDownTimer(300, 1) {
-
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            public void onFinish() {
-                YoYo.with(Techniques.StandUp)
-                        .duration(1700)
-                        .repeat(0)
-                        .playOn(ratingLayout);
-            }
-        }.start();
 
         YoYo.with(Techniques.FadeIn)
                 .duration(1700)
@@ -333,9 +320,10 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
         n2.setAnimation(rightAnim);
         p1.setAnimation(leftAnim);
         p2.setAnimation(rightAnim);
-        totalEventLayout.setAnimation(bottomAnim2);
-        totalTourLayout.setAnimation(bottomAnim2);
-        ratingLayout.setAnimation(bottomAnim2);
+        activityCard.setAnimation(bottomAnim2);
+//        totalEventLayout.setAnimation(bottomAnim2);
+//        totalTourLayout.setAnimation(bottomAnim2);
+//        ratingLayout.setAnimation(bottomAnim2);
 
     }
 
@@ -360,6 +348,7 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
         e2 = findViewById(R.id.e2);
         p1 = findViewById(R.id.p1);
         p2 = findViewById(R.id.p2);
+        activityCard = findViewById(R.id.activityCard);
         intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         connectivityReceiver = new ConnectivityReceiver();

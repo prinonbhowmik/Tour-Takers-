@@ -61,6 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:padding="2dp"
                 android:transitionName="ratingTransition">
 
                 <ImageView
@@ -72,7 +73,7 @@
                     android:textColor="@android:color/black" />
 
                 <TextView
-                    android:layout_width="25dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="3dp"
