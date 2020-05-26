@@ -6,41 +6,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/background_gradient"
     android:orientation="vertical"
-    android:focusableInTouchMode="true"
-    android:padding="25dp">
+    android:focusableInTouchMode="true">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/nav_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/menu_white"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            />
-    </RelativeLayout>
-
-
 
     <RelativeLayout
         android:id="@+id/mainContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible">
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/addressContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:id="@+id/weather_nav_icon"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:src="@drawable/ic_menu5" />
 
             <TextView
                 android:id="@+id/address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:text="Location, BD"
                 android:textSize="24dp" />
 
@@ -48,25 +45,25 @@
                 android:id="@+id/updated_at"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/address"
                 android:text="Date &amp; Time"
                 android:textSize="14dp" />
-        </LinearLayout>
+        </RelativeLayout>
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/weatherAnim"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/overviewContainer"
             android:layout_below="@id/addressContainer"
-            android:layout_centerInParent="true"
-            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
             app:lottie_loop="true" />
 
         <LinearLayout
             android:id="@+id/overviewContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_below="@+id/weatherAnim"
             android:orientation="vertical">
 
             <TextView
@@ -104,15 +101,15 @@
         </LinearLayout>
 
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/detailsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/overviewContainer"
-            android:layout_alignParentBottom="true"
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/ll1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -136,6 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_below="@+id/ll1"
                 android:weightSum="3">
 
                 <LinearLayout
@@ -220,6 +218,7 @@
                     android:background="#3CF1EBF1"
                     android:gravity="center"
                     android:orientation="vertical"
+                    android:layout_marginBottom="30dp"
                     android:padding="8dp">
 
                     <ImageView
@@ -248,8 +247,10 @@
 
 
             </LinearLayout>
-        </LinearLayout>
+
+        </RelativeLayout>
     </RelativeLayout>
+    </ScrollView>
 
 
     <ProgressBar

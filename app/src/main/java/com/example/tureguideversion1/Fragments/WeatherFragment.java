@@ -10,11 +10,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,6 +55,8 @@ public class WeatherFragment extends Fragment {
     private RecyclerView hourlyRecycleView;
     private HourlyForcastAdapter hourlyForcastAdapter;
     private List<HourlyForcastList> hourlyForcastLists;
+    private DrawerLayout wDrawerLayout;
+    private ImageView weather_nav_icon;
 
     private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
 
@@ -71,6 +75,8 @@ public class WeatherFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_weather, container, false);
+        wDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+        weather_nav_icon = view.findViewById(R.id.weather_nav_icon);
         addressTxt = view.findViewById(R.id.address);
         updated_atTxt = view.findViewById(R.id.updated_at);
         statusTxt = view.findViewById(R.id.status);
@@ -100,6 +106,13 @@ public class WeatherFragment extends Fragment {
                 }
             });
         }
+
+        weather_nav_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
         return view;
     }
 

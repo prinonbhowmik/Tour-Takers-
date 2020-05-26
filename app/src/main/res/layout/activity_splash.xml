@@ -7,16 +7,6 @@
     tools:context=".Activities.Splash"
     android:background="#fff">
 
-    <TextView
-        android:id="@+id/tourtv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="450dp"
-        android:fontFamily="@font/bree_serif"
-        android:text="Tour Guide"
-        android:textColor="@color/colorYellow"
-        android:textSize="50sp" />
 
     <TextView
         android:id="@+id/ball1"
@@ -36,21 +26,32 @@
     <ImageView
         android:id="@+id/logoIV"
         android:layout_width="250dp"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:src="@drawable/icon"
-        android:layout_marginTop="180dp"
+        android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"/>
 
+    <TextView
+        android:id="@+id/tourtv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logoIV"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-20dp"
+        android:fontFamily="@font/bree_serif"
+        android:text="Tour Guide"
+        android:textColor="@color/colorYellow"
+        android:textSize="50sp" />
 
     <TextView
+        android:layout_below="@+id/tourtv"
         android:id="@+id/ball3"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="29dp"
-        android:layout_marginBottom="148dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="45dp"
         android:background="@drawable/round_ball_design" />
 
 
