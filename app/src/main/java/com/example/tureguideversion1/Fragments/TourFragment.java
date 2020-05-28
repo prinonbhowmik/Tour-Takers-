@@ -385,7 +385,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     s_date = startDateET.getText().toString();
                     r_date = endDateET.getText().toString();
                     time = eventTime.getText().toString();
-                    place = locationEt.getText().toString().substring(0, 1).toUpperCase() + locationEt.getText().toString().substring(1);
+                    if(!locationEt.getText().toString().isEmpty()) {
+                        place = locationEt.getText().toString().substring(0, 1).toUpperCase() + locationEt.getText().toString().substring(1);
+                    }
                     description = eventDescription_ET.getText().toString();
                     meetPlace = meetingPlace_ET.getText().toString();
                     group_name = groupName_ET.getText().toString();

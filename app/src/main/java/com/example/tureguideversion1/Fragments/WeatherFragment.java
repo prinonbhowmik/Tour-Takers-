@@ -11,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -39,6 +41,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,18 +54,19 @@ public class WeatherFragment extends Fragment {
 
     private FusedLocationProviderClient providerClient;
     private LottieAnimationView weatherAnim;
-    private TextView addressTxt, updated_atTxt, statusTxt, tempTxt, feels_like, windTxt, pressureTxt, humidityTxt;
+    private TextView addressTxt, updated_atTxt, statusTxt, tempTxt, feels_like, windTxt, pressureTxt, humidityTxt, sunRise, sunSet, dewPoint, cloudness, visibility, uvi;
     private RecyclerView hourlyRecycleView;
     private HourlyForcastAdapter hourlyForcastAdapter;
     private List<HourlyForcastList> hourlyForcastLists;
     private DrawerLayout wDrawerLayout;
     private ImageView weather_nav_icon;
-
+    private RelativeLayout mainContainer;
+    private LottieAnimationView loadinWeather;
     private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
 
     private double lat, lon;
 
-    int MY_PERMISSION;
+    private final int MY_PERMISSION = 123;
     private ApiInterFace api;
 
     public WeatherFragment() {
@@ -75,6 +79,8 @@ public class WeatherFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_weather, container, false);
+        mainContainer = view.findViewById(R.id.mainContainer);
+        loadinWeather = view.findViewById(R.id.loadinWeather);
         wDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
         weather_nav_icon = view.findViewById(R.id.weather_nav_icon);
         addressTxt = view.findViewById(R.id.address);
@@ -86,6 +92,12 @@ public class WeatherFragment extends Fragment {
         pressureTxt = view.findViewById(R.id.pressure);
         humidityTxt = view.findViewById(R.id.humidity);
         weatherAnim = view.findViewById(R.id.weatherAnim);
+        sunRise = view.findViewById(R.id.sunrise);
+        sunSet = view.findViewById(R.id.sunset);
+        dewPoint = view.findViewById(R.id.dewPoint);
+        cloudness = view.findViewById(R.id.cloudiness);
+        visibility = view.findViewById(R.id.visibility);
+        uvi = view.findViewById(R.id.uv);
         api = ApiUtils.getUserService();
         providerClient = new FusedLocationProviderClient(getContext());
         hourlyForcastLists = new ArrayList<>();
@@ -95,10 +107,9 @@ public class WeatherFragment extends Fragment {
         hourlyRecycleView.setLayoutManager(layoutManager);
         hourlyRecycleView.setAdapter(hourlyForcastAdapter);
         if (checkLocationPermission()) {
-            Task location = providerClient.getLastLocation();
-            location.addOnCompleteListener(new OnCompleteListener() {
+            providerClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
                 @Override
-                public void onComplete(@NonNull Task task) {
+                public void onComplete(@NonNull Task<Location> task) {
                     Location currentLocation = (Location) task.getResult();
                     lat = currentLocation.getLatitude();
                     lon = currentLocation.getLongitude();
@@ -276,6 +287,25 @@ public class WeatherFragment extends Fragment {
                         windTxt.setText(Math.round(weatherResponse.currentWeather.wind_speed) + " Meter/Sec");
                         pressureTxt.setText(String.valueOf(weatherResponse.currentWeather.pressure));
                         humidityTxt.setText(Math.round(weatherResponse.currentWeather.humidity) + "%");
+                        String riseTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunrise*1000));
+                        sunRise.setText(riseTime);
+                        String setTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunset*1000));
+                        sunSet.setText(setTime);
+                        dewPoint.setText(Math.round(weatherResponse.currentWeather.dew_point) + "°C");
+                        cloudness.setText(weatherResponse.currentWeather.clouds+"%");
+                        float v = (float) weatherResponse.currentWeather.visibility / 1000;
+                        visibility.setText(v+" km");
+                        if((weatherResponse.currentWeather.uvi >= 0) && (weatherResponse.currentWeather.uvi <= 2)){
+                            uvi.setText("Low");
+                        }else if((weatherResponse.currentWeather.uvi >= 3) && (weatherResponse.currentWeather.uvi <= 5)){
+                            uvi.setText("Moderate");
+                        }else if((weatherResponse.currentWeather.uvi >= 6) && (weatherResponse.currentWeather.uvi <= 7)){
+                            uvi.setText("High");
+                        }else if((weatherResponse.currentWeather.uvi >= 8) && (weatherResponse.currentWeather.uvi <= 10)){
+                            uvi.setText("Very high");
+                        }else if(weatherResponse.currentWeather.uvi >= 11){
+                            uvi.setText("Extreme");
+                        }
 
                         for (int i = 0; i < 24; i++) {
                             HourlyForcastList forcastList = new HourlyForcastList(
@@ -286,6 +316,8 @@ public class WeatherFragment extends Fragment {
                             hourlyForcastLists.add(forcastList);
                             hourlyForcastAdapter.notifyDataSetChanged();
                         }
+                        mainContainer.setVisibility(View.VISIBLE);
+                        loadinWeather.setVisibility(View.GONE);
                     }
                 }
             }
@@ -301,11 +333,36 @@ public class WeatherFragment extends Fragment {
     private boolean checkLocationPermission() {
         if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION);
             return false;
         }
 
         return true;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    providerClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Location> task) {
+                            Location currentLocation = (Location) task.getResult();
+                            lat = currentLocation.getLatitude();
+                            lon = currentLocation.getLongitude();
+                            findweather(lat, lon);
+                        }
+                    });
+                } else {
+                    // Permission Denied
+                    loadinWeather.setAnimation("confused.json");
+                    loadinWeather.playAnimation();
+                    Toasty.error(getContext(),"Location permission not granted!",Toasty.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 }

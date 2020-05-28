@@ -23,10 +23,14 @@ public class CurrentWeather {
     public float dew_point;
     @SerializedName("uvi")
     public float uvi;
+    @SerializedName("visibility")
+    public long visibility;
     @SerializedName("clouds")
     public int clouds;
     @SerializedName("wind_speed")
     public float wind_speed;
+    @SerializedName("wind_gust")
+    public float wind_gust;
     @SerializedName("wind_deg")
     public int wind_deg;
     @SerializedName("weather")
