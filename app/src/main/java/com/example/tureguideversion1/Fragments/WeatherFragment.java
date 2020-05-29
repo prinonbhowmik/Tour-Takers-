@@ -307,7 +307,7 @@ public class WeatherFragment extends Fragment {
                             uvi.setText("Extreme");
                         }
 
-                        for (int i = 0; i < 24; i++) {
+                        for (int i = 1; i <= 24; i++) {
                             HourlyForcastList forcastList = new HourlyForcastList(
                                     weatherResponse.hourlyWeather.get(i).hourlyWeatherForcasts.get(0).icon,
                                     weatherResponse.hourlyWeather.get(i).temp,

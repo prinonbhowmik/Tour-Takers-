@@ -8,6 +8,12 @@ public class WeatherResponse {
     @SerializedName("message")
     public String message;
 
+    @SerializedName("lat")
+    public float lat;
+
+    @SerializedName("lon")
+    public float lon;
+
     @SerializedName("current")
     public CurrentWeather currentWeather;
 

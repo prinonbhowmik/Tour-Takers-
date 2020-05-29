@@ -8,10 +8,13 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,12 +34,15 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.request.RequestOptions;
@@ -44,11 +50,16 @@ import com.example.tureguideversion1.Activities.LocationImage;
 import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.Activities.NoInternetConnection;
 import com.example.tureguideversion1.Adapters.AutoCompleteLocationAdapter;
+import com.example.tureguideversion1.Adapters.DailyForcastAdapter;
+import com.example.tureguideversion1.ForApi.ApiInterFace;
+import com.example.tureguideversion1.ForApi.ApiUtils;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.LocationSelection_bottomSheet;
+import com.example.tureguideversion1.Model.DailyForcastList;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.LocationItem;
 import com.example.tureguideversion1.R;
+import com.example.tureguideversion1.Weather.WeatherResponse;
 import com.glide.slider.library.SliderLayout;
 import com.glide.slider.library.animations.DescriptionAnimation;
 import com.glide.slider.library.slidertypes.BaseSliderView;
@@ -64,16 +75,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polyak.iconswitch.IconSwitch;
-
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import es.dmoral.toasty.Toasty;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -98,8 +114,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     View view;
     private IconSwitch iconSwitch;
     private Animation anim;
-    private TextView tourTitle;
-    private LinearLayout eventLayout;
+    private TextView tourTitle, weatherLocation;
+    private LinearLayout eventLayout, dailyForcastLayout;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
     private static String eventId;
@@ -107,7 +123,11 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private navDrawerCheck check;
     private ScrollView tScrollView;
     private DrawerLayout tDrawerLayout;
-
+    private ApiInterFace api;
+    private String weatherAPI = "618e3a096dcd96b86ffa64b35ef140e1";
+    private RecyclerView dailyRecycleView;
+    private DailyForcastAdapter dailyForcastAdapter;
+    private List<DailyForcastList> dailyForcastLists;
     public TourFragment() {
         // Required empty public constructor
     }
@@ -637,12 +657,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     }
 
     private void getEndDate() {
+        Toasty.info(getContext(),"Currently we are support tour within 8 days!",Toasty.LENGTH_SHORT).show();
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month + 1;
-                String currentDate = year + "/" + month + "/" + day;
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                String currentDate = day + "/" + month + "/" + year;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 Date date = null;
 
                 try {
@@ -652,6 +673,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 }
                 endDateET.setText(dateFormat.format(date));
                 long milisec = date.getTime();
+                getForcast();
             }
         };
 
@@ -661,6 +683,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(view.getContext(), dateSetListener, year, month, day);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        calendar.add(Calendar.DAY_OF_MONTH,7);
+        datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
         datePickerDialog.show();
     }
 
@@ -731,6 +756,15 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         eventDescription_ET = view.findViewById(R.id.eventDescription_ET);
         tScrollView = view.findViewById(R.id.tScrollView);
         tour_nav_icon = view.findViewById(R.id.nav_icon);
+        api = ApiUtils.getUserService();
+        dailyForcastLists = new ArrayList<>();
+        dailyRecycleView = view.findViewById(R.id.dailyForcastRecycleView);
+        dailyForcastAdapter = new DailyForcastAdapter(dailyForcastLists,getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        dailyRecycleView.setLayoutManager(layoutManager);
+        dailyRecycleView.setAdapter(dailyForcastAdapter);
+        weatherLocation = view.findViewById(R.id.weatherLocation);
+        dailyForcastLayout = view.findViewById(R.id.dailyForcastLayout);
     }
 
     private void getDate() {
@@ -738,8 +772,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month + 1;
-                String currentDate = year + "/" + month + "/" + day;
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                String currentDate = day + "/" + month + "/" + year;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 Date date = null;
 
                 try {
@@ -749,6 +783,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 }
                 startDateET.setText(dateFormat.format(date));
                 long milisec = date.getTime();
+                getForcast();
             }
         };
 
@@ -758,6 +793,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(view.getContext(), dateSetListener, year, month, day);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        calendar.add(Calendar.DAY_OF_MONTH,7);
+        datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
         datePickerDialog.show();
     }
 
@@ -855,10 +893,104 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         }
     }
 
-
     private void hideKeyboardFrom(Context context) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getRootView().getWindowToken(), 0);
+    }
+
+    private void getForcast() {
+        if (startDateET.getText() != null && endDateET.getText() != null) {
+            try {
+                Date c = Calendar.getInstance().getTime();
+                SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                String c1 = sdf1.format(c);
+                Date currentDate = sdf1.parse(c1);
+                Date endDate1 = sdf1.parse(endDateET.getText().toString());
+
+                long diff = endDate1.getTime() - currentDate.getTime();
+                long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)+1;
+                if(days <= 8){
+                    dailyForcastLayout.setVisibility(View.VISIBLE);
+                    dailyForcastLists.clear();
+                    Geocoder coder = new Geocoder(getContext());
+                    List<Address> latlonaddress = null;
+                    List<Address> address = null;
+                    try {
+                        latlonaddress = coder.getFromLocationName(locationEt.getText().toString(), 5);
+                        if (latlonaddress != null) {
+                            Address location = latlonaddress.get(0);
+                            Call<WeatherResponse> call = api.getWeather(location.getLatitude(), location.getLongitude(), "metric", weatherAPI);
+                            call.enqueue(new Callback<WeatherResponse>() {
+                                @Override
+                                public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                                    if (response.isSuccessful()) {
+                                        if (response.body() != null) {
+                                            WeatherResponse weatherResponse = response.body();
+                                            String address = "";
+                                            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+
+                                            List<Address> addresses;
+
+                                            try {
+                                                addresses = geocoder.getFromLocation(weatherResponse.lat, weatherResponse.lon, 1);
+                                                if (addresses.size() > 0) {
+                                                    address = addresses.get(0).getLocality();
+                                                    if (address == null) {
+                                                        weatherLocation.setText(locationEt.getText().toString());
+                                                    } else {
+                                                        weatherLocation.setText(address);
+                                                    }
+                                                }
+
+
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                            for (int i = 0; i < 8; i++) {
+                                                String dailyDate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(new Date(weatherResponse.dailyForcasts.get(i).dt * 1000));
+                                                try {
+                                                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                                                    Date forcastDate = sdf.parse(dailyDate);
+                                                    Date startDate = sdf.parse(startDateET.getText().toString());
+                                                    Date endDate = sdf.parse(endDateET.getText().toString());
+
+                                                    if (forcastDate.compareTo(startDate) >= 0 && forcastDate.compareTo(endDate) <= 0) {
+                                                        DailyForcastList forcastList = new DailyForcastList(weatherResponse.dailyForcasts.get(i).dailyWeatherForcasts.get(0).icon,
+                                                                weatherResponse.dailyForcasts.get(i).dailyTemps.min,
+                                                                weatherResponse.dailyForcasts.get(i).dailyTemps.max,
+                                                                weatherResponse.dailyForcasts.get(i).dailyWeatherForcasts.get(0).description,
+                                                                weatherResponse.dailyForcasts.get(i).dt);
+                                                        dailyForcastLists.add(forcastList);
+                                                        dailyForcastAdapter.notifyDataSetChanged();
+                                                    }
+
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<WeatherResponse> call, Throwable t) {
+
+                                }
+                            });
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    Toasty.error(getContext(),"Currently we are support tour within 8 days. Please take tour within 8 days!",Toasty.LENGTH_SHORT).show();
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+//        if(!startDateET.getText().toString().isEmpty() && !endDateET.getText().toString().isEmpty()){
+//
+//        }
+        }
     }
 
 }
