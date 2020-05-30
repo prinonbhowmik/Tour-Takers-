@@ -127,12 +127,11 @@ public class DailyForcastAdapter extends RecyclerView.Adapter<DailyForcastAdapte
                 m = "December";
                 break;
         }
-        holder.date.setText(dailyDate.substring(0,2)+" "+m);
-        //holder.dayName.append(" "+dailyDate.substring(0,2)+" "+m);
+        holder.dayName.append(" "+dailyDate.substring(0,2)+" "+m);
         String imageURL = "https://openweathermap.org/img/wn/"+forcastList.getDaliyImage()+"@2x.png";
         GlideApp.with(context)
                 .load(imageURL)
-                .fitCenter()
+                .centerCrop()
                 .into(holder.dailyForcastImage);
     }
 
@@ -143,14 +142,13 @@ public class DailyForcastAdapter extends RecyclerView.Adapter<DailyForcastAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private ImageView dailyForcastImage;
-        private TextView minTemp, maxTemp, dailyDescription, date, dayName,dWind, dhumidity, dcloude, dDewPoint, dSunrise, dSunset;;
+        private TextView minTemp, maxTemp, dailyDescription, dayName,dWind, dhumidity, dcloude, dDewPoint, dSunrise, dSunset;;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             dailyForcastImage = itemView.findViewById(R.id.dailyImage);
             minTemp = itemView.findViewById(R.id.minTemp);
             maxTemp = itemView.findViewById(R.id.maxTemp);
             dailyDescription = itemView.findViewById(R.id.dailyDescription);
-            date = itemView.findViewById(R.id.date);
             dayName = itemView.findViewById(R.id.dayName);
             dWind = itemView.findViewById(R.id.dWind);
             dhumidity = itemView.findViewById(R.id.dhumidity);
