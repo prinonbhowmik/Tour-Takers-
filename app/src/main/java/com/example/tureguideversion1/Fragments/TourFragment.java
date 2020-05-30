@@ -43,6 +43,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.request.RequestOptions;
@@ -899,7 +900,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     }
 
     private void getForcast() {
-        if (startDateET.getText() != null && endDateET.getText() != null) {
+        if (startDateET.getText().toString().trim().length() != 0 && endDateET.getText().toString().trim().length() != 0) {
             try {
                 Date c = Calendar.getInstance().getTime();
                 SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
@@ -959,7 +960,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                                                 weatherResponse.dailyForcasts.get(i).dailyTemps.min,
                                                                 weatherResponse.dailyForcasts.get(i).dailyTemps.max,
                                                                 weatherResponse.dailyForcasts.get(i).dailyWeatherForcasts.get(0).description,
-                                                                weatherResponse.dailyForcasts.get(i).dt);
+                                                                weatherResponse.dailyForcasts.get(i).dt,
+                                                                weatherResponse.dailyForcasts.get(i).sunrise,
+                                                                weatherResponse.dailyForcasts.get(i).sunset,
+                                                                weatherResponse.dailyForcasts.get(i).humidity,
+                                                                weatherResponse.dailyForcasts.get(i).wind_speed,
+                                                                weatherResponse.dailyForcasts.get(i).clouds,
+                                                                weatherResponse.dailyForcasts.get(i).dew_point);
                                                         dailyForcastLists.add(forcastList);
                                                         dailyForcastAdapter.notifyDataSetChanged();
                                                     }

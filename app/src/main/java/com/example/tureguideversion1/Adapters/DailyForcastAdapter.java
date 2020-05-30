@@ -42,9 +42,17 @@ public class DailyForcastAdapter extends RecyclerView.Adapter<DailyForcastAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         DailyForcastList forcastList = dailyForcastLists.get(position);
-        holder.minTemp.setText("min: "+Math.round(forcastList.getMinTemp())+"°C");
-        holder.maxTemp.setText("max: "+Math.round(forcastList.getMaxTemp())+"°C");
+        holder.minTemp.setText(Math.round(forcastList.getMinTemp())+"°C");
+        holder.maxTemp.setText(Math.round(forcastList.getMaxTemp())+"°C");
         holder.dailyDescription.setText(forcastList.getDaliyDescription());
+        holder.dWind.setText(Math.round(forcastList.getWind_speed())+"ms");
+        holder.dhumidity.setText(Math.round(forcastList.getHumidity())+"%");
+        holder.dcloude.setText(forcastList.getClouds()+"%");
+        holder.dDewPoint.setText(Math.round(forcastList.getdDewPoint())+"°C");
+        String riseTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(forcastList.getSunrise()*1000));
+        holder.dSunrise.setText(riseTime);
+        String setTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(forcastList.getSunset()*1000));
+        holder.dSunset.setText(setTime);
         String dailyDate =new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(new Date(forcastList.getDailytime() * 1000));
         Date date = new Date();
         SimpleDateFormat date_format = new SimpleDateFormat("dd/MM/yyyy");
@@ -56,6 +64,7 @@ public class DailyForcastAdapter extends RecyclerView.Adapter<DailyForcastAdapte
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         int result = calendar.get(Calendar.DAY_OF_WEEK);
+        int month = calendar.get(Calendar.MONTH);
         switch (result) {
             case Calendar.SATURDAY:
                 holder.dayName.setText("Saturday");
@@ -79,7 +88,47 @@ public class DailyForcastAdapter extends RecyclerView.Adapter<DailyForcastAdapte
                 holder.dayName.setText("Friday");
                 break;
         }
-        holder.date.setText(dailyDate);
+        String m = "";
+        switch (month) {
+            case Calendar.JANUARY:
+                m = "January";
+                break;
+            case Calendar.FEBRUARY:
+                m = "February";
+                break;
+            case Calendar.MARCH:
+                m = "March";
+                break;
+            case Calendar.APRIL:
+                m = "April";
+                break;
+            case Calendar.MAY:
+                m = "May";
+                break;
+            case Calendar.JUNE:
+                m = "June";
+                break;
+            case Calendar.JULY:
+                m = "July";
+                break;
+            case Calendar.AUGUST:
+                m = "August";
+                break;
+            case Calendar.SEPTEMBER:
+                m = "September";
+                break;
+            case Calendar.OCTOBER:
+                m = "October";
+                break;
+            case Calendar.NOVEMBER:
+                m = "November";
+                break;
+            case Calendar.DECEMBER:
+                m = "December";
+                break;
+        }
+        holder.date.setText(dailyDate.substring(0,2)+" "+m);
+        //holder.dayName.append(" "+dailyDate.substring(0,2)+" "+m);
         String imageURL = "https://openweathermap.org/img/wn/"+forcastList.getDaliyImage()+"@2x.png";
         GlideApp.with(context)
                 .load(imageURL)
@@ -94,7 +143,7 @@ public class DailyForcastAdapter extends RecyclerView.Adapter<DailyForcastAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private ImageView dailyForcastImage;
-        private TextView minTemp, maxTemp, dailyDescription, date, dayName;
+        private TextView minTemp, maxTemp, dailyDescription, date, dayName,dWind, dhumidity, dcloude, dDewPoint, dSunrise, dSunset;;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             dailyForcastImage = itemView.findViewById(R.id.dailyImage);
@@ -103,6 +152,12 @@ public class DailyForcastAdapter extends RecyclerView.Adapter<DailyForcastAdapte
             dailyDescription = itemView.findViewById(R.id.dailyDescription);
             date = itemView.findViewById(R.id.date);
             dayName = itemView.findViewById(R.id.dayName);
+            dWind = itemView.findViewById(R.id.dWind);
+            dhumidity = itemView.findViewById(R.id.dhumidity);
+            dcloude = itemView.findViewById(R.id.dcloude);
+            dDewPoint = itemView.findViewById(R.id.dDewPoint);
+            dSunrise = itemView.findViewById(R.id.dSunrise);
+            dSunset = itemView.findViewById(R.id.dSunset);
         }
     }
 }
