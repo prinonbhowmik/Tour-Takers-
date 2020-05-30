@@ -8,7 +8,8 @@
     <ImageView
         android:id="@+id/hourlyImage"
         android:layout_width="110dp"
-        android:layout_height="60dp" />
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal" />
 
     <TextView
         android:id="@+id/hourlyTemp"
@@ -20,10 +21,11 @@
 
     <TextView
         android:id="@+id/hourlyDescription"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
-        android:text="scattered clouds" />
+        android:text="heavy shower rain and drizzle" />
 
     <TextView
         android:id="@+id/hourlyTime"
