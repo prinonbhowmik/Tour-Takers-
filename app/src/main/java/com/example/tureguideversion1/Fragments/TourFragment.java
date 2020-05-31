@@ -76,6 +76,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polyak.iconswitch.IconSwitch;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -105,7 +106,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private ImageView logo, tour_nav_icon;
     private LottieAnimationView loading;
     private List<LocationItem> locationList;
-    private List<String> selectedLocation;
+    private List<String> selectedLocation, locationListForWeather;
     private AutoCompleteTextView locationEt;
     private ArrayList<String> location;
     private String locationForViewPage, districtForLocationImage, districtFromLocationSelection, format,
@@ -129,6 +130,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private RecyclerView dailyRecycleView;
     private DailyForcastAdapter dailyForcastAdapter;
     private List<DailyForcastList> dailyForcastLists;
+
     public TourFragment() {
         // Required empty public constructor
     }
@@ -299,6 +301,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     logo.setVisibility(View.INVISIBLE);
                     loading.setVisibility(View.VISIBLE);
                     String location = locationEt.getText().toString();
+                    getForcast();
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location.toLowerCase());
                     ref.addListenerForSingleValueEvent(
                             new ValueEventListener() {
@@ -332,7 +335,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     if (keyEvent == null || !keyEvent.isShiftPressed()) {
                         if (checkConnection()) {
                             // the user is done typing.
-                            if (!locationEt.getText().toString().matches("")) {
+                            if (locationEt.getText().toString().trim().length() != 0) {
+                                getForcast();
                                 hideKeyboardFrom(view.getContext(), view);
                                 locationEt.dismissDropDown();
                                 logo.setVisibility(View.INVISIBLE);
@@ -406,7 +410,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     s_date = startDateET.getText().toString();
                     r_date = endDateET.getText().toString();
                     time = eventTime.getText().toString();
-                    if(!locationEt.getText().toString().isEmpty()) {
+                    if (!locationEt.getText().toString().isEmpty()) {
                         place = locationEt.getText().toString().substring(0, 1).toUpperCase() + locationEt.getText().toString().substring(1);
                     }
                     description = eventDescription_ET.getText().toString();
@@ -557,6 +561,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             Map singleUser = (Map) entry.getValue();
             //Get district field and append to list
             String location = (String) singleUser.get("district");
+            locationListForWeather.add((String) singleUser.get("district"));
             String[] strArray = location.split(" ");
             StringBuilder uppercaseWord = new StringBuilder();
             for (String s : strArray) {
@@ -565,6 +570,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             }
             String pureString = uppercaseWord.substring(0, uppercaseWord.length() - 1);
             locationList.add(new LocationItem(pureString, R.drawable.travel_icon));
+            locationListForWeather.add(pureString);
         }
         AutoCompleteLocationAdapter adapter = new AutoCompleteLocationAdapter(view.getContext(), locationList);
         locationEt.setAdapter(adapter);
@@ -658,7 +664,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     }
 
     private void getEndDate() {
-        Toasty.info(getContext(),"Currently we are support tour within 8 days!",Toasty.LENGTH_SHORT).show();
+        Toasty.info(getContext(), "Currently we are support tour within 8 days!", Toasty.LENGTH_SHORT).show();
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -672,21 +678,33 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+
                 endDateET.setText(dateFormat.format(date));
                 long milisec = date.getTime();
                 getForcast();
+
             }
         };
 
         Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-
         DatePickerDialog datePickerDialog = new DatePickerDialog(view.getContext(), dateSetListener, year, month, day);
-        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-        calendar.add(Calendar.DAY_OF_MONTH,7);
-        datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+        try {
+            Date stDate2 = sdf2.parse(startDateET.getText().toString());
+            //calendar.setTime(stDate);
+            datePickerDialog.getDatePicker().setMinDate(stDate2.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        if (tourTitle.getText().toString().matches("Tour")) {
+            calendar.add(Calendar.DAY_OF_MONTH, 7);
+            datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+        }
         datePickerDialog.show();
     }
 
@@ -760,12 +778,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         api = ApiUtils.getUserService();
         dailyForcastLists = new ArrayList<>();
         dailyRecycleView = view.findViewById(R.id.dailyForcastRecycleView);
-        dailyForcastAdapter = new DailyForcastAdapter(dailyForcastLists,getContext());
+        dailyForcastAdapter = new DailyForcastAdapter(dailyForcastLists, getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         dailyRecycleView.setLayoutManager(layoutManager);
         dailyRecycleView.setAdapter(dailyForcastAdapter);
         weatherLocation = view.findViewById(R.id.weatherLocation);
         dailyForcastLayout = view.findViewById(R.id.dailyForcastLayout);
+        locationListForWeather = new ArrayList<>();
     }
 
     private void getDate() {
@@ -795,8 +814,10 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(view.getContext(), dateSetListener, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-        calendar.add(Calendar.DAY_OF_MONTH,7);
-        datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+        if (tourTitle.getText().toString().matches("Tour")) {
+            calendar.add(Calendar.DAY_OF_MONTH, 7);
+            datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+        }
         datePickerDialog.show();
     }
 
@@ -907,89 +928,90 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 String c1 = sdf1.format(c);
                 Date currentDate = sdf1.parse(c1);
                 Date endDate1 = sdf1.parse(endDateET.getText().toString());
-
                 long diff = endDate1.getTime() - currentDate.getTime();
-                long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)+1;
-                if(days <= 8){
-                    dailyForcastLayout.setVisibility(View.VISIBLE);
-                    dailyForcastLists.clear();
-                    Geocoder coder = new Geocoder(getContext());
-                    List<Address> latlonaddress = null;
-                    List<Address> address = null;
-                    try {
-                        latlonaddress = coder.getFromLocationName(locationEt.getText().toString(), 5);
-                        if (latlonaddress != null) {
-                            Address location = latlonaddress.get(0);
-                            Call<WeatherResponse> call = api.getWeather(location.getLatitude(), location.getLongitude(), "metric", weatherAPI);
-                            call.enqueue(new Callback<WeatherResponse>() {
-                                @Override
-                                public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
-                                    if (response.isSuccessful()) {
-                                        if (response.body() != null) {
-                                            WeatherResponse weatherResponse = response.body();
-                                            String address = "";
-                                            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS) + 1;
+                if (days <= 8) {
+                    if (locationEt.getText().toString().trim().length() != 0) {
+                        if (locationListForWeather.contains(locationEt.getText().toString())) {
+                            dailyForcastLayout.setVisibility(View.VISIBLE);
+                            dailyForcastLists.clear();
+                            Geocoder coder = new Geocoder(getContext());
+                            List<Address> latlonaddress = null;
+                            List<Address> address = null;
+                            try {
+                                latlonaddress = coder.getFromLocationName(locationEt.getText().toString(), 5);
+                                if (latlonaddress != null) {
+                                    Address location = latlonaddress.get(0);
+                                    Call<WeatherResponse> call = api.getWeather(location.getLatitude(), location.getLongitude(), "metric", weatherAPI);
+                                    call.enqueue(new Callback<WeatherResponse>() {
+                                        @Override
+                                        public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                                            if (response.isSuccessful()) {
+                                                if (response.body() != null) {
+                                                    WeatherResponse weatherResponse = response.body();
+                                                    String address = "";
+                                                    Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
 
-                                            List<Address> addresses;
+                                                    List<Address> addresses;
 
-                                            try {
-                                                addresses = geocoder.getFromLocation(weatherResponse.lat, weatherResponse.lon, 1);
-                                                if (addresses.size() > 0) {
-                                                    address = addresses.get(0).getLocality();
-                                                    if (address == null) {
-                                                        weatherLocation.setText(locationEt.getText().toString());
-                                                    } else {
-                                                        weatherLocation.setText(address);
+                                                    try {
+                                                        addresses = geocoder.getFromLocation(weatherResponse.lat, weatherResponse.lon, 1);
+                                                        if (addresses.size() > 0) {
+                                                            address = addresses.get(0).getLocality();
+                                                            if (address == null) {
+                                                                weatherLocation.setText(locationEt.getText().toString());
+                                                            } else {
+                                                                weatherLocation.setText(address);
+                                                            }
+                                                        }
+
+
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
                                                     }
-                                                }
+                                                    for (int i = 0; i < 8; i++) {
+                                                        String dailyDate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(new Date(weatherResponse.dailyForcasts.get(i).dt * 1000));
+                                                        try {
+                                                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                                                            Date forcastDate = sdf.parse(dailyDate);
+                                                            Date startDate = sdf.parse(startDateET.getText().toString());
+                                                            Date endDate = sdf.parse(endDateET.getText().toString());
 
+                                                            if (forcastDate.compareTo(startDate) >= 0 && forcastDate.compareTo(endDate) <= 0) {
+                                                                DailyForcastList forcastList = new DailyForcastList(weatherResponse.dailyForcasts.get(i).dailyWeatherForcasts.get(0).icon,
+                                                                        weatherResponse.dailyForcasts.get(i).dailyTemps.min,
+                                                                        weatherResponse.dailyForcasts.get(i).dailyTemps.max,
+                                                                        weatherResponse.dailyForcasts.get(i).dailyWeatherForcasts.get(0).description,
+                                                                        weatherResponse.dailyForcasts.get(i).dt,
+                                                                        weatherResponse.dailyForcasts.get(i).sunrise,
+                                                                        weatherResponse.dailyForcasts.get(i).sunset,
+                                                                        weatherResponse.dailyForcasts.get(i).humidity,
+                                                                        weatherResponse.dailyForcasts.get(i).wind_speed,
+                                                                        weatherResponse.dailyForcasts.get(i).clouds,
+                                                                        weatherResponse.dailyForcasts.get(i).dew_point);
+                                                                dailyForcastLists.add(forcastList);
+                                                                dailyForcastAdapter.notifyDataSetChanged();
+                                                            }
 
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                            for (int i = 0; i < 8; i++) {
-                                                String dailyDate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(new Date(weatherResponse.dailyForcasts.get(i).dt * 1000));
-                                                try {
-                                                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-                                                    Date forcastDate = sdf.parse(dailyDate);
-                                                    Date startDate = sdf.parse(startDateET.getText().toString());
-                                                    Date endDate = sdf.parse(endDateET.getText().toString());
-
-                                                    if (forcastDate.compareTo(startDate) >= 0 && forcastDate.compareTo(endDate) <= 0) {
-                                                        DailyForcastList forcastList = new DailyForcastList(weatherResponse.dailyForcasts.get(i).dailyWeatherForcasts.get(0).icon,
-                                                                weatherResponse.dailyForcasts.get(i).dailyTemps.min,
-                                                                weatherResponse.dailyForcasts.get(i).dailyTemps.max,
-                                                                weatherResponse.dailyForcasts.get(i).dailyWeatherForcasts.get(0).description,
-                                                                weatherResponse.dailyForcasts.get(i).dt,
-                                                                weatherResponse.dailyForcasts.get(i).sunrise,
-                                                                weatherResponse.dailyForcasts.get(i).sunset,
-                                                                weatherResponse.dailyForcasts.get(i).humidity,
-                                                                weatherResponse.dailyForcasts.get(i).wind_speed,
-                                                                weatherResponse.dailyForcasts.get(i).clouds,
-                                                                weatherResponse.dailyForcasts.get(i).dew_point);
-                                                        dailyForcastLists.add(forcastList);
-                                                        dailyForcastAdapter.notifyDataSetChanged();
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
                                                     }
-
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
                                                 }
                                             }
                                         }
-                                    }
-                                }
 
-                                @Override
-                                public void onFailure(Call<WeatherResponse> call, Throwable t) {
+                                        @Override
+                                        public void onFailure(Call<WeatherResponse> call, Throwable t) {
 
+                                        }
+                                    });
                                 }
-                            });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                }else {
-                    Toasty.error(getContext(),"Currently we are support tour within 8 days. Please take tour within 8 days!",Toasty.LENGTH_SHORT).show();
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
