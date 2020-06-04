@@ -22,6 +22,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.tureguideversion1.Adapters.HourlyForcastAdapter;
@@ -61,6 +62,7 @@ public class WeatherFragment extends Fragment {
     private DrawerLayout wDrawerLayout;
     private ImageView weather_nav_icon;
     private RelativeLayout mainContainer;
+    private SwipeRefreshLayout refreshLayout;
     private LottieAnimationView loadinWeather;
     private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
 
@@ -99,6 +101,9 @@ public class WeatherFragment extends Fragment {
         visibility = view.findViewById(R.id.visibility);
         uvi = view.findViewById(R.id.uv);
         api = ApiUtils.getUserService();
+
+        refreshLayout = view.findViewById(R.id.refreshLayout);
+
         providerClient = new FusedLocationProviderClient(getContext());
         hourlyForcastLists = new ArrayList<>();
         hourlyRecycleView = view.findViewById(R.id.hourlyForcastRecycleView);
@@ -118,6 +123,8 @@ public class WeatherFragment extends Fragment {
             });
         }
 
+        refresh();
+
         weather_nav_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +132,15 @@ public class WeatherFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    private void refresh() {
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                findweather(lat,lon);
+            }
+        });
     }
 
     private void findweather(final double lat, final double lon) {
@@ -327,6 +343,7 @@ public class WeatherFragment extends Fragment {
 
             }
         });
+        refreshLayout.setRefreshing(false);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

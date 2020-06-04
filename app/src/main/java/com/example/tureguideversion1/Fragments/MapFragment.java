@@ -84,7 +84,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         map = googleMap;
 
-
         currentLocation();
 
     }

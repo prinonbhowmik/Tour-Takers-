@@ -102,8 +102,7 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
 
     private void checkmail() {
         email = nameET.getText().toString();
-        auth.fetchSignInMethodsForEmail(email)
-                .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+        auth.fetchSignInMethodsForEmail(email).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
                     @Override
                     public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
                         singin.setEnabled(true);
