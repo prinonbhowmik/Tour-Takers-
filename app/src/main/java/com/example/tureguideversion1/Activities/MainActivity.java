@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -24,18 +23,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.tureguideversion1.Fragments.EventFragment;
 import com.example.tureguideversion1.Fragments.GuideFragment;
 import com.example.tureguideversion1.Fragments.LoaderFragment;
-import com.example.tureguideversion1.Fragments.MapFragment;
 import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
 import com.example.tureguideversion1.GlideApp;
@@ -210,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
+        FragmentManager fm = getSupportFragmentManager();
         switch (menuItem.getItemId()) {
 
             case R.id.tour:
@@ -229,11 +227,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.map:
                 if (checkConnection()) {
                     currentFragment = "map";
-                    FragmentTransaction map = getSupportFragmentManager().beginTransaction();
-                    map.replace(R.id.fragment_container, new MapFragment());
-                    map.commit();
+                    startActivity(new Intent(MainActivity.this, Map.class));
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     drawerLayout.closeDrawers();
-                    navigationView.getMenu().getItem(3).setChecked(true);
 
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
@@ -367,7 +363,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
         /*register connection status listener*/
         Connection.getInstance().setConnectivityListener(this);
-
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
             if (intent.getExtras().getString("EventDetails").matches("event")) {

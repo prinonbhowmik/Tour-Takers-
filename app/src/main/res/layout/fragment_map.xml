@@ -18,47 +18,19 @@
         android:backgroundTint="@android:color/white"
         app:cardCornerRadius="5dp">
 
+
+
         <RelativeLayout
             android:id="@+id/rl1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/transparent">
 
-            <ImageView
-                android:id="@+id/map_nav"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:src="@drawable/ic_menu5" />
-
-            <EditText
-                android:id="@+id/location_searchET"
+            <fragment
+                android:id="@+id/autocomplete_fragment"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/map_nav"
-                android:layout_toStartOf="@+id/searchIV"
-                android:background="@null"
-                android:gravity="center_vertical"
-                android:cursorVisible="false"
-                android:hint="Search Location"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:textColor="@android:color/black"
-                android:textColorHint="@android:color/darker_gray"
-                android:textSize="21sp" />
-
-            <ImageView
-                android:id="@+id/searchIV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerInParent="true"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/custom_round"
-                android:padding="8dp"
-                android:src="@drawable/ic_search" />
+                android:layout_height="match_parent" />
 
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
@@ -68,6 +40,15 @@
         android:layout_height="match_parent"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:clickable="true"
+        android:src="@drawable/custom_round2" />
 
 
 </RelativeLayout>

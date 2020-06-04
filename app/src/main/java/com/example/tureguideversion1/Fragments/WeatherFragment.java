@@ -1,6 +1,9 @@
 package com.example.tureguideversion1.Fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -26,13 +30,20 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.tureguideversion1.Adapters.HourlyForcastAdapter;
+import com.example.tureguideversion1.AppConstants;
 import com.example.tureguideversion1.ForApi.ApiInterFace;
 import com.example.tureguideversion1.ForApi.ApiUtils;
+import com.example.tureguideversion1.GpsUtils;
 import com.example.tureguideversion1.Model.HourlyForcastList;
 import com.example.tureguideversion1.R;
 import com.example.tureguideversion1.Weather.WeatherResponse;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
@@ -53,7 +64,10 @@ public class WeatherFragment extends Fragment {
 
     String CITY = "";
 
-    private FusedLocationProviderClient providerClient;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private double wayLatitude = 0.0, wayLongitude = 0.0;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
     private LottieAnimationView weatherAnim;
     private TextView addressTxt, updated_atTxt, statusTxt, tempTxt, feels_like, windTxt, pressureTxt, humidityTxt, sunRise, sunSet, dewPoint, cloudness, visibility, uvi;
     private RecyclerView hourlyRecycleView;
@@ -64,12 +78,14 @@ public class WeatherFragment extends Fragment {
     private RelativeLayout mainContainer;
     private SwipeRefreshLayout refreshLayout;
     private LottieAnimationView loadinWeather;
-    private String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
 
-    private double lat, lon;
-
-    private final int MY_PERMISSION = 123;
     private ApiInterFace api;
+    private StringBuilder stringBuilder;
+
+    private boolean isContinue = false;
+    private boolean isGPS = false;
+    private View view;
+
 
     public WeatherFragment() {
         // Required empty public constructor
@@ -80,7 +96,7 @@ public class WeatherFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.fragment_weather, container, false);
+        view = inflater.inflate(R.layout.fragment_weather, container, false);
         mainContainer = view.findViewById(R.id.mainContainer);
         loadinWeather = view.findViewById(R.id.loadinWeather);
         wDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
@@ -104,24 +120,59 @@ public class WeatherFragment extends Fragment {
 
         refreshLayout = view.findViewById(R.id.refreshLayout);
 
-        providerClient = new FusedLocationProviderClient(getContext());
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.getContext());
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10 * 1000); // 10 seconds
+        locationRequest.setFastestInterval(5 * 1000); // 5 seconds
+
+        new GpsUtils(view.getContext()).turnGPSOn(new GpsUtils.onGpsListener() {
+            @Override
+            public void gpsStatus(boolean isGPSEnable) {
+                // turn on GPS
+                isGPS = isGPSEnable;
+            }
+        });
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        wayLatitude = location.getLatitude();
+                        wayLongitude = location.getLongitude();
+                        if (!isContinue) {
+                            findweather(wayLatitude,wayLongitude);
+                        } else {
+                            stringBuilder.append(wayLatitude);
+                            stringBuilder.append("-");
+                            stringBuilder.append(wayLongitude);
+                            stringBuilder.append("\n\n");
+                            Toast.makeText(getContext(),stringBuilder.toString(),Toast.LENGTH_SHORT).show();
+                        }
+                        if (!isContinue && mFusedLocationClient != null) {
+                            mFusedLocationClient.removeLocationUpdates(locationCallback);
+                        }
+                    }
+                }
+            }
+        };
+
         hourlyForcastLists = new ArrayList<>();
         hourlyRecycleView = view.findViewById(R.id.hourlyForcastRecycleView);
         hourlyForcastAdapter = new HourlyForcastAdapter(hourlyForcastLists, getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         hourlyRecycleView.setLayoutManager(layoutManager);
         hourlyRecycleView.setAdapter(hourlyForcastAdapter);
-        if (checkLocationPermission()) {
-            providerClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-                @Override
-                public void onComplete(@NonNull Task<Location> task) {
-                    Location currentLocation = (Location) task.getResult();
-                    lat = currentLocation.getLatitude();
-                    lon = currentLocation.getLongitude();
-                    findweather(lat, lon);
-                }
-            });
+
+        if (!isGPS) {
+            Toasty.info(view.getContext(),"Please turn on GPS",Toasty.LENGTH_SHORT).show();
         }
+        isContinue = false;
+        getLocation();
 
         refresh();
 
@@ -138,7 +189,7 @@ public class WeatherFragment extends Fragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                findweather(lat,lon);
+                getLocation();
             }
         });
     }
@@ -150,7 +201,7 @@ public class WeatherFragment extends Fragment {
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                 if (response.isSuccessful()) {
                     if (response.body() == null) {
-                        return;
+                        Toasty.error(view.getContext(),"Can't get weather data!",Toasty.LENGTH_SHORT).show();
                     } else {
                         WeatherResponse weatherResponse = response.body();
                         String address = "";
@@ -172,7 +223,7 @@ public class WeatherFragment extends Fragment {
 
 
                         //  addressTxt.setText(weatherResponse.name+","+weatherResponse.sys.country);
-                        Float updatedAt = weatherResponse.currentWeather.dt;
+                        float updatedAt = weatherResponse.currentWeather.dt;
                         // Date time  = new Date(updatedAt.longValue());
                         if (weatherResponse.currentWeather.weather.get(0).icon.contains("d")) {
                             if (weatherResponse.currentWeather.weather.get(0).description.matches("light thunderstorm") ||
@@ -295,7 +346,7 @@ public class WeatherFragment extends Fragment {
                                 weatherAnim.playAnimation();
                             }
                         }
-                        String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt.longValue() * 1000));
+                        String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date((long) updatedAt * 1000));
                         updated_atTxt.setText(updatedAtText);
                         statusTxt.setText(weatherResponse.currentWeather.weather.get(0).description);
                         tempTxt.setText(Math.round(weatherResponse.currentWeather.temp) + "°C");
@@ -346,40 +397,75 @@ public class WeatherFragment extends Fragment {
         refreshLayout.setRefreshing(false);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private boolean checkLocationPermission() {
-        if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION);
-            return false;
-        }
+    private void getLocation() {
+        if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    AppConstants.LOCATION_REQUEST);
 
-        return true;
+        } else {
+            if (isContinue) {
+                mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+            } else {
+                mFusedLocationClient.getLastLocation().addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            wayLatitude = location.getLatitude();
+                            wayLongitude = location.getLongitude();
+                            WeatherFragment.this.findweather(wayLatitude, wayLongitude);
+                        } else {
+                            mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1000: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    if (isContinue) {
+                        mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                    } else {
+                        mFusedLocationClient.getLastLocation().addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                if (location != null) {
+                                    wayLatitude = location.getLatitude();
+                                    wayLongitude = location.getLongitude();
+                                    WeatherFragment.this.findweather(wayLatitude, wayLongitude);
+                                } else {
+                                    mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    loadinWeather.setAnimation("confused.json");
+                    loadinWeather.playAnimation();
+                    Toasty.error(view.getContext(),"Location permission denied!",Toasty.LENGTH_SHORT).show();
+                }
+                break;
+            }
+        }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSION:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    providerClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Location> task) {
-                            Location currentLocation = (Location) task.getResult();
-                            lat = currentLocation.getLatitude();
-                            lon = currentLocation.getLongitude();
-                            findweather(lat, lon);
-                        }
-                    });
-                } else {
-                    // Permission Denied
-                    loadinWeather.setAnimation("confused.json");
-                    loadinWeather.playAnimation();
-                    Toasty.error(getContext(),"Location permission not granted!",Toasty.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == AppConstants.GPS_REQUEST) {
+                isGPS = true; // flag maintain before get location
+            }
         }
     }
 }

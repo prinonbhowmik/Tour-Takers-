@@ -37,6 +37,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -492,8 +493,46 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             }
         });
 
+        meetingPlace_ET.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), com.example.tureguideversion1.Activities.Map.class);
+                startActivityForResult(intent,1);
+            }
+        });
+
         return view;
     }
+
+    //    @Override
+//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+//        super.onActivityCreated(savedInstanceState);
+//        if(savedInstanceState != null) {
+//            s_date = savedInstanceState.getString("sDate");
+//            r_date = savedInstanceState.getString("rDate");
+//            time = savedInstanceState.getString("time");
+//            place = savedInstanceState.getString("place");
+//            description = savedInstanceState.getString("description");
+//            group_name = savedInstanceState.getString("groupName");
+//            cost = savedInstanceState.getString("cost");
+//            Toast.makeText(getContext(), s_date, Toast.LENGTH_SHORT).show();
+//        }
+//    }
+//
+//    @Override
+//    public void onSaveInstanceState(@NonNull Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        outState.putString("sDate",startDateET.getText().toString());
+//        outState.putString("rDate",endDateET.getText().toString());
+//        outState.putString("time",eventTime.getText().toString());
+//        if (!locationEt.getText().toString().isEmpty()) {
+//            outState.putString("place",locationEt.getText().toString().substring(0, 1).toUpperCase() + locationEt.getText().toString().substring(1));
+//        }
+//        outState.putString("description",eventDescription_ET.getText().toString());
+//        outState.putString("groupName",groupName_ET.getText().toString());
+//        outState.putString("cost",eventCost_ET.getText().toString());
+//        Toast.makeText(getContext(),"saveing",Toast.LENGTH_SHORT).show();
+//    }
 
     public void receivedLocationData(String pickedLocation) {
         if (pickedLocation.substring(0, 2).matches("un")) {
@@ -527,7 +566,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 slide = data.getIntExtra("slide", 0);
-
                 loading.setVisibility(View.INVISIBLE);
                 logo.setVisibility(View.INVISIBLE);
                 imageSlider.setVisibility(View.VISIBLE);
@@ -548,6 +586,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 } catch (ArithmeticException e) {
                     e.printStackTrace();
                 }
+            }else if(resultCode == 2){
+                String location = data.getStringExtra("location");
+                meetingPlace_ET.setText(location);
             }
         }
     }
@@ -824,6 +865,12 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     @Override
     public void onResume() {
         imageSlider.startAutoCycle();
+        Bundle mArgs = this.getArguments();
+        if(mArgs != null) {
+            String strtext = mArgs.getString("locationPoint");
+            meetingPlace_ET.setText(strtext);
+            Toast.makeText(getContext(), strtext, Toast.LENGTH_SHORT).show();
+        }
         super.onResume();
     }
 
@@ -1016,9 +1063,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-//        if(!startDateET.getText().toString().isEmpty() && !endDateET.getText().toString().isEmpty()){
-//
-//        }
         }
     }
 
