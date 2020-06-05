@@ -91,7 +91,7 @@ public class WeatherFragment extends Fragment {
         // Required empty public constructor
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -427,34 +427,31 @@ public class WeatherFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1000: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == 1000) {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    if (isContinue) {
-                        mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-                    } else {
-                        mFusedLocationClient.getLastLocation().addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                if (location != null) {
-                                    wayLatitude = location.getLatitude();
-                                    wayLongitude = location.getLongitude();
-                                    WeatherFragment.this.findweather(wayLatitude, wayLongitude);
-                                } else {
-                                    mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-                                }
-                            }
-                        });
-                    }
+                if (isContinue) {
+                    mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
                 } else {
-                    loadinWeather.setAnimation("confused.json");
-                    loadinWeather.playAnimation();
-                    Toasty.error(view.getContext(),"Location permission denied!",Toasty.LENGTH_SHORT).show();
+                    mFusedLocationClient.getLastLocation().addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                wayLatitude = location.getLatitude();
+                                wayLongitude = location.getLongitude();
+                                WeatherFragment.this.findweather(wayLatitude, wayLongitude);
+                            } else {
+                                mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                            }
+                        }
+                    });
                 }
-                break;
+            } else {
+                loadinWeather.setAnimation("confused.json");
+                loadinWeather.playAnimation();
+                Toasty.error(view.getContext(), "Location permission denied!", Toasty.LENGTH_SHORT).show();
             }
         }
     }
