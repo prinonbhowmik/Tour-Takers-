@@ -205,7 +205,7 @@ public class WeatherFragment extends Fragment {
                     } else {
                         WeatherResponse weatherResponse = response.body();
                         String address = "";
-                        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                        Geocoder geocoder = new Geocoder(view.getContext(), Locale.getDefault());
 
                         List<Address> addresses;
 
