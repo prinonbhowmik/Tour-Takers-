@@ -99,7 +99,7 @@ public class WeatherFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_weather, container, false);
         mainContainer = view.findViewById(R.id.mainContainer);
         loadinWeather = view.findViewById(R.id.loadinWeather);
-        wDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+        wDrawerLayout = view.findViewById(R.id.drawer_layout);
         weather_nav_icon = view.findViewById(R.id.weather_nav_icon);
         addressTxt = view.findViewById(R.id.address);
         updated_atTxt = view.findViewById(R.id.updated_at);
@@ -373,7 +373,7 @@ public class WeatherFragment extends Fragment {
                         }else if(weatherResponse.currentWeather.uvi >= 11){
                             uvi.setText("Extreme");
                         }
-
+                        hourlyForcastLists.clear();
                         for (int i = 1; i <= 24; i++) {
                             HourlyForcastList forcastList = new HourlyForcastList(
                                     weatherResponse.hourlyWeather.get(i).hourlyWeatherForcasts.get(0).icon,

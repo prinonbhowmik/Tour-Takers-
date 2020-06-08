@@ -148,7 +148,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.eDate.setText(event.getStartDate());
         holder.rDate.setText(event.getReturnDate());
         holder.eTime.setText(event.getTime());
-        holder.ePlace.setText(event.getMeetPlace());
+        holder.ePlace.setText(event.getSubLocalityForMeetingPlace());
         holder.eMembers.setText(String.valueOf(event.getJoinMemberCount()));
         holder.eCost.setText(event.getCost());
         holder.eGroupName.setText(event.getGroupName());

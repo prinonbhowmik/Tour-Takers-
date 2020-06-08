@@ -14,14 +14,15 @@ public class Event {
     private String eventPublisherId;
     private String groupName;
     private String cost;
+    private double latForMeetingPlace;
+    private double lonForMeetingPlace;
+    private String subLocalityForMeetingPlace;
 
 
     public Event() {
     }
 
-    public Event(String id, String startDate, String returnDate, String time, String place, String meetPlace,
-                 String description, String publishDate, int joinMemberCount, String eventPublisherId,
-                 String groupName, String cost) {
+    public Event(String id, String startDate, String returnDate, String time, String place, String meetPlace, String description, String publishDate, int joinMemberCount, String eventPublisherId, String groupName, String cost, double latForMeetingPlace, double lonForMeetingPlace, String subLocalityForMeetingPlace) {
         this.id = id;
         this.startDate = startDate;
         this.returnDate = returnDate;
@@ -34,6 +35,9 @@ public class Event {
         this.eventPublisherId = eventPublisherId;
         this.groupName = groupName;
         this.cost = cost;
+        this.latForMeetingPlace = latForMeetingPlace;
+        this.lonForMeetingPlace = lonForMeetingPlace;
+        this.subLocalityForMeetingPlace = subLocalityForMeetingPlace;
     }
 
     public String getId() {
@@ -82,5 +86,17 @@ public class Event {
 
     public String getCost() {
         return cost;
+    }
+
+    public double getLatForMeetingPlace() {
+        return latForMeetingPlace;
+    }
+
+    public double getLonForMeetingPlace() {
+        return lonForMeetingPlace;
+    }
+
+    public String getSubLocalityForMeetingPlace() {
+        return subLocalityForMeetingPlace;
     }
 }

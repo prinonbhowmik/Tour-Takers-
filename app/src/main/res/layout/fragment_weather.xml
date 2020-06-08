@@ -15,7 +15,8 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false">
 
             <RelativeLayout
                 android:id="@+id/mainContainer"
@@ -124,6 +125,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
+                            android:nestedScrollingEnabled="false"
                             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 

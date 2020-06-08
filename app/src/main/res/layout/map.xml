@@ -42,13 +42,36 @@
         android:name="com.google.android.gms.maps.SupportMapFragment" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/currentLocationBTN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="90dp"
         android:clickable="true"
-        android:src="@drawable/custom_round2" />
+        android:focusable="true"
+        android:src="@drawable/current_location" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/locationPickBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:background="#face2f"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/amarante"
+        android:icon="@drawable/ic_location_on_black_24dp"
+        android:src="@drawable/ic_location_on_black_24dp"
+        android:text="Pick Location"
+        android:textColor="#000000"
+        app:fabSize="normal" />
 
 
 </RelativeLayout>

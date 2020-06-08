@@ -131,6 +131,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private RecyclerView dailyRecycleView;
     private DailyForcastAdapter dailyForcastAdapter;
     private List<DailyForcastList> dailyForcastLists;
+    private double latForMeetingPlace;
+    private double lonForMeetingPlace;
+    private String subLocalityForMeetingPlace;
 
     public TourFragment() {
         // Required empty public constructor
@@ -475,14 +478,16 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     } else if (TextUtils.isEmpty(description)) {
                         Toasty.error(view.getContext(), "Enter Description about tour!", Toasty.LENGTH_SHORT).show();
                         eventDescription_ET.requestFocus();
+                    } else if ((latForMeetingPlace == 0) && (lonForMeetingPlace == 0) && (subLocalityForMeetingPlace.trim().length() == 0)) {
+                        Toasty.error(view.getContext(), "Can't get your meeting location point! Please pick location again.", Toasty.LENGTH_SHORT).show();
                     } else {
                         if (!place.matches(districtFromLocationSelection)) {
                             place = districtFromLocationSelection;
                             addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
-                                    userID, group_name, cost);
+                                    userID, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace);
                         } else if (place.matches(districtFromLocationSelection)) {
                             addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
-                                    userID, group_name, cost);
+                                    userID, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace);
                         } else {
                             Toasty.error(view.getContext(), "Location mismatching!", Toasty.LENGTH_SHORT).show();
                         }
@@ -496,7 +501,10 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         meetingPlace_ET.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), com.example.tureguideversion1.Activities.Map.class);
+                Intent intent = new Intent(view.getContext(), com.example.tureguideversion1.Activities.Map.class)
+                        .putExtra("meetingPlace",meetingPlace_ET.getText().toString())
+                        .putExtra("latForMeetingPlace",latForMeetingPlace)
+                        .putExtra("lonForMeetingPlace",lonForMeetingPlace);
                 startActivityForResult(intent,1);
             }
         });
@@ -588,6 +596,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 }
             }else if(resultCode == 2){
                 String location = data.getStringExtra("location");
+                latForMeetingPlace = data.getDoubleExtra("latForMeetingPlace",0);
+                lonForMeetingPlace = data.getDoubleExtra("lonForMeetingPlace",0);
+                subLocalityForMeetingPlace = data.getStringExtra("subLocality");
                 meetingPlace_ET.setText(location);
             }
         }
@@ -750,11 +761,11 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     }
 
     private void addEventInDB(String id, String startDate, String returnDate, String time, String place, String meetPlace, String description,
-                              String publishDate, int joinMemberCount, String eventPublisherId, String group_name, String cost) {
+                              String publishDate, int joinMemberCount, String eventPublisherId, String group_name, String cost, double latForMeetingPlace, double lonForMeetingPlace, String subLocalityForMeetingPlace) {
         final DatabaseReference eventRef = databaseReference.child("event");
 
         final Event event = new Event(id, startDate, returnDate, time, place, meetPlace, description, publishDate, joinMemberCount,
-                eventPublisherId, group_name, cost);
+                eventPublisherId, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace);
 
         eventRef.child(eventId).setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -865,12 +876,12 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     @Override
     public void onResume() {
         imageSlider.startAutoCycle();
-        Bundle mArgs = this.getArguments();
-        if(mArgs != null) {
-            String strtext = mArgs.getString("locationPoint");
-            meetingPlace_ET.setText(strtext);
-            Toast.makeText(getContext(), strtext, Toast.LENGTH_SHORT).show();
-        }
+//        Bundle mArgs = this.getArguments();
+//        if(mArgs != null) {
+//            String strtext = mArgs.getString("locationPoint");
+//            meetingPlace_ET.setText(strtext);
+//            Toast.makeText(getContext(), strtext, Toast.LENGTH_SHORT).show();
+//        }
         super.onResume();
     }
 
