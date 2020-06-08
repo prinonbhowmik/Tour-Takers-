@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -42,9 +40,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -99,7 +95,7 @@ public class WeatherFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_weather, container, false);
         mainContainer = view.findViewById(R.id.mainContainer);
         loadinWeather = view.findViewById(R.id.loadinWeather);
-        wDrawerLayout = view.findViewById(R.id.drawer_layout);
+        wDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
         weather_nav_icon = view.findViewById(R.id.weather_nav_icon);
         addressTxt = view.findViewById(R.id.address);
         updated_atTxt = view.findViewById(R.id.updated_at);
