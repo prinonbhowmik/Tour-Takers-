@@ -493,8 +493,7 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_below="@id/relative6"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="30dp">
+            android:layout_marginTop="10dp">
 
             <TextView
                 android:id="@+id/txt6"
@@ -532,12 +531,53 @@
                 android:textSize="18sp" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/relative16"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative7"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/commentTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total Comments :"
+                android:textSize="21sp"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/commentCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="21sp"
+                android:paddingStart="10dp"
+                android:paddingEnd="0dp"
+                android:layout_toEndOf="@+id/commentTV"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/viewComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/amarante"
+                android:text="View Comments"
+                android:textColor="@color/colorBlue"
+                android:textSize="18sp" />
+        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/relative15"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:layout_below="@id/relative7"
+            android:layout_below="@id/relative16"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="50dp">
 
             <Button

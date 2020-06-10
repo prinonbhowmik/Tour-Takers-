@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -78,6 +79,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
     private double latForMeetingPlace, lonForMeetingPlace;
+    private RelativeLayout relative16;
+    private TextView viewComment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +151,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                         }
                     });
                     joinBtn.setVisibility(View.GONE);
+                    relative16.setVisibility(View.VISIBLE);
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
@@ -243,6 +247,13 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 }
             }
         });
+        viewComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EventDetails.this, ChatBox.class);
+                startActivity(intent);
+            }
+        });
 
 
     }
@@ -291,6 +302,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                     }
                 });
                 cancel_joinBtn.setVisibility(View.GONE);
+                relative16.setVisibility(View.GONE);
+
             }
         });
         dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -456,6 +469,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 descriptionIV.setVisibility(View.VISIBLE);
                 groupIV.setVisibility(View.VISIBLE);
                 costIV.setVisibility(View.VISIBLE);
+                relative16.setVisibility(View.VISIBLE);
+
             } else {
                 joinButtonShow();
             }
@@ -473,8 +488,10 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                     String id = (String) data.child("id").getValue();
                     if (userId.equals(id)) {
                         cancel_joinBtn.setVisibility(View.VISIBLE);
+                        relative16.setVisibility(View.VISIBLE);
                     } else {
                         joinBtn.setVisibility(View.VISIBLE);
+                        //relative16.setVisibility(View.GONE);
                     }
                 }
             }
@@ -643,6 +660,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         connectivityReceiver = new ConnectivityReceiver();
+        relative16 = findViewById(R.id.relative16);
+        viewComment = findViewById(R.id.viewComment);
     }
 
 
