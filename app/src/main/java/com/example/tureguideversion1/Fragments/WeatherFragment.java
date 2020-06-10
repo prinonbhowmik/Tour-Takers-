@@ -9,6 +9,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -65,7 +67,8 @@ public class WeatherFragment extends Fragment {
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private LottieAnimationView weatherAnim;
-    private TextView addressTxt, updated_atTxt, statusTxt, tempTxt, feels_like, windTxt, pressureTxt, humidityTxt, sunRise, sunSet, dewPoint, cloudness, visibility, uvi;
+    private TextView addressTxt, updated_atTxt, statusTxt, tempTxt, feels_like, windTxt, pressureTxt, humidityTxt, sunRise,
+            sunSet, dewPoint, cloudness, visibility, uvi;
     private RecyclerView hourlyRecycleView;
     private HourlyForcastAdapter hourlyForcastAdapter;
     private List<HourlyForcastList> hourlyForcastLists;
@@ -74,6 +77,7 @@ public class WeatherFragment extends Fragment {
     private RelativeLayout mainContainer;
     private SwipeRefreshLayout refreshLayout;
     private LottieAnimationView loadinWeather;
+    private RelativeLayout weatherLayout;
 
     private ApiInterFace api;
     private StringBuilder stringBuilder;
@@ -87,12 +91,12 @@ public class WeatherFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_weather, container, false);
+        weatherLayout = view.findViewById(R.id.weatherLayout);
         mainContainer = view.findViewById(R.id.mainContainer);
         loadinWeather = view.findViewById(R.id.loadinWeather);
         wDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
@@ -193,6 +197,7 @@ public class WeatherFragment extends Fragment {
     private void findweather(final double lat, final double lon) {
         Call<WeatherResponse> call = api.getWeather(lat, lon, "metric", API);
         call.enqueue(new Callback<WeatherResponse>() {
+            @SuppressLint("ResourceAsColor")
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                 if (response.isSuccessful()) {
@@ -344,6 +349,35 @@ public class WeatherFragment extends Fragment {
                         }
                         String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date((long) updatedAt * 1000));
                         updated_atTxt.setText(updatedAtText);
+
+
+                        Calendar c = Calendar.getInstance();
+                        int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
+                        Log.d("CurrentHour", String.valueOf(timeOfDay));
+
+                        if(timeOfDay >= 6 && timeOfDay < 18){
+                            weatherLayout.setBackgroundResource(R.drawable.weatherday);
+                            addressTxt.setTextColor(R.color.colorBlack);
+                            weather_nav_icon.setColorFilter(R.color.colorBlack);
+                            updated_atTxt.setTextColor(R.color.colorBlack);
+                            statusTxt.setTextColor(R.color.colorBlack);
+                            tempTxt.setTextColor(R.color.color8);
+                            feels_like.setTextColor(R.color.colorBlack);
+                            pressureTxt.setTextColor(R.color.colorBlack);
+                            humidityTxt.setTextColor(R.color.colorBlack);
+                            windTxt.setTextColor(R.color.colorBlack);
+                            sunRise.setTextColor(R.color.colorBlack);
+                            sunSet.setTextColor(R.color.colorBlack);
+                            dewPoint.setTextColor(R.color.colorBlack);
+                            visibility.setTextColor(R.color.colorBlack);
+                            uvi.setTextColor(R.color.colorBlack);
+                            
+                        }else if(timeOfDay >= 18 && timeOfDay <=0) {
+
+                        }else if( timeOfDay >=0 && timeOfDay<6){
+                            weatherLayout.setBackgroundResource(R.drawable.weathernight);
+                        }
+
                         statusTxt.setText(weatherResponse.currentWeather.weather.get(0).description);
                         tempTxt.setText(Math.round(weatherResponse.currentWeather.temp) + "°C");
                         feels_like.setText("Feels Like: " + Math.round(weatherResponse.currentWeather.feels_like) + "°C");
