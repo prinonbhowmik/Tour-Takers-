@@ -53,7 +53,8 @@
         android:layout_marginBottom="90dp"
         android:clickable="true"
         android:focusable="true"
-        android:src="@drawable/current_location" />
+        android:src="@drawable/current_location"
+        tools:ignore="RelativeOverlap" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/locationPickBTN"
@@ -67,7 +68,6 @@
         android:clickable="true"
         android:focusable="true"
         android:fontFamily="@font/amarante"
-        android:icon="@drawable/ic_location_on_black_24dp"
         android:src="@drawable/ic_location_on_black_24dp"
         android:text="Pick Location"
         android:textColor="#000000"

@@ -502,6 +502,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), com.example.tureguideversion1.Activities.Map.class)
+                        .putExtra("from", "tour")
                         .putExtra("meetingPlace",meetingPlace_ET.getText().toString())
                         .putExtra("latForMeetingPlace",latForMeetingPlace)
                         .putExtra("lonForMeetingPlace",lonForMeetingPlace);

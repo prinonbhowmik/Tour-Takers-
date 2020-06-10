@@ -77,6 +77,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
+    private double latForMeetingPlace, lonForMeetingPlace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,18 +106,28 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         deleteTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkConnection()) {
+                if (checkConnection()) {
                     deletealertmessage();
-                }else {
+                } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
+            }
+        });
+
+        meeting_place.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(EventDetails.this, com.example.tureguideversion1.Activities.Map.class)
+                        .putExtra("from", "eventDetails")
+                        .putExtra("latForMeetingPlace", latForMeetingPlace)
+                        .putExtra("lonForMeetingPlace", lonForMeetingPlace));
             }
         });
 
         joinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkConnection()) {
+                if (checkConnection()) {
                     joinAlertDialog();
                     DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
                     memberRef.child("id").setValue(userId);
@@ -137,7 +148,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                         }
                     });
                     joinBtn.setVisibility(View.GONE);
-                }else {
+                } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
             }
@@ -145,9 +156,9 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         cancel_joinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkConnection()) {
+                if (checkConnection()) {
                     cancelAlertDialog();
-                }else {
+                } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
             }
@@ -168,7 +179,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         descriptionIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkConnection()) {
+                if (checkConnection()) {
                     Bundle args = new Bundle();
                     args.putString("description", "Description");
                     args.putString("event_id", event_Id);
@@ -176,7 +187,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                     EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
                     bottomSheet.setArguments(args);
                     bottomSheet.show(getSupportFragmentManager(), "test");
-                }else {
+                } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
             }
@@ -185,7 +196,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         meetingIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkConnection()) {
+                if (checkConnection()) {
                     Bundle args = new Bundle();
                     args.putString("meeting_place", "Meeting Place");
                     args.putString("event_id", event_Id);
@@ -193,7 +204,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                     EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
                     bottomSheet.setArguments(args);
                     bottomSheet.show(getSupportFragmentManager(), "test");
-                }else {
+                } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
             }
@@ -202,7 +213,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         groupIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkConnection()) {
+                if (checkConnection()) {
                     Bundle args = new Bundle();
                     args.putString("group_name", "Group Name");
                     args.putString("event_id", event_Id);
@@ -210,7 +221,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                     EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
                     bottomSheet.setArguments(args);
                     bottomSheet.show(getSupportFragmentManager(), "test");
-                }else {
+                } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
             }
@@ -219,7 +230,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         costIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkConnection()) {
+                if (checkConnection()) {
                     Bundle args = new Bundle();
                     args.putString("cost", "Total Cost");
                     args.putString("event_id", event_Id);
@@ -227,7 +238,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                     EventUpdateBottomSheet bottomSheet = new EventUpdateBottomSheet();
                     bottomSheet.setArguments(args);
                     bottomSheet.show(getSupportFragmentManager(), "test");
-                }else {
+                } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
             }
@@ -363,7 +374,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 //Get user map
                 Map singleUser = (Map) entry.getValue();
                 //Get phone field and append to list
-                if(locationWillBeVisit.contains(singleUser.get("locationName").toString())) {
+                if (locationWillBeVisit.contains(singleUser.get("locationName").toString())) {
                     location.add((String) singleUser.get("locationName"));
                     image.add((String) singleUser.get("image"));
                 }
@@ -436,9 +447,6 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     }
 
 
-
-
-
     private void moreImageShow() {
         if (publisher_id != null) {
             if (publisher_id.equals(userId)) {
@@ -490,7 +498,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         updateref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
+                if (dataSnapshot.exists()) {
                     Event event = dataSnapshot.getValue(Event.class);
                     place1 = event.getPlace();
                     p_date = event.getPublishDate();
@@ -502,6 +510,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                     description = event.getDescription();
                     e_cost = event.getCost();
                     attend_member_count = event.getJoinMemberCount();
+                    latForMeetingPlace = event.getLatForMeetingPlace();
+                    lonForMeetingPlace = event.getLonForMeetingPlace();
 
                     event_place.setText(place);
                     publish_date.setText(p_date);
@@ -546,13 +556,13 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    }else {
-                        if(member_gender.matches("male")){
+                    } else {
+                        if (member_gender.matches("male")) {
                             GlideApp.with(EventDetails.this)
                                     .load(getImageFromDrawable("man"))
                                     .centerInside()
                                     .into(event_publisher_image);
-                        }else if(member_gender.matches("female")){
+                        } else if (member_gender.matches("female")) {
                             GlideApp.with(EventDetails.this)
                                     .load(getImageFromDrawable("woman"))
                                     .centerInside()
@@ -584,7 +594,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     }
 
     private void locationList(Map<String, Object> value) {
-        if(value != null) {
+        if (value != null) {
             for (Map.Entry<String, Object> entry : value.entrySet()) {
                 //Get user map
                 Map singleUser = (Map) entry.getValue();
@@ -623,7 +633,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         costIV = findViewById(R.id.edit_costIV);
         locationLists = new ArrayList<>();
         locationWillBeVisit = new ArrayList<>();
-        locationAdapter = new EventLocationListAdapter(locationLists,getApplicationContext());
+        locationAdapter = new EventLocationListAdapter(locationLists, getApplicationContext());
         locationRecycleView = findViewById(R.id.eventLocationList_recyclerview);
         locationRecycleView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         locationRecycleView.setHasFixedSize(true);
@@ -634,8 +644,6 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         connectivityReceiver = new ConnectivityReceiver();
     }
-
-
 
 
     @Override
@@ -651,13 +659,13 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
 
     @Override
     public void onSliderClick(BaseSliderView slider) {
-        if(checkConnection()) {
+        if (checkConnection()) {
             Intent i = new Intent(view.getContext(), LocationImage.class)
                     .putExtra("slide", slider.getBundle().getString("extra"))
                     .putExtra("location", place.toLowerCase())
                     .putStringArrayListExtra("willVisit", (ArrayList<String>) locationWillBeVisit);
             startActivityForResult(i, 1);
-        }else{
+        } else {
             startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
         }
     }
@@ -682,7 +690,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         ImageView pic;
         Button btnFollow;
         profileDialog.setContentView(R.layout.profile_popup);
-        close =profileDialog.findViewById(R.id.close);
+        close = profileDialog.findViewById(R.id.close);
         namePopUp = profileDialog.findViewById(R.id.namePopUp);
         phonePopUp = profileDialog.findViewById(R.id.phonePopUp);
         emailPopUp = profileDialog.findViewById(R.id.emailPopUp);
@@ -690,18 +698,18 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         namePopUp.setText(member_name);
         phonePopUp.setText(member_phone);
         emailPopUp.setText(member_email);
-        if(!member_image.matches("")) {
+        if (!member_image.matches("")) {
             GlideApp.with(profileDialog.getContext())
                     .load(member_image)
                     .fitCenter()
                     .into(pic);
-        }else {
-            if(member_gender.matches("male")){
+        } else {
+            if (member_gender.matches("male")) {
                 GlideApp.with(profileDialog.getContext())
                         .load(getImageFromDrawable("man"))
                         .fitCenter()
                         .into(pic);
-            }else if(member_gender.matches("female")){
+            } else if (member_gender.matches("female")) {
                 GlideApp.with(profileDialog.getContext())
                         .load(getImageFromDrawable("woman"))
                         .fitCenter()
