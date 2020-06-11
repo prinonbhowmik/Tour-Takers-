@@ -357,21 +357,26 @@ public class WeatherFragment extends Fragment {
 
                         if (timeOfDay >= 6 && timeOfDay < 18) {
                             weatherLayout.setBackgroundResource(R.drawable.weatherday);
-                            addressTxt.setTextColor(R.color.colorBlack);
-                            weather_nav_icon.setColorFilter(R.color.colorBlack);
-                            updated_atTxt.setTextColor(R.color.colorBlack);
-                            statusTxt.setTextColor(R.color.colorBlack);
-                            tempTxt.setTextColor(R.color.colorBlack);
-                            feels_like.setTextColor(R.color.colorBlack);
-                            pressureTxt.setTextColor(R.color.colorBlack);
-                            humidityTxt.setTextColor(R.color.colorBlack);
-                            windTxt.setTextColor(R.color.colorBlack);
-                            sunRise.setTextColor(R.color.colorBlack);
-                            sunSet.setTextColor(R.color.colorBlack);
-                            dewPoint.setTextColor(R.color.colorBlack);
-                            visibility.setTextColor(R.color.colorBlack);
-                            uvi.setTextColor(R.color.colorBlack);
-
+                        }
+                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("scattered clouds") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("broken clouds") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("overcast clouds")
+                        || weatherResponse.currentWeather.weather.get(0).description.matches("few clouds")){
+                            weatherLayout.setBackgroundResource(R.drawable.weathercloudyday);
+                        }
+                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light rain") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("moderate rain") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy intensity rain") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("very heavy rain") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("extreme rain")){
+                            weatherLayout.setBackgroundResource(R.drawable.weatherrain);
+                        }
+                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light thunderstorm") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("thunderstorm") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy thunderstorm") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("ragged thunderstorm"))
+                        {
+                            weatherLayout.setBackgroundResource(R.drawable.weatherstorm);
                         }
                         else if (timeOfDay >= 18 && timeOfDay <= 23) {
                             weatherLayout.setBackgroundResource(R.drawable.weathernight);
