@@ -110,4 +110,7 @@ dependencies {
 
     implementation group: 'com.github.seratch', name: 'java-time-backport', version: '1.0.0'
 
+    //FancyButtonProj
+    implementation 'com.ekalips.android:fancyprogressbutton:1.2.1'
+
 }

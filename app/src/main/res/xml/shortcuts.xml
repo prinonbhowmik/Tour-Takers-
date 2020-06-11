@@ -1,0 +1,35 @@
+<shortcuts xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="Event"
+        android:enabled="true"
+        android:icon="@drawable/ic_event_black_24dp"
+        android:shortcutShortLabel="@string/event"
+        android:shortcutLongLabel="@string/event"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="event"
+            android:targetPackage="com.example.tureguideversion1"
+            android:targetClass="com.example.tureguideversion1.Activities.Splash" />
+        <!-- If your shortcut is associated with multiple intents, include them
+             here. The last intent in the list determines what the user sees when
+             they launch this shortcut. -->
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="weather"
+        android:enabled="true"
+        android:icon="@drawable/ic_sun"
+        android:shortcutShortLabel="@string/weather"
+        android:shortcutLongLabel="@string/weather"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="weather"
+            android:targetPackage="com.example.tureguideversion1"
+            android:targetClass="com.example.tureguideversion1.Activities.Splash" />
+        <!-- If your shortcut is associated with multiple intents, include them
+             here. The last intent in the list determines what the user sees when
+             they launch this shortcut. -->
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>

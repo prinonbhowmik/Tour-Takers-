@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.ekalips.fancybuttonproj.FancyButton;
 import com.example.tureguideversion1.AppConstants;
 import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
@@ -328,7 +329,6 @@ public class Map extends AppCompatActivity implements
                 return false;
             }
         });
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

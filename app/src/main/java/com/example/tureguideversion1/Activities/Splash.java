@@ -7,6 +7,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -43,11 +44,31 @@ public class Splash extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Intent myintent=new Intent(Splash.this, SignIn.class);
-                    myintent.putExtra("name", "Toast Test");
-                    startActivity(myintent);
-                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
-                    finish();
+                    if (getIntent().getAction() != null) {
+                        if (getIntent().getAction().matches("event")) {
+                            Intent myintent = new Intent(Splash.this, SignIn.class).setAction("event");
+                            startActivity(myintent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                            finish();
+                        }else if (getIntent().getAction().matches("weather")) {
+                            Intent myintent = new Intent(Splash.this, SignIn.class);
+                            myintent.setAction("weather");
+                            startActivity(myintent);
+                            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                            finish();
+                        }else {
+                            Intent myintent = new Intent(Splash.this, SignIn.class);
+                            startActivity(myintent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                            finish();
+                        }
+                    }
+
+//                    Intent myintent = new Intent(Splash.this, SignIn.class);
+//                    myintent.putExtra("name", "Toast Test");
+//                    startActivity(myintent);
+//                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+//                    finish();
                 }
             },splash_time_out);
         }

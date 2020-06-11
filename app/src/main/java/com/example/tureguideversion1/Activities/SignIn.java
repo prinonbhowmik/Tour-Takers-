@@ -1,5 +1,9 @@
 package com.example.tureguideversion1.Activities;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -63,17 +67,36 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
         registerReceiver(connectivityReceiver, intentFilter);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Intent intent = getIntent();
+
         if (intent.getExtras() != null) {
             nameET.setText(intent.getExtras().getString("email"));
         }
         if (user != null && user.isEmailVerified()) {
             // User is signed in
-            unregisterReceiver(connectivityReceiver);
-            intent = new Intent(SignIn.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            finish();
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            startActivity(intent);
+            if (intent.getAction() != null) {
+                if (getIntent().getAction().matches("event")) {
+                    unregisterReceiver(connectivityReceiver);
+                    intent = new Intent(SignIn.this, MainActivity.class).setAction("event");
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    finish();
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    startActivity(intent);
+                }else if (getIntent().getAction().matches("weather")) {
+                    unregisterReceiver(connectivityReceiver);
+                    intent = new Intent(SignIn.this, MainActivity.class).setAction("weather");
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    finish();
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    startActivity(intent);
+                }
+            }else {
+                unregisterReceiver(connectivityReceiver);
+                intent = new Intent(SignIn.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                startActivity(intent);
+            }
         }
 
         singin.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +124,7 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
 
         Intent myIntent = getIntent();
         String text = myIntent.getStringExtra("name");
-        Toast.makeText(this, "" + text, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "" + text, Toast.LENGTH_SHORT).show();
     }
 
     private void checkmail() {

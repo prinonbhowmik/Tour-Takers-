@@ -6,6 +6,7 @@ import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,7 @@ public class LoaderFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_loader, container, false);
         loadinAmin = view.findViewById(R.id.loadinAmin);
+        Bundle bundle = getArguments();
         new CountDownTimer(5000, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -38,9 +40,21 @@ public class LoaderFragment extends Fragment {
 
             public void onFinish() {
                 //startActivity(new Intent(getContext(), MainActivity.class).putExtra("FromLoader","tour"));
-                FragmentTransaction event = getParentFragmentManager().beginTransaction();
-                event.replace(R.id.fragment_container, new TourFragment());
-                event.commit();
+                if(getArguments() != null) {
+                    if (bundle.getString("shortcut").matches("event")) {
+                        FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                        event.replace(R.id.fragment_container, new EventFragment());
+                        event.commit();
+                    }else if (bundle.getString("shortcut").matches("weather")) {
+                        FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                        event.replace(R.id.fragment_container, new WeatherFragment());
+                        event.commit();
+                    }
+                }else {
+                    FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                    event.replace(R.id.fragment_container, new TourFragment());
+                    event.commit();
+                }
             }
         }.start();
 

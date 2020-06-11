@@ -87,14 +87,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         registerReceiver(connectivityReceiver, intentFilter);
         if (checkConnection()) {
             storageReference = FirebaseStorage.getInstance().getReference();
-            if (savedInstanceState == null) {
-                currentFragment = "tour";
-                FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
-                tour.replace(R.id.fragment_container, new LoaderFragment());
-                tour.commit();
-                navigationView.getMenu().getItem(0).setChecked(true);
-            }
-
+                if (getIntent().getAction() != null) {
+                if (getIntent().getAction().matches("event")) {
+                    currentFragment = "event";
+                    Bundle bundle = new Bundle();
+                    bundle.putString("shortcut", "event");
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment_container, LoaderFragment.class, bundle);
+                    transaction.commit();
+                    navigationView.getMenu().getItem(2).setChecked(true);
+                } else if (getIntent().getAction().matches("weather")) {
+                    currentFragment = "weather";
+                    Bundle bundle = new Bundle();
+                    bundle.putString("shortcut", "weather");
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment_container, LoaderFragment.class, bundle);
+                    transaction.commit();
+                    navigationView.getMenu().getItem(4).setChecked(true);
+                }
+            }else {
+                    if (savedInstanceState == null) {
+                        currentFragment = "tour";
+                        FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+                        tour.replace(R.id.fragment_container, new LoaderFragment());
+                        tour.commit();
+                        navigationView.getMenu().getItem(0).setChecked(true);
+                    }
+                }
             userId = auth.getUid();
 
             DatabaseReference showref = reference.child(userId);
@@ -122,14 +141,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 e.printStackTrace();
                                 //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
                             }
-                        }else {
+                        } else {
                             String sex = profile.getSex();
-                            if(sex.matches("male")){
+                            if (sex.matches("male")) {
                                 GlideApp.with(MainActivity.this)
                                         .load(getImageFromDrawable("man"))
                                         .centerInside()
                                         .into(circularImageView);
-                            }else if(sex.matches("female")){
+                            } else if (sex.matches("female")) {
                                 GlideApp.with(MainActivity.this)
                                         .load(getImageFromDrawable("woman"))
                                         .centerInside()
@@ -313,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if (tasks != null && !tasks.isEmpty()) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 className = tasks.get(0).getTaskInfo().topActivity.getClassName().substring(41);
-                                if(className.matches("MainActivity")){
+                                if (className.matches("MainActivity")) {
                                     Fragment frag = this.getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                                     fragmentTransaction.detach(frag);
