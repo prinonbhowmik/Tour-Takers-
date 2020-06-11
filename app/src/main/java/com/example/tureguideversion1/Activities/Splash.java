@@ -1,7 +1,5 @@
 package com.example.tureguideversion1.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +7,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tureguideversion1.R;
 
@@ -44,6 +44,7 @@ public class Splash extends AppCompatActivity {
                 @Override
                 public void run() {
                     Intent myintent=new Intent(Splash.this, SignIn.class);
+                    myintent.putExtra("name", "Toast Test");
                     startActivity(myintent);
                     overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                     finish();

@@ -1,8 +1,5 @@
 package com.example.tureguideversion1.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -20,6 +17,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
@@ -98,6 +98,10 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
 
             }
         });
+
+        Intent myIntent = getIntent();
+        String text = myIntent.getStringExtra("name");
+        Toast.makeText(this, "" + text, Toast.LENGTH_SHORT).show();
     }
 
     private void checkmail() {
