@@ -145,13 +145,13 @@ public class WeatherFragment extends Fragment {
                         wayLatitude = location.getLatitude();
                         wayLongitude = location.getLongitude();
                         if (!isContinue) {
-                            findweather(wayLatitude,wayLongitude);
+                            findweather(wayLatitude, wayLongitude);
                         } else {
                             stringBuilder.append(wayLatitude);
                             stringBuilder.append("-");
                             stringBuilder.append(wayLongitude);
                             stringBuilder.append("\n\n");
-                            Toast.makeText(getContext(),stringBuilder.toString(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), stringBuilder.toString(), Toast.LENGTH_SHORT).show();
                         }
                         if (!isContinue && mFusedLocationClient != null) {
                             mFusedLocationClient.removeLocationUpdates(locationCallback);
@@ -169,7 +169,7 @@ public class WeatherFragment extends Fragment {
         hourlyRecycleView.setAdapter(hourlyForcastAdapter);
 
         if (!isGPS) {
-            Toasty.info(view.getContext(),"Please turn on GPS",Toasty.LENGTH_SHORT).show();
+            Toasty.info(view.getContext(), "Please turn on GPS", Toasty.LENGTH_SHORT).show();
         }
         isContinue = false;
         getLocation();
@@ -202,7 +202,7 @@ public class WeatherFragment extends Fragment {
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                 if (response.isSuccessful()) {
                     if (response.body() == null) {
-                        Toasty.error(view.getContext(),"Can't get weather data!",Toasty.LENGTH_SHORT).show();
+                        Toasty.error(view.getContext(), "Can't get weather data!", Toasty.LENGTH_SHORT).show();
                     } else {
                         WeatherResponse weatherResponse = response.body();
                         String address = "";
@@ -355,13 +355,13 @@ public class WeatherFragment extends Fragment {
                         int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
                         Log.d("CurrentHour", String.valueOf(timeOfDay));
 
-                        if(timeOfDay >= 6 && timeOfDay < 18){
+                        if (timeOfDay >= 6 && timeOfDay < 18) {
                             weatherLayout.setBackgroundResource(R.drawable.weatherday);
                             addressTxt.setTextColor(R.color.colorBlack);
                             weather_nav_icon.setColorFilter(R.color.colorBlack);
                             updated_atTxt.setTextColor(R.color.colorBlack);
                             statusTxt.setTextColor(R.color.colorBlack);
-                            tempTxt.setTextColor(R.color.color8);
+                            tempTxt.setTextColor(R.color.colorBlack);
                             feels_like.setTextColor(R.color.colorBlack);
                             pressureTxt.setTextColor(R.color.colorBlack);
                             humidityTxt.setTextColor(R.color.colorBlack);
@@ -371,10 +371,12 @@ public class WeatherFragment extends Fragment {
                             dewPoint.setTextColor(R.color.colorBlack);
                             visibility.setTextColor(R.color.colorBlack);
                             uvi.setTextColor(R.color.colorBlack);
-                            
-                        }else if(timeOfDay >= 18 && timeOfDay <=0) {
 
-                        }else if( timeOfDay >=0 && timeOfDay<6){
+                        }
+                        else if (timeOfDay >= 18 && timeOfDay <= 23) {
+                            weatherLayout.setBackgroundResource(R.drawable.weathernight);
+                        }
+                        else if (timeOfDay >= 0 && timeOfDay < 6) {
                             weatherLayout.setBackgroundResource(R.drawable.weathernight);
                         }
 
@@ -384,23 +386,23 @@ public class WeatherFragment extends Fragment {
                         windTxt.setText(Math.round(weatherResponse.currentWeather.wind_speed) + " Meter/Sec");
                         pressureTxt.setText(String.valueOf(weatherResponse.currentWeather.pressure));
                         humidityTxt.setText(Math.round(weatherResponse.currentWeather.humidity) + "%");
-                        String riseTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunrise*1000));
+                        String riseTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunrise * 1000));
                         sunRise.setText(riseTime);
-                        String setTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunset*1000));
+                        String setTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunset * 1000));
                         sunSet.setText(setTime);
                         dewPoint.setText(Math.round(weatherResponse.currentWeather.dew_point) + "°C");
-                        cloudness.setText(weatherResponse.currentWeather.clouds+"%");
+                        cloudness.setText(weatherResponse.currentWeather.clouds + "%");
                         float v = (float) weatherResponse.currentWeather.visibility / 1000;
-                        visibility.setText(v+" km");
-                        if((weatherResponse.currentWeather.uvi >= 0) && (weatherResponse.currentWeather.uvi <= 2)){
+                        visibility.setText(v + " km");
+                        if ((weatherResponse.currentWeather.uvi >= 0) && (weatherResponse.currentWeather.uvi <= 2)) {
                             uvi.setText("Low");
-                        }else if((weatherResponse.currentWeather.uvi >= 3) && (weatherResponse.currentWeather.uvi <= 5)){
+                        } else if ((weatherResponse.currentWeather.uvi >= 3) && (weatherResponse.currentWeather.uvi <= 5)) {
                             uvi.setText("Moderate");
-                        }else if((weatherResponse.currentWeather.uvi >= 6) && (weatherResponse.currentWeather.uvi <= 7)){
+                        } else if ((weatherResponse.currentWeather.uvi >= 6) && (weatherResponse.currentWeather.uvi <= 7)) {
                             uvi.setText("High");
-                        }else if((weatherResponse.currentWeather.uvi >= 8) && (weatherResponse.currentWeather.uvi <= 10)){
+                        } else if ((weatherResponse.currentWeather.uvi >= 8) && (weatherResponse.currentWeather.uvi <= 10)) {
                             uvi.setText("Very high");
-                        }else if(weatherResponse.currentWeather.uvi >= 11){
+                        } else if (weatherResponse.currentWeather.uvi >= 11) {
                             uvi.setText("Extreme");
                         }
                         hourlyForcastLists.clear();
@@ -445,6 +447,16 @@ public class WeatherFragment extends Fragment {
                             wayLongitude = location.getLongitude();
                             WeatherFragment.this.findweather(wayLatitude, wayLongitude);
                         } else {
+                            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                // TODO: Consider calling
+                                //    ActivityCompat#requestPermissions
+                                // here to request the missing permissions, and then overriding
+                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                //                                          int[] grantResults)
+                                // to handle the case where the user grants the permission. See the documentation
+                                // for ActivityCompat#requestPermissions for more details.
+                                return;
+                            }
                             mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
                         }
                     }
