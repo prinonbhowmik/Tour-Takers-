@@ -154,7 +154,7 @@ public class Map extends AppCompatActivity implements
         };
 
         if (!isGPS) {
-            Toasty.info(getApplicationContext(), "Please turn on GPS", Toasty.LENGTH_SHORT).show();
+            Toasty.info(getApplicationContext(), "Please turn on your GPS", Toasty.LENGTH_SHORT).show();
         }
         isContinue = false;
 
