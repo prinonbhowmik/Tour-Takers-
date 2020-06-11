@@ -251,6 +251,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EventDetails.this, ChatBox.class);
+                intent.putExtra("eventId", event_Id);
                 startActivity(intent);
             }
         });

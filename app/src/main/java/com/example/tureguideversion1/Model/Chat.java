@@ -3,15 +3,13 @@ package com.example.tureguideversion1.Model;
 public class Chat {
     private String message;
     private String sender;
-    private String senderImageURL;
-
-    public Chat(String message, String sender, String senderImageURL) {
-        this.message = message;
-        this.sender = sender;
-        this.senderImageURL = senderImageURL;
-    }
 
     public Chat() {
+    }
+
+    public Chat(String message, String sender) {
+        this.message = message;
+        this.sender = sender;
     }
 
     public String getMessage() {
@@ -22,7 +20,4 @@ public class Chat {
         return sender;
     }
 
-    public String getSenderImageURL() {
-        return senderImageURL;
-    }
 }

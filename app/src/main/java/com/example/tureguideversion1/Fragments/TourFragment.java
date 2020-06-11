@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,17 +33,14 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.request.RequestOptions;
@@ -774,6 +770,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 if (task.isSuccessful()) {
                     Toasty.success(getContext(), "Your Event Successfully Added", Toasty.LENGTH_SHORT).show();
                     addJoinMember();
+                    addChat();
                     addEventLoacationList();
                     FragmentTransaction event = getParentFragmentManager().beginTransaction();
                     event.replace(R.id.fragment_container, new EventFragment());
@@ -791,6 +788,12 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private void addJoinMember() {
         DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(eventId).child(userID);
         memberRef.child("id").setValue(userID);
+    }
+
+    private void addChat() {
+        DatabaseReference memberRef = databaseReference.child("chat");
+        memberRef.setValue(eventId);
+
     }
 
     private void addEventLoacationList() {
