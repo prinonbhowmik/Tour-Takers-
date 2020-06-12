@@ -35,6 +35,7 @@ public class ChatBox extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private RecyclerView chatRecyclerView;
     private List<Chat> mChat;
+    private List<Profile> mProfile;
     private ChatAdapter chatAdapter;
     ArrayList<String> messageID;
 
@@ -90,17 +91,39 @@ public class ChatBox extends AppCompatActivity {
 
     private void readMessage() {
         mChat = new ArrayList<>();
+        mProfile = new ArrayList<>();
         DatabaseReference ref = databaseReference.child("chat").child(currentEventId);
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mChat.clear();
+                mProfile.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
-                    mChat.add(chat);
-                    chatAdapter = new ChatAdapter(ChatBox.this, mChat);
-                    chatRecyclerView.setAdapter(chatAdapter);
-                    chatAdapter.notifyDataSetChanged();
+
+                    String senderid = chat.getSender();
+                    DatabaseReference sendr = databaseReference.child("profile").child(senderid);
+                    sendr.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            java.util.Map<String, Object> values = (java.util.Map<String, Object>) dataSnapshot.getValue();
+                            Profile profile = new Profile((String) values.get("name"), (String) values.get("image"), (String) values.get("sex"));
+                            //Profile profile=snapshot1.getValue(Profile.class);
+
+                            mProfile.add(profile);
+                            mChat.add(chat);
+                            chatAdapter = new ChatAdapter(ChatBox.this, mChat, mProfile);
+                            chatRecyclerView.setAdapter(chatAdapter);
+                            chatAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                 }
 
             }

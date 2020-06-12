@@ -31,6 +31,12 @@ public class Profile {
         this.sex = sex;
     }
 
+    public Profile(String name, String image, String sex) {
+        this.name = name;
+        this.image = image;
+        this.sex = sex;
+    }
+
     public String getSex() {
         return sex;
     }

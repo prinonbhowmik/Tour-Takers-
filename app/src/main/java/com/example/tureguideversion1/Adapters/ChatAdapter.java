@@ -4,16 +4,18 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Chat;
+import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
 
@@ -24,14 +26,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public static final int MSG_TYPE_RIGHT = 1;
     private Context mContext;
     private List<Chat> mChat;
+    private List<Profile> mProfile;
     private String imageUrl = "";
+    private DatabaseReference databaseReference;
     String userid;
     FirebaseUser fUser;
     FirebaseAuth auth;
 
-    public ChatAdapter(Context context, List<Chat> mChat) {
+    public ChatAdapter(Context context, List<Chat> mChat, List<Profile> mProfile) {
         this.mContext = context;
         this.mChat = mChat;
+        this.mProfile = mProfile;
         //this.imageUrl = imageUrl;
     }
 
@@ -52,11 +57,32 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         Chat chat = mChat.get(position);
+        Profile profile = mProfile.get(position);
         holder.showMessage.setText(chat.getMessage());
-        if (imageUrl.equals("")) {
+
+        holder.senderName.setText(profile.getName());
+       /* if (imageUrl.equals("")) {
             holder.profileImageView.setImageResource(R.drawable.man);
         } else {
             holder.profileImageView.setImageResource(R.drawable.woman);
+        }*/
+        if (!profile.getImage().isEmpty()) {
+            GlideApp.with(mContext)
+                    .load(profile.getImage())
+                    .fitCenter()
+                    .into(holder.profileImageView);
+        } else {
+            if (profile.getSex().matches("male")) {
+                GlideApp.with(mContext)
+                        .load(R.drawable.man)
+                        .centerInside()
+                        .into(holder.profileImageView);
+            } else if (profile.getSex().matches("female")) {
+                GlideApp.with(mContext)
+                        .load(R.drawable.woman)
+                        .centerInside()
+                        .into(holder.profileImageView);
+            }
         }
     }
 
@@ -66,11 +92,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView showMessage;
+        private TextView showMessage, senderName;
         private CircleImageView profileImageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            senderName = itemView.findViewById(R.id.senderName);
             showMessage = itemView.findViewById(R.id.showMessage);
             profileImageView = itemView.findViewById(R.id.chat_profileImage);
         }

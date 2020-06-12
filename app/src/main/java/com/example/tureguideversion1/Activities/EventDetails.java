@@ -55,7 +55,7 @@ import es.dmoral.toasty.Toasty;
 public class EventDetails extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView event_place, event_date, return_date, event_time, meeting_place, event_description, publish_date,
-            publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, deleteTV, txt7;
+            publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, deleteTV, txt7, commentCountTV;
     private ImageView descriptionIV, meetingIV, groupIV, costIV, event_image;
     private CircleImageView event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
@@ -66,7 +66,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private String userId, event_Id;
     private String member_name, member_image, member_phone, member_email, member_gender;
     private String update_des;
-    private long count;
+    private long count, commentCounter;
     private List<EventLocationList> locationLists;
     private List<String> locationWillBeVisit;
     private EventLocationListAdapter locationAdapter;
@@ -89,6 +89,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         init();
         registerReceiver(connectivityReceiver, intentFilter);
         getData();
+        commentCounter();
         userId = auth.getCurrentUser().getUid();
         moreImageShow();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(place.toLowerCase());
@@ -257,6 +258,23 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         });
 
 
+    }
+
+    private void commentCounter() {
+        DatabaseReference comment = databaseReference.child("chat").child(event_Id);
+        comment.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                commentCounter = dataSnapshot.getChildrenCount();
+                String cCounter = String.valueOf(commentCounter);
+                commentCountTV.setText(cCounter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void joinAlertDialog() {
@@ -663,6 +681,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         connectivityReceiver = new ConnectivityReceiver();
         relative16 = findViewById(R.id.relative16);
         viewComment = findViewById(R.id.viewComment);
+        commentCountTV = findViewById(R.id.commentCount);
+
     }
 
 
