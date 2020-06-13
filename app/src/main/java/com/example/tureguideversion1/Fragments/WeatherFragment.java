@@ -350,6 +350,10 @@ public class WeatherFragment extends Fragment {
                         String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date((long) updatedAt * 1000));
                         updated_atTxt.setText(updatedAtText);
 
+                        String riseTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunrise * 1000));
+                        sunRise.setText(riseTime);
+                        String setTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunset * 1000));
+                        sunSet.setText(setTime);
 
                         Calendar c = Calendar.getInstance();
                         int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
@@ -358,32 +362,38 @@ public class WeatherFragment extends Fragment {
                         if (timeOfDay >= 6 && timeOfDay < 18) {
                             weatherLayout.setBackgroundResource(R.drawable.weatherday);
                         }
-                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("scattered clouds") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("broken clouds") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("overcast clouds")
-                        || weatherResponse.currentWeather.weather.get(0).description.matches("few clouds")){
-                            weatherLayout.setBackgroundResource(R.drawable.weathercloudyday);
+                        else if (timeOfDay >= 18 && timeOfDay <= 19) {
+                            weatherLayout.setBackgroundResource(R.drawable.weatherevening);
                         }
-                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light rain") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("moderate rain") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy intensity rain") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("very heavy rain") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("extreme rain")){
-                            weatherLayout.setBackgroundResource(R.drawable.weatherrain);
-                        }
-                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light thunderstorm") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("thunderstorm") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy thunderstorm") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("ragged thunderstorm"))
-                        {
-                            weatherLayout.setBackgroundResource(R.drawable.weatherstorm);
-                        }
-                        else if (timeOfDay >= 18 && timeOfDay <= 23) {
+                        else if (timeOfDay > 19 && timeOfDay <= 23) {
                             weatherLayout.setBackgroundResource(R.drawable.weathernight);
                         }
                         else if (timeOfDay >= 0 && timeOfDay < 6) {
                             weatherLayout.setBackgroundResource(R.drawable.weathernight);
                         }
+
+
+//                        if(weatherResponse.currentWeather.weather.get(0).description.matches("scattered clouds") ||
+//                                weatherResponse.currentWeather.weather.get(0).description.matches("broken clouds") ||
+//                                weatherResponse.currentWeather.weather.get(0).description.matches("overcast clouds")
+//                        || weatherResponse.currentWeather.weather.get(0).description.matches("few clouds")){
+//                            weatherLayout.setBackgroundResource(R.drawable.weathercloudyday);
+//                        }
+//                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light rain") ||
+//                                weatherResponse.currentWeather.weather.get(0).description.matches("moderate rain") ||
+//                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy intensity rain") ||
+//                                weatherResponse.currentWeather.weather.get(0).description.matches("very heavy rain") ||
+//                                weatherResponse.currentWeather.weather.get(0).description.matches("extreme rain")){
+//                            weatherLayout.setBackgroundResource(R.drawable.weatherrain);
+//                        }
+//                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light thunderstorm") ||
+//                                weatherResponse.currentWeather.weather.get(0).description.matches("thunderstorm") ||
+//                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy thunderstorm") ||
+//                                weatherResponse.currentWeather.weather.get(0).description.matches("ragged thunderstorm"))
+//                        {
+//                            weatherLayout.setBackgroundResource(R.drawable.weatherstorm);
+//                        }
+
 
                         statusTxt.setText(weatherResponse.currentWeather.weather.get(0).description);
                         tempTxt.setText(Math.round(weatherResponse.currentWeather.temp) + "°C");
@@ -391,10 +401,7 @@ public class WeatherFragment extends Fragment {
                         windTxt.setText(Math.round(weatherResponse.currentWeather.wind_speed) + " Meter/Sec");
                         pressureTxt.setText(String.valueOf(weatherResponse.currentWeather.pressure));
                         humidityTxt.setText(Math.round(weatherResponse.currentWeather.humidity) + "%");
-                        String riseTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunrise * 1000));
-                        sunRise.setText(riseTime);
-                        String setTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunset * 1000));
-                        sunSet.setText(setTime);
+
                         dewPoint.setText(Math.round(weatherResponse.currentWeather.dew_point) + "°C");
                         cloudness.setText(weatherResponse.currentWeather.clouds + "%");
                         float v = (float) weatherResponse.currentWeather.visibility / 1000;
