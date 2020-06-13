@@ -33,11 +33,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     FirebaseUser fUser;
     FirebaseAuth auth;
 
-    public ChatAdapter(Context context, List<Chat> mChat, List<Profile> mProfile) {
+    public ChatAdapter(Context context, List<Chat> mChat) {
         this.mContext = context;
         this.mChat = mChat;
-        this.mProfile = mProfile;
+//        this.mProfile = mProfile;
         //this.imageUrl = imageUrl;
+        setHasStableIds(true);
     }
 
     @NonNull
@@ -49,7 +50,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             return new ViewHolder(view);
         } else {
             View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_left, parent, false);
-            return new ChatAdapter.ViewHolder(view);
+            return new ViewHolder(view);
         }
     }
 
@@ -57,27 +58,27 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         Chat chat = mChat.get(position);
-        Profile profile = mProfile.get(position);
         holder.showMessage.setText(chat.getMessage());
 
-        holder.senderName.setText(profile.getName());
+        holder.senderName.setText(chat.getSenderName());
        /* if (imageUrl.equals("")) {
             holder.profileImageView.setImageResource(R.drawable.man);
         } else {
             holder.profileImageView.setImageResource(R.drawable.woman);
         }*/
-        if (!profile.getImage().isEmpty()) {
+       if(chat.getSenderImage() != null){
+        if (!chat.getSenderImage().isEmpty()) {
             GlideApp.with(mContext)
-                    .load(profile.getImage())
+                    .load(chat.getSenderImage())
                     .fitCenter()
                     .into(holder.profileImageView);
         } else {
-            if (profile.getSex().matches("male")) {
+            if (chat.getSenderSex().matches("male")) {
                 GlideApp.with(mContext)
                         .load(R.drawable.man)
                         .centerInside()
                         .into(holder.profileImageView);
-            } else if (profile.getSex().matches("female")) {
+            } else if (chat.getSenderSex().matches("female")) {
                 GlideApp.with(mContext)
                         .load(R.drawable.woman)
                         .centerInside()
@@ -85,13 +86,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             }
         }
     }
+    }
 
     @Override
     public int getItemCount() {
         return mChat.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView showMessage, senderName;
         private CircleImageView profileImageView;
 
@@ -104,15 +106,21 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     }
 
     @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
     public int getItemViewType(int position) {
-        fUser = FirebaseAuth.getInstance().getCurrentUser();
-        auth = FirebaseAuth.getInstance();
-        userid = auth.getUid();
-        if (mChat.get(position).getSender().equals(fUser.getUid())) {
-            //if(mChat.get(position).getSender().equals(userid)){
-            return MSG_TYPE_RIGHT;
-        } else {
-            return MSG_TYPE_LEFT;
-        }
+//        fUser = FirebaseAuth.getInstance().getCurrentUser();
+//        auth = FirebaseAuth.getInstance();
+//        userid = auth.getUid();
+//        if (mChat.get(position).getSender().equals(fUser.getUid())) {
+//            //if(mChat.get(position).getSender().equals(userid)){
+//            return MSG_TYPE_RIGHT;
+//        } else {
+//            return MSG_TYPE_LEFT;
+//        }
+        return position;
     }
 }

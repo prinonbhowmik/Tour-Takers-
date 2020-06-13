@@ -552,7 +552,7 @@ public class Map extends AppCompatActivity implements
         for (PolylineData polylineData : polylineData) {
             Log.d(null, "onPolylineClick: toString: " + polylineData.toString());
             if (polyline.getId().equals(polylineData.getPolyline().getId())) {
-                polylineData.getPolyline().setColor(Color.BLUE);
+                polylineData.getPolyline().setColor(ContextCompat.getColor(getApplicationContext(),R.color.blue1));
                 polylineData.getPolyline().setZIndex(1);
                 LatLng endLocation = new LatLng(
                         polylineData.getLeg().endLocation.lat,
