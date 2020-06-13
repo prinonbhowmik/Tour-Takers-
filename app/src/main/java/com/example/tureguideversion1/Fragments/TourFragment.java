@@ -771,7 +771,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 if (task.isSuccessful()) {
                     Toasty.success(getContext(), "Your Event Successfully Added", Toasty.LENGTH_SHORT).show();
                     addJoinMember();
-                    addChat();
+                    addEventComments();
                     addEventLoacationList();
                     FragmentTransaction event = getParentFragmentManager().beginTransaction();
                     event.replace(R.id.fragment_container, new EventFragment());
@@ -791,8 +791,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         memberRef.child("id").setValue(userID);
     }
 
-    private void addChat() {
-        DatabaseReference memberRef = databaseReference.child("chat");
+    private void addEventComments() {
+        DatabaseReference memberRef = databaseReference.child("eventComments");
         memberRef.setValue(eventId);
 
     }

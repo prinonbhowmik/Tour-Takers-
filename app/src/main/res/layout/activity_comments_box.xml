@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.ChatBox"
+    tools:context=".Activities.CommentsBox"
     android:background="@android:color/white">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -24,17 +24,17 @@
         <View
             android:id="@+id/view1"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="#E1EAE8E8" />
 
         <EditText
             android:id="@+id/commentET"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/view1"
             android:layout_centerVertical="true"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
             android:layout_toLeftOf="@+id/sendMessage"
             android:background="@drawable/chatbox_edittext_design"

@@ -251,7 +251,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         viewComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EventDetails.this, ChatBox.class);
+                Intent intent = new Intent(EventDetails.this, CommentsBox.class);
                 intent.putExtra("eventId", event_Id);
                 startActivity(intent);
             }
@@ -261,7 +261,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     }
 
     private void commentCounter() {
-        DatabaseReference comment = databaseReference.child("chat").child(event_Id);
+        DatabaseReference comment = databaseReference.child("eventComments").child(event_Id);
         comment.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -349,12 +349,12 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 DatabaseReference eRef = databaseReference.child("event").child(event_Id);
                 DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id);
                 DatabaseReference lRef = databaseReference.child("eventLocationList").child(event_Id);
+                DatabaseReference cRef = databaseReference.child("eventComments").child(event_Id);
                 eRef.setValue(null);
                 mRef.setValue(null);
                 lRef.setValue(null);
+                cRef.setValue(null);
                 Toasty.success(getApplicationContext(), "Delete Success", Toasty.LENGTH_SHORT).show();
-                //startActivity(new Intent(EventDetails.this, MainActivity.class));
-                //startActivity(new Intent(EventDetails.this, MainActivity.class).putExtra("EventDetails","event"));
                 finish();
             }
         });
