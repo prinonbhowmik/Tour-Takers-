@@ -7,17 +7,19 @@ public class Chat {
     private String senderSex;
     private String senderID;
     private String ID;
+    private String eventID;
 
     public Chat() {
     }
 
-    public Chat(String message, String senderName, String senderImage, String senderSex, String senderID, String ID) {
+    public Chat(String message, String senderName, String senderImage, String senderSex, String senderID, String ID, String eventID) {
         this.message = message;
         this.senderName = senderName;
         this.senderImage = senderImage;
         this.senderSex = senderSex;
         this.senderID = senderID;
         this.ID = ID;
+        this.eventID = eventID;
     }
 
     public String getMessage() {
@@ -42,5 +44,9 @@ public class Chat {
 
     public String getID() {
         return ID;
+    }
+
+    public String getEventID() {
+        return eventID;
     }
 }

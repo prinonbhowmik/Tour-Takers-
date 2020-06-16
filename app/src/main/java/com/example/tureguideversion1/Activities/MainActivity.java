@@ -3,15 +3,20 @@ package com.example.tureguideversion1.Activities;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -41,7 +46,9 @@ import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.LocationSelection_bottomSheet;
 import com.example.tureguideversion1.Model.Profile;
+import com.example.tureguideversion1.Notifications.Token;
 import com.example.tureguideversion1.R;
+import com.example.tureguideversion1.Services.EventCommentsNotify;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,10 +56,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
@@ -61,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ConnectivityReceiver.ConnectivityReceiverListener,
         LocationSelection_bottomSheet.BottomSheetListener,
         TourFragment.navDrawerCheck {
-
+    private static final String TAG = "MainActivity";
     boolean doubleBackToExitPressedOnce = false;
     private ImageView nav_icon;
     private NavigationView navigationView;
@@ -87,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         registerReceiver(connectivityReceiver, intentFilter);
         if (checkConnection()) {
             storageReference = FirebaseStorage.getInstance().getReference();
-                if (getIntent().getAction() != null) {
+            if (getIntent().getAction() != null) {
                 if (getIntent().getAction().matches("event")) {
                     currentFragment = "event";
                     Bundle bundle = new Bundle();
@@ -105,15 +115,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     transaction.commit();
                     navigationView.getMenu().getItem(4).setChecked(true);
                 }
-            }else {
-                    if (savedInstanceState == null) {
-                        currentFragment = "tour";
-                        FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
-                        tour.replace(R.id.fragment_container, new LoaderFragment());
-                        tour.commit();
-                        navigationView.getMenu().getItem(0).setChecked(true);
-                    }
+            } else {
+                if (savedInstanceState == null) {
+                    currentFragment = "tour";
+                    FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+                    tour.replace(R.id.fragment_container, new LoaderFragment());
+                    tour.commit();
+                    navigationView.getMenu().getItem(0).setChecked(true);
                 }
+            }
             userId = auth.getUid();
 
             DatabaseReference showref = reference.child(userId);
@@ -194,10 +204,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
             });
+            //eventCommentsNotification();
+            setNewTokens();
         } else {
             startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
             finish();
         }
+    }
+
+    private void eventCommentsNotification() {
+        ComponentName componentName = new ComponentName(this, EventCommentsNotify.class);
+        JobInfo jobInfo = new JobInfo.Builder(1, componentName)
+                .setRequiresCharging(true)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .setPersisted(true)
+                .setPeriodic(15 * 60 * 1000)
+                .build();
+
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        int resultCode = scheduler.schedule(jobInfo);
+        if (resultCode == JobScheduler.RESULT_SUCCESS) {
+            Log.d(TAG, "Job scheduled");
+        } else {
+            Log.d(TAG, "Job scheduling failed");
+        }
+    }
+
+    public void cancelJob() {
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        scheduler.cancel(1);
+        Log.d(TAG, "Job cancelled");
     }
 
     private void init() {
@@ -313,6 +349,61 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean checkConnection() {
         boolean isConnected = ConnectivityReceiver.isConnected();
         return isConnected;
+    }
+
+    private void setNewTokens() {
+        ArrayList<String> eventIDs = new ArrayList<>();
+        SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
+        String token = preferences.getString("newToken", "none");
+        //Log.d(TAG, "newToken: "+token);
+        if (!token.equals("none")) {
+            DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens");
+            eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            eventIDs.add(snapshot.getKey());
+                            //Log.d(TAG, "events: "+snapshot.getKey());
+                        }
+                        for (int i = 0; i < eventIDs.size(); i++) {
+                            DatabaseReference IDRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(eventIDs.get(i));
+                            Query query = IDRef.orderByKey().equalTo(auth.getUid());
+                            int finalI = i;
+                            query.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        updateToken(token, eventIDs.get(finalI));
+                                        //Log.d(TAG, "onDataChange: " + eventIDs.get(finalI));
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                        preferences.edit().clear().apply();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    private void updateToken(String token, String eventID) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens");
+        Token token1 = new Token(token);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("userID", auth.getUid());
+        hashMap.put("token", token1.getToken());
+        ref.child(eventID).child(auth.getUid()).setValue(hashMap);
     }
 
     // Showing the status in Snackbar

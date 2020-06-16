@@ -81,6 +81,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -510,36 +511,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         return view;
     }
 
-    //    @Override
-//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        super.onActivityCreated(savedInstanceState);
-//        if(savedInstanceState != null) {
-//            s_date = savedInstanceState.getString("sDate");
-//            r_date = savedInstanceState.getString("rDate");
-//            time = savedInstanceState.getString("time");
-//            place = savedInstanceState.getString("place");
-//            description = savedInstanceState.getString("description");
-//            group_name = savedInstanceState.getString("groupName");
-//            cost = savedInstanceState.getString("cost");
-//            Toast.makeText(getContext(), s_date, Toast.LENGTH_SHORT).show();
-//        }
-//    }
-//
-//    @Override
-//    public void onSaveInstanceState(@NonNull Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        outState.putString("sDate",startDateET.getText().toString());
-//        outState.putString("rDate",endDateET.getText().toString());
-//        outState.putString("time",eventTime.getText().toString());
-//        if (!locationEt.getText().toString().isEmpty()) {
-//            outState.putString("place",locationEt.getText().toString().substring(0, 1).toUpperCase() + locationEt.getText().toString().substring(1));
-//        }
-//        outState.putString("description",eventDescription_ET.getText().toString());
-//        outState.putString("groupName",groupName_ET.getText().toString());
-//        outState.putString("cost",eventCost_ET.getText().toString());
-//        Toast.makeText(getContext(),"saveing",Toast.LENGTH_SHORT).show();
-//    }
-
     public void receivedLocationData(String pickedLocation) {
         if (pickedLocation.substring(0, 2).matches("un")) {
             String s = pickedLocation.substring(2);
@@ -773,6 +744,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     addJoinMember();
                     addEventComments();
                     addEventLoacationList();
+                    setUserActivity(eventId);
                     FragmentTransaction event = getParentFragmentManager().beginTransaction();
                     event.replace(R.id.fragment_container, new EventFragment());
                     event.commit();
@@ -1084,6 +1056,17 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 Log.e("Error", "grpc failed: " + e.getMessage(), e);
             }
         }
+    }
+
+    private void setUserActivity(String eventID) {
+        DatabaseReference userActivityRef = databaseReference
+                .child("userActivities")
+                .child(auth.getUid())
+                .child("events");
+        String id = userActivityRef.push().getKey();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("eventID", eventID);
+        userActivityRef.child(id).setValue(hashMap);
     }
 
 }

@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -37,6 +38,7 @@ import com.glide.slider.library.slidertypes.BaseSliderView;
 import com.glide.slider.library.slidertypes.TextSliderView;
 import com.glide.slider.library.transformers.BaseTransformer;
 import com.glide.slider.library.tricks.ViewPagerEx;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -46,6 +48,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -81,6 +84,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private double latForMeetingPlace, lonForMeetingPlace;
     private RelativeLayout relative16;
     private TextView viewComment;
+    public static final String TAG = "EventDetails";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +138,12 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 if (checkConnection()) {
                     joinAlertDialog();
                     DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
-                    memberRef.child("id").setValue(userId);
+                    memberRef.child("id").setValue(userId).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            setUserActivity();
+                        }
+                    });
                     DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
                     memberRef2.addValueEventListener(new ValueEventListener() {
                         @Override
@@ -302,8 +311,37 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                ArrayList<String> eventKeys = new ArrayList<>();
                 DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
                 mRef.removeValue();
+                DatabaseReference removeToken = databaseReference.child("eventCommentsTokens").child(event_Id).child(userId);
+                removeToken.removeValue();
+                DatabaseReference removeActivity = databaseReference.child("userActivities").child(userId).child("events");
+                removeActivity.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                                //eventKeys.add(childSnapshot.getKey());
+                                HashMap<String,Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
+                                if(hashMap.get("eventID").toString().equals(event_Id)){
+                                    eventKeys.add(childSnapshot.getKey());
+                                    //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
+                                }
+                            }
+                            for (int i = 0; i < eventKeys.size(); i++) {
+                                DatabaseReference remove = databaseReference.child("userActivities").child(userId).child("events").child(eventKeys.get(i));
+                                remove.removeValue();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
                 DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
                 memberRef2.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -350,10 +388,58 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 DatabaseReference mRef = databaseReference.child("eventJoinMember").child(event_Id);
                 DatabaseReference lRef = databaseReference.child("eventLocationList").child(event_Id);
                 DatabaseReference cRef = databaseReference.child("eventComments").child(event_Id);
+                DatabaseReference commentsTokenRef = databaseReference.child("eventCommentsTokens").child(event_Id);
                 eRef.setValue(null);
                 mRef.setValue(null);
                 lRef.setValue(null);
                 cRef.setValue(null);
+                commentsTokenRef.removeValue();
+                ArrayList<String> userIDs = new ArrayList<>();
+                DatabaseReference removeActivity = FirebaseDatabase.getInstance().getReference().child("userActivities");
+                removeActivity.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                                userIDs.add(childSnapshot.getKey());
+                                //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
+                            }
+                            for (int i = 0; i < userIDs.size(); i++) {
+                                DatabaseReference eventsRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(userIDs.get(i)).child("events");
+                                int finalI = i;
+                                eventsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.exists()){
+                                            for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                                                HashMap<String,Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
+                                                if(hashMap.get("eventID").toString().equals(event_Id)){
+                                                    DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference()
+                                                            .child("userActivities")
+                                                            .child(userIDs.get(finalI))
+                                                            .child("events")
+                                                            .child(childSnapshot.getKey());
+                                                    eventRef.removeValue();
+                                                    //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 Toasty.success(getApplicationContext(), "Delete Success", Toasty.LENGTH_SHORT).show();
                 finish();
             }
@@ -521,6 +607,17 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         });
 
 
+    }
+
+    private void setUserActivity() {
+        DatabaseReference userActivityRef = databaseReference
+                .child("userActivities")
+                .child(userId)
+                .child("events");
+        String id = userActivityRef.push().getKey();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("eventID", event_Id);
+        userActivityRef.child(id).setValue(hashMap);
     }
 
 
