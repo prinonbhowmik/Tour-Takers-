@@ -742,7 +742,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 if (task.isSuccessful()) {
                     Toasty.success(getContext(), "Your Event Successfully Added", Toasty.LENGTH_SHORT).show();
                     addJoinMember();
-                    addEventComments();
                     addEventLoacationList();
                     setUserActivity(eventId);
                     FragmentTransaction event = getParentFragmentManager().beginTransaction();
@@ -763,11 +762,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         memberRef.child("id").setValue(userID);
     }
 
-    private void addEventComments() {
-        DatabaseReference memberRef = databaseReference.child("eventComments");
-        memberRef.setValue(eventId);
 
-    }
 
     private void addEventLoacationList() {
         for (int i = 0; i < selectedLocation.size(); i++) {

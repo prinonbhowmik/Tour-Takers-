@@ -11,6 +11,7 @@
         android:src="@drawable/man" />
 
     <RelativeLayout
+        android:id="@+id/crl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
@@ -22,7 +23,6 @@
             android:id="@+id/senderName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Imran Hossain"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -32,8 +32,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/senderName"
-            android:text="hello"
             android:textColor="@android:color/black"
             android:textSize="18sp" />
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/commentTimeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1m"
+        android:layout_below="@+id/crl"
+        android:textColor="@color/color1"
+        android:layout_marginStart="50dp" />
 </RelativeLayout>
