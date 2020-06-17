@@ -17,7 +17,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -61,11 +65,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         holder.showMessage.setText(chat.getMessage());
 
         holder.senderName.setText(chat.getSenderName());
-       /* if (imageUrl.equals("")) {
-            holder.profileImageView.setImageResource(R.drawable.man);
-        } else {
-            holder.profileImageView.setImageResource(R.drawable.woman);
-        }*/
+
        if(chat.getSenderImage() != null){
         if (!chat.getSenderImage().isEmpty()) {
             GlideApp.with(mContext)
@@ -85,7 +85,29 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                         .into(holder.profileImageView);
             }
         }
-    }
+       }
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
+        Date past = null;
+        try {
+            past = format.parse(chat.getCommentTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date now = new Date();
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(now.getTime() - past.getTime());
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(now.getTime() - past.getTime());
+        long hours = TimeUnit.MILLISECONDS.toHours(now.getTime() - past.getTime());
+        long days = TimeUnit.MILLISECONDS.toDays(now.getTime() - past.getTime());
+        if (seconds < 60) {
+            holder.commentTimeTV.setText(seconds + " seconds ago");
+        } else if (minutes < 60) {
+            holder.commentTimeTV.setText(minutes + " minutes ago");
+        } else if (hours < 24) {
+            holder.commentTimeTV.setText(hours + " hours ago");
+        } else {
+            holder.commentTimeTV.setText(days + " days ago");
+        }
     }
 
     @Override
@@ -94,7 +116,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView showMessage, senderName;
+        private TextView showMessage, senderName, commentTimeTV;
         private CircleImageView profileImageView;
 
         public ViewHolder(@NonNull View itemView) {
@@ -102,6 +124,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             senderName = itemView.findViewById(R.id.senderName);
             showMessage = itemView.findViewById(R.id.showMessage);
             profileImageView = itemView.findViewById(R.id.chat_profileImage);
+            commentTimeTV = itemView.findViewById(R.id.commentTimeTV);
         }
     }
 

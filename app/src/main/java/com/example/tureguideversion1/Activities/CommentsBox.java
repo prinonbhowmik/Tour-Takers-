@@ -36,7 +36,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +88,12 @@ public class CommentsBox extends AppCompatActivity {
             public void onClick(View v) {
                 notify = true;
                 String mess = commentET.getText().toString();
+
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
+                String commentTime = simpleDateFormat.format(calendar.getTime());
                 if (mess.trim().length() != 0) {
-                    setSendMessage(mess, senderID, senderName, senderImage, senderSex);
+                    setSendMessage(mess, senderID, senderName, senderImage, senderSex, commentTime);
                 } else {
                     Toast.makeText(CommentsBox.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
@@ -125,7 +131,7 @@ public class CommentsBox extends AppCompatActivity {
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
     }
 
-    void setSendMessage(String message, String senderID, String senderName, String senderImage, String senderSex) {
+    void setSendMessage(String message, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
 
         DatabaseReference ref = databaseReference.child("eventComments").child(currentEventId);
         String id = ref.push().getKey();
@@ -136,6 +142,7 @@ public class CommentsBox extends AppCompatActivity {
         hashMap.put("senderImage", senderImage);
         hashMap.put("senderSex", senderSex);
         hashMap.put("ID", id);
+        hashMap.put("commentTime", commentTime);
         hashMap.put("eventID", currentEventId);
         ref.child(id).setValue(hashMap);
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
