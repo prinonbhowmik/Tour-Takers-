@@ -38,50 +38,10 @@ public class EventCommentsNotify extends JobService {
     }
 
     private void commentsNotify(final JobParameters params) {
-        ArrayList<String> eventIDs = new ArrayList<>();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null){
-            DatabaseReference userActivity = databaseReference.child("userActivities").child(user.getUid()).child("events");
-            userActivity.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                            HashMap<String,Object> data = (HashMap<String, Object>) childSnapshot.getValue();
-                            eventIDs.add((String) data.get("eventID"));
-
-                        }
-                        //Log.d(TAG, "onDataChange: " + eventIDs);
-                        for (int i = 0; i < eventIDs.size(); i++) {
-                            DatabaseReference ref = databaseReference.child("eventComments").child(eventIDs.get(i));
-                            Query locations = ref.orderByKey().limitToLast(1);
-                            locations.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                                            //Log.d(TAG, "onDataChange: " + childSnapshot.getValue());
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-    }
+            Log.d(TAG, "commentsNotify: wake up");
+        }
         jobFinished(params, false);
     }
 

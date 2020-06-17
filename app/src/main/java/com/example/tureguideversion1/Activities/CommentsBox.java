@@ -231,7 +231,7 @@ public class CommentsBox extends AppCompatActivity {
                                     //HashMap<String,Object> data = (HashMap<String, Object>) snapshot.getValue();
                                     //Log.d(TAG, "onDataChange: " + eventID);
                                     Token token = snapshot.getValue(Token.class);
-                                    Data data = new Data(eventID, R.drawable.ic_stat_name, username + " " + message, "Event", membersID.get(finalI),auth.getUid());
+                                    Data data = new Data(eventID, R.drawable.ic_stat_ic_notification, username + " " + message, "Event", membersID.get(finalI),auth.getUid());
 
                                     Sender sender = new Sender(data, token.getToken());
 

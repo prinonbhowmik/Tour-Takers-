@@ -73,6 +73,14 @@
             </intent-filter>
         </service>
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_ic_notification" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
 <!--        <service-->
 <!--            android:name=".Services.EventCommentsNotify"-->
 <!--            android:permission="android.permission.BIND_JOB_SERVICE" />-->

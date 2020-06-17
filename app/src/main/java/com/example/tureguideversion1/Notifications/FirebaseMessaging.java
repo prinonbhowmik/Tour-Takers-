@@ -51,7 +51,7 @@ public static final String TAG = "FirebaseMessaging";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-
+        //Log.d(TAG, "onMessageReceived: called");
         String sented = remoteMessage.getData().get("sented");
         //Log.d(TAG, "onMessageReceived: sented = "+sented);
         String user = remoteMessage.getData().get("userID");
