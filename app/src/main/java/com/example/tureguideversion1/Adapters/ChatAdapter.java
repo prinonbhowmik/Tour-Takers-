@@ -37,6 +37,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     FirebaseUser fUser;
     FirebaseAuth auth;
 
+    private int timeVisibility = 0;
     public ChatAdapter(Context context, List<Chat> mChat) {
         this.mContext = context;
         this.mChat = mChat;
@@ -100,14 +101,36 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         long hours = TimeUnit.MILLISECONDS.toHours(now.getTime() - past.getTime());
         long days = TimeUnit.MILLISECONDS.toDays(now.getTime() - past.getTime());
         if (seconds < 60) {
-            holder.commentTimeTV.setText(seconds + " seconds ago");
+            holder.commentTimeTV.setText("now");
         } else if (minutes < 60) {
-            holder.commentTimeTV.setText(minutes + " minutes ago");
+            if (minutes == 1) {
+                holder.commentTimeTV.setText("1 minute ago");
+            } else
+                holder.commentTimeTV.setText(minutes + " minutes ago");
         } else if (hours < 24) {
-            holder.commentTimeTV.setText(hours + " hours ago");
+            if (hours == 1) {
+                holder.commentTimeTV.setText("1 hour ago");
+            } else
+                holder.commentTimeTV.setText(hours + " hours ago");
         } else {
-            holder.commentTimeTV.setText(days + " days ago");
+            if (days == 1) {
+                holder.commentTimeTV.setText("1 day ago");
+            } else
+                holder.commentTimeTV.setText(days + " days ago");
         }
+//        holder.mview.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(timeVisibility==1){
+//                    holder.commentTimeTV.setVisibility(View.GONE);
+//                    timeVisibility=0;
+//                }else if(timeVisibility==0){
+//                    holder.commentTimeTV.setVisibility(View.VISIBLE);
+//                    timeVisibility=1;
+//                }
+//
+//            }
+//        });
     }
 
     @Override
@@ -118,6 +141,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView showMessage, senderName, commentTimeTV;
         private CircleImageView profileImageView;
+        private View mview;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -125,6 +149,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             showMessage = itemView.findViewById(R.id.showMessage);
             profileImageView = itemView.findViewById(R.id.chat_profileImage);
             commentTimeTV = itemView.findViewById(R.id.commentTimeTV);
+            mview = itemView;
         }
     }
 
