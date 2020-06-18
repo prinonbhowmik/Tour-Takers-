@@ -1,12 +1,15 @@
 package com.example.tureguideversion1.Activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -15,7 +18,11 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.provider.Settings;
+import android.text.AndroidCharacter;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
@@ -28,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
@@ -210,6 +218,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
             finish();
         }
+//        new CountDownTimer(8000, 1000) {
+//
+//            public void onTick(long millisUntilFinished) {
+//
+//            }
+//
+//            public void onFinish() {
+//                bettaryOptimization();
+//            }
+//        }.start();
     }
 
     private void eventCommentsNotification() {
@@ -350,6 +368,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         boolean isConnected = ConnectivityReceiver.isConnected();
         return isConnected;
     }
+
+    private void bettaryOptimization(){
+        if(checkBatteryOptimized()){
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
+            builder.setMessage("Please ignore Battery Optimization for working this app properly.")
+                    .setCancelable(true)
+                    .setTitle("Warning...")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            startBatteryOptimizeDialog();
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
+
+    /**
+     * return false if in settings "Not optimized" and true if "Optimizing battery use"
+     */
+    private boolean checkBatteryOptimized() {
+        final PowerManager pwrm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return !pwrm.isIgnoringBatteryOptimizations(getBaseContext().getPackageName());
+            }
+        }catch (Exception ignored){}
+        return false;
+    }
+
+    @SuppressLint("BatteryLife")
+    private void startBatteryOptimizeDialog(){
+        try {
+            Intent intent = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:"+getApplicationContext().getPackageName()));
+                startActivity(intent);
+            }
+
+
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void setNewTokens() {
         ArrayList<String> eventIDs = new ArrayList<>();

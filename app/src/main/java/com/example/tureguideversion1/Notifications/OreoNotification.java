@@ -11,6 +11,8 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.core.app.NotificationCompat;
+
 import com.example.tureguideversion1.R;
 
 public class OreoNotification extends ContextWrapper {
@@ -42,6 +44,7 @@ public class OreoNotification extends ContextWrapper {
         channel.enableLights(true);
         channel.enableVibration(true);
         channel.setSound(sound,audioAttributes);
+        channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
 
 

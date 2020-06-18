@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,7 +38,7 @@ public static final String TAG = "FirebaseMessaging";
     @Override
     public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
-        Log.d(TAG, "onNewToken: updated token "+s);
+        //Log.d(TAG, "onNewToken: updated token "+s);
         SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
         editor.putString("newToken", s);
         editor.apply();
@@ -51,6 +52,25 @@ public static final String TAG = "FirebaseMessaging";
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+        //Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+
+        PowerManager pm = (PowerManager)getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        boolean isScreenOn = pm.isInteractive();
+        //Log.e(TAG, "isScreenOn "+isScreenOn);
+        if(!isScreenOn)
+        {
+            //Log.d(TAG, "wakelock: access");
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"TourTakers: wakeLock");
+            wl.acquire(10000);
+            PowerManager.WakeLock wl_cpu = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"TourTakers:CpuLock");
+            wl_cpu.acquire(10000);
+        }
+
+
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+        }
         //Log.d(TAG, "onMessageReceived: called");
         String sented = remoteMessage.getData().get("sented");
         //Log.d(TAG, "onMessageReceived: sented = "+sented);
@@ -198,6 +218,7 @@ public static final String TAG = "FirebaseMessaging";
                             .setSmallIcon(Integer.parseInt(icon))
                             .setContentTitle(title+": "+eventPlace)
                             .setContentText(body)
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
                             .setAutoCancel(true)
                             .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
                             .setContentIntent(pendingIntent);
@@ -224,6 +245,7 @@ public static final String TAG = "FirebaseMessaging";
                             .setSmallIcon(Integer.parseInt(icon))
                             .setContentTitle(title)
                             .setContentText(body)
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
                             .setAutoCancel(true)
                             .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
                             .setContentIntent(pendingIntent);
