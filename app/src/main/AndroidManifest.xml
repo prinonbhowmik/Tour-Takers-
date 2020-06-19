@@ -11,8 +11,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:name=".Internet.Connection"
@@ -21,7 +21,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.CommentsBox"></activity>
+        <activity android:name=".Activities.CommentsBox"
+            android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".Activities.Map" />
         <activity android:name=".Activities.JoinMemberDetails" />
         <activity android:name=".Activities.EventDetails" />
@@ -42,7 +43,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="android.app.shortcuts"
+            <meta-data
+                android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
 
@@ -68,12 +70,13 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <service android:name=".Notifications.FirebaseMessaging"
+        <service
+            android:name=".Notifications.FirebaseMessaging"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="connectedDevice">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
@@ -85,9 +88,9 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
-<!--        <service-->
-<!--            android:name=".Services.EventCommentsNotify"-->
-<!--            android:permission="android.permission.BIND_JOB_SERVICE" />-->
+        <!--        <service-->
+        <!--            android:name=".Services.EventCommentsNotify"-->
+        <!--            android:permission="android.permission.BIND_JOB_SERVICE" />-->
     </application>
 
 </manifest>

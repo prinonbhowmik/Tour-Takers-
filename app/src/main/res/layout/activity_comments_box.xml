@@ -1,66 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Activities.CommentsBox"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:fitsSystemWindows="true">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/chatRecycler"
-        android:layout_above="@+id/commentRL" />
+        android:layout_above="@id/inputLayout"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp" />
 
-    <RelativeLayout
-        android:id="@+id/commentRL"
+    <LinearLayout
+        android:id="@+id/inputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="5dp">
-
-        <View
-            android:id="@+id/view1"
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:weightSum="5">
 
         <EditText
             android:id="@+id/commentET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/view1"
-            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
-            android:layout_toLeftOf="@+id/sendMessage"
+            android:layout_weight="4"
             android:background="@drawable/chatbox_edittext_design"
-            android:gravity="top|start"
             android:hint="Write a comment..."
             android:inputType="textMultiLine|textCapSentences"
             android:maxLength="2000"
             android:maxLines="5"
             android:paddingStart="15dp"
             android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="10dp"
             android:textColor="@android:color/black"
-            android:textColorHint="@android:color/black"
+            android:textColorHint="@android:color/darker_gray"
             android:textSize="18sp" />
 
         <ImageButton
             android:id="@+id/sendMessage"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="7dp"
-            android:layout_marginEnd="5dp"
-            android:src="@drawable/ic_send_blue"
-            android:background="@drawable/send_button_design" />
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="17dp"
+            android:layout_weight="0"
+            android:background="@drawable/send_button_design"
+            android:contentDescription="sendButton"
+            android:src="@drawable/ic_send_blue" />
 
-
-    </RelativeLayout>
-
+    </LinearLayout>
 
 </RelativeLayout>
