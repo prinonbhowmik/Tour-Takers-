@@ -9,7 +9,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -260,9 +259,17 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         viewComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EventDetails.this, CommentsBox.class);
-                intent.putExtra("eventId", event_Id);
-                startActivity(intent);
+//                Intent intent = new Intent(EventDetails.this, CommentsBox.class);
+//                intent.putExtra("eventId", event_Id);
+//                startActivity(intent);
+
+
+                Bundle args = new Bundle();
+                args.putString("event_id", event_Id);
+                CommentBoxBottomSheet bottomSheet1 = new CommentBoxBottomSheet();
+                bottomSheet1.setArguments(args);
+                bottomSheet1.show(getSupportFragmentManager(), "test");
+
             }
         });
 

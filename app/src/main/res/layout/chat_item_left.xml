@@ -44,5 +44,5 @@
         android:layout_below="@+id/crl"
         android:textColor="@color/color1"
         android:layout_marginStart="50dp"
-        android:visibility="visible" />
+        android:visibility="gone" />
 </RelativeLayout>
