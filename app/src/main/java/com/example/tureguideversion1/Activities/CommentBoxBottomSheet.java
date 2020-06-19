@@ -1,12 +1,22 @@
 package com.example.tureguideversion1.Activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,6 +35,8 @@ import com.example.tureguideversion1.Notifications.Sender;
 import com.example.tureguideversion1.Notifications.Token;
 import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -43,8 +55,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import co.ceryle.radiorealbutton.RadioRealButton;
+import co.ceryle.radiorealbutton.RadioRealButtonGroup;
 import retrofit2.Call;
 import retrofit2.Callback;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
 
@@ -53,6 +69,8 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
     private String senderID, currentEventId, senderName, senderImage, senderSex;
     private EditText commentET;
     private ImageButton sendMessage;
+    private ImageView notiBTMS,closeBTMS;
+    private int e,d;
     FirebaseAuth auth;
     private DatabaseReference databaseReference;
     private RecyclerView chatRecyclerView;
@@ -60,6 +78,8 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
     private ChatAdapter chatAdapter;
     private APIService apiService;
     private boolean notify = false;
+    private RadioRealButtonGroup radioGroup;
+    private LinearLayout radioLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_comments_box, container, false);
@@ -84,6 +104,59 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
 
             }
         });
+
+        notiBTMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(radioLayout.getVisibility() == View.GONE) {
+                    radioLayout.setVisibility(View.VISIBLE);
+                    radioLayout.setAlpha(0.0f);
+
+                    // Start the animation
+                    radioLayout.animate()
+                            .translationY(0)
+                            .alpha(1.0f)
+                            .setDuration(200)
+                            .setListener(null);
+                }else if(radioLayout.getVisibility() == View.VISIBLE) {
+                    radioLayout.animate()
+                            .translationY(-150)
+                            .alpha(0.0f)
+                            .setDuration(200)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    radioLayout.setVisibility(View.GONE);
+                                }
+                            });
+                }
+            }
+        });
+
+        radioGroup.setOnClickedButtonListener(new RadioRealButtonGroup.OnClickedButtonListener() {
+            @Override
+            public void onClickedButton(RadioRealButton button, int position) {
+                if(position == 0){
+                    e = 1;
+                    d = 0;
+
+                }else if(position == 1){
+                    e = 0;
+                    d = 1;
+
+                }
+                //Toast.makeText(getContext(), "Clicked! Position: " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        closeBTMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
+
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,8 +168,6 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
                 String commentTime = simpleDateFormat.format(calendar.getTime());
                 if (mess.trim().length() != 0) {
                     setSendMessage(mess, senderID, senderName, senderImage, senderSex, commentTime);
-                } else {
-                    Toast.makeText(getContext(), "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
                 commentET.setText(null);
             }
@@ -119,6 +190,20 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
 //        }
 //    }
 
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        BottomSheetDialog bottomSheetDialog=(BottomSheetDialog)super.onCreateDialog(savedInstanceState);
+        bottomSheetDialog.setOnShowListener(dialog -> {
+            BottomSheetDialog dialogc = (BottomSheetDialog) dialog;
+            FrameLayout bottomSheet =  dialogc.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+
+            BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+            bottomSheetBehavior.setPeekHeight(Resources.getSystem().getDisplayMetrics().heightPixels);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        });
+        return bottomSheetDialog;
+    }
+
     private void init(View view) {
         commentET = view.findViewById(R.id.commentET);
         sendMessage = view.findViewById(R.id.sendMessage);
@@ -134,6 +219,10 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
         chatRecyclerView.setAdapter(chatAdapter);
         //chatRecyclerView.setHasFixedSize(true);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+        radioGroup = view.findViewById(R.id.radioGroup);
+        notiBTMS = view.findViewById(R.id.notiBTMS);
+        closeBTMS = view.findViewById(R.id.closeBTMS);
+        radioLayout = view.findViewById(R.id.radioLayout);
     }
 
     void setSendMessage(String message, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
@@ -285,22 +374,22 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
 
 
     }
-/*
+
     private void currentUser(String userid){
-        SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = getActivity().getSharedPreferences("PREFS", MODE_PRIVATE).edit();
         editor.putString("currentuser", userid);
         editor.apply();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        currentUser(auth.getUid());
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        currentUser("none");
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        currentUser("none");
-    }*/
+    public void onStart() {
+        super.onStart();
+        currentUser(auth.getUid());
+    }
 }
