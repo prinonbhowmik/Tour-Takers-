@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/secondRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@+id/topRelativeLayout">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/reply_profileImage2"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/man" />
+
+        <RelativeLayout
+            android:id="@+id/crl2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@+id/reply_profileImage2"
+            android:background="@drawable/chat_background_left"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/senderName2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:text="MIH"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/showMessage2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/senderName2"
+                android:textColor="@android:color/black"
+                android:text="this is testing comments reply. hope everythings work well"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/commentTimeTV2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/crl2"
+            android:textColor="@color/color1"
+            android:layout_marginStart="50dp"
+            android:text="now"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+</RelativeLayout>

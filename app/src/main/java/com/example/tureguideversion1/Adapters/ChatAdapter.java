@@ -144,6 +144,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             holder.crl.setSelected(false);
             holder.commentTimeTV.setVisibility(View.GONE);
         }
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return false;
+                // Intent intent=new Intent(CommentReply.class);
+            }
+        });
     }
 
     @Override
@@ -170,18 +177,19 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public long getItemId(int position) {
         return position;
     }
-
+/*
     @Override
     public int getItemViewType(int position) {
-//        fUser = FirebaseAuth.getInstance().getCurrentUser();
-//        auth = FirebaseAuth.getInstance();
-//        userid = auth.getUid();
-//        if (mChat.get(position).getSender().equals(fUser.getUid())) {
-//            //if(mChat.get(position).getSender().equals(userid)){
-//            return MSG_TYPE_RIGHT;
-//        } else {
-//            return MSG_TYPE_LEFT;
-//        }
+        fUser = FirebaseAuth.getInstance().getCurrentUser();
+        auth = FirebaseAuth.getInstance();
+        userid = auth.getUid();
+        if (mChat.get(position).getSenderId().equals(fUser.getUid())) {
+            //if(mChat.get(position).getSender().equals(userid)){
+            return MSG_TYPE_RIGHT;
+        } else {
+            return MSG_TYPE_LEFT;
+        }
         return position;
     }
+    */
 }

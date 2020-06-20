@@ -1,65 +1,94 @@
-package com.example.tureguideversion1.Activities;
+package com.example.tureguideversion1.Fragments;
 
-import android.app.Dialog;
-import android.content.res.Resources;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tureguideversion1.Fragments.CommentBoxFragment;
+import com.example.tureguideversion1.Adapters.ChatAdapter;
+import com.example.tureguideversion1.Model.Chat;
+import com.example.tureguideversion1.Model.Profile;
+import com.example.tureguideversion1.Notifications.APIService;
+import com.example.tureguideversion1.Notifications.Client;
+import com.example.tureguideversion1.Notifications.Data;
+import com.example.tureguideversion1.Notifications.Response;
+import com.example.tureguideversion1.Notifications.Sender;
+import com.example.tureguideversion1.Notifications.Token;
 import com.example.tureguideversion1.R;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
-public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    /*
-        public static final String TAG = "CommentsBox";
-        private String senderID, currentEventId, senderName, senderImage, senderSex;
-        private EditText commentET;
-        private ImageButton sendMessage;
-        private ImageView notiBTMS,closeBTMS;
-        private int e,d;
-        FirebaseAuth auth;
-        private DatabaseReference databaseReference;
-        private RecyclerView chatRecyclerView;
-        private List<Chat> mChat;
-        private ChatAdapter chatAdapter;
-        private APIService apiService;
-        private boolean notify = false;
-        private RadioRealButtonGroup radioGroup;
-        private LinearLayout radioLayout;
-        */
-    private String currentEventId;
+import co.ceryle.radiorealbutton.RadioRealButton;
+import co.ceryle.radiorealbutton.RadioRealButtonGroup;
+import retrofit2.Call;
+import retrofit2.Callback;
+
+import static android.content.Context.MODE_PRIVATE;
+
+public class CommentBoxFragment extends Fragment {
+
+    public static final String TAG = "CommentsBox";
+    private String senderID, currentEventId, senderName, senderImage, senderSex;
+    private EditText commentET;
+    private ImageButton sendMessage;
+    private ImageView notiBTMS, closeBTMS;
+    private int e, d;
+    FirebaseAuth auth;
+    private DatabaseReference databaseReference;
+    private RecyclerView chatRecyclerView;
+    private List<Chat> mChat;
+    private ChatAdapter chatAdapter;
+    private APIService apiService;
+    private boolean notify = false;
+    private RadioRealButtonGroup radioGroup;
+    private LinearLayout radioLayout;
+    private View view;
+
+    public CommentBoxFragment() {
+        // Required empty public constructor
+    }
 
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_comment_box, container, false);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_comment_box, container, false);
         init(view);
 
 
         Bundle bundle = getArguments();
         currentEventId = bundle.getString("event_id");
-
-        Bundle args = new Bundle();
-        args.putString("event_id", currentEventId);
-        Fragment fm = new CommentBoxFragment();
-        fm.setArguments(args);
-
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.commentBoxFrameLayout, new CommentBoxFragment());
-        transaction.commit();
-/*
-        Bundle bundle = getArguments();
-        currentEventId = bundle.getString("event_id");
+        //currentEventId="-M9zMMxVM07BOzpgapJQ";
 
         DatabaseReference sendr = databaseReference.child("profile").child(senderID);
         sendr.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -81,7 +110,7 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
         notiBTMS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(radioLayout.getVisibility() == View.GONE) {
+                if (radioLayout.getVisibility() == View.GONE) {
                     radioLayout.setVisibility(View.VISIBLE);
                     radioLayout.setAlpha(0.0f);
 
@@ -91,7 +120,7 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
                             .alpha(1.0f)
                             .setDuration(200)
                             .setListener(null);
-                }else if(radioLayout.getVisibility() == View.VISIBLE) {
+                } else if (radioLayout.getVisibility() == View.VISIBLE) {
                     radioLayout.animate()
                             .translationY(-150)
                             .alpha(0.0f)
@@ -110,11 +139,11 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
         radioGroup.setOnClickedButtonListener(new RadioRealButtonGroup.OnClickedButtonListener() {
             @Override
             public void onClickedButton(RadioRealButton button, int position) {
-                if(position == 0){
+                if (position == 0) {
                     e = 1;
                     d = 0;
 
-                }else if(position == 1){
+                } else if (position == 1) {
                     e = 0;
                     d = 1;
 
@@ -126,7 +155,7 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
         closeBTMS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismiss();
+                //dismiss();
             }
         });
 
@@ -151,37 +180,11 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
         readMessage();
 
 
-
- */
-
         return view;
     }
 
-
-//    @Override
-//    private void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if(requestCode == 1){
-//            currentEventId = data.getStringExtra("eventId");
-//        }
-//    }
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        BottomSheetDialog bottomSheetDialog=(BottomSheetDialog)super.onCreateDialog(savedInstanceState);
-        bottomSheetDialog.setOnShowListener(dialog -> {
-            BottomSheetDialog dialogc = (BottomSheetDialog) dialog;
-            FrameLayout bottomSheet =  dialogc.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-
-            BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-            bottomSheetBehavior.setPeekHeight(Resources.getSystem().getDisplayMetrics().heightPixels);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        });
-        return bottomSheetDialog;
-    }
-
     private void init(View view) {
-       /* commentET = view.findViewById(R.id.commentET);
+        commentET = view.findViewById(R.id.commentET);
         sendMessage = view.findViewById(R.id.sendMessage);
         auth = FirebaseAuth.getInstance();
         senderID = auth.getUid();
@@ -199,11 +202,9 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
         notiBTMS = view.findViewById(R.id.notiBTMS);
         closeBTMS = view.findViewById(R.id.closeBTMS);
         radioLayout = view.findViewById(R.id.radioLayout);
-        */
     }
 
 
-    /*
     void setSendMessage(String message, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
 
         DatabaseReference ref = databaseReference.child("eventComments").child(currentEventId);
@@ -354,22 +355,23 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
 
     }
 
-    private void currentUser(String userid){
+    private void currentUser(String userid) {
         SharedPreferences.Editor editor = getActivity().getSharedPreferences("PREFS", MODE_PRIVATE).edit();
         editor.putString("currentuser", userid);
         editor.apply();
     }
 
-    @Override
-    public void onDismiss(@NonNull DialogInterface dialog) {
-        super.onDismiss(dialog);
-        currentUser("none");
-    }
+//    @Override
+//    public void onDismiss(@NonNull DialogInterface dialog) {
+//        super.onDismiss(dialog);
+//        currentUser("none");
+//    }
 
     @Override
     public void onStart() {
         super.onStart();
         currentUser(auth.getUid());
     }
-    */
+
+
 }
