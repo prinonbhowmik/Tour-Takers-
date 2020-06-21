@@ -3,6 +3,7 @@ package com.example.tureguideversion1.Activities;
 import android.app.Dialog;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +21,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
-
+    public static final String TAG = "CommentsBox";
     /*
-        public static final String TAG = "CommentsBox";
+
         private String senderID, currentEventId, senderName, senderImage, senderSex;
         private EditText commentET;
         private ImageButton sendMessage;
@@ -48,14 +49,13 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
 
         Bundle bundle = getArguments();
         currentEventId = bundle.getString("event_id");
-
         Bundle args = new Bundle();
         args.putString("event_id", currentEventId);
         Fragment fm = new CommentBoxFragment();
         fm.setArguments(args);
 
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.commentBoxFrameLayout, new CommentBoxFragment());
+        transaction.replace(R.id.commentBoxFrameLayout,fm);
         transaction.commit();
 /*
         Bundle bundle = getArguments();
