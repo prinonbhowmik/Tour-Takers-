@@ -1,6 +1,7 @@
 package com.example.tureguideversion1.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tureguideversion1.Activities.ReplyBox;
 import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Chat;
 import com.example.tureguideversion1.Model.Profile;
@@ -144,11 +146,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             holder.crl.setSelected(false);
             holder.commentTimeTV.setVisibility(View.GONE);
         }
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.crl.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                return false;
-                // Intent intent=new Intent(CommentReply.class);
+
+
+                Intent intent = new Intent(mContext, ReplyBox.class);
+                //overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                mContext.startActivity(intent);
+                return true;
+
             }
         });
     }

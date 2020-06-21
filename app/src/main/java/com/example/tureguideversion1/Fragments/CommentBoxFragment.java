@@ -16,11 +16,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tureguideversion1.Activities.CommentBoxBottomSheet;
 import com.example.tureguideversion1.Adapters.ChatAdapter;
 import com.example.tureguideversion1.Model.Chat;
 import com.example.tureguideversion1.Model.Profile;
@@ -158,6 +156,7 @@ public class CommentBoxFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //dismiss();
+                onDestroy();
 
             }
         });

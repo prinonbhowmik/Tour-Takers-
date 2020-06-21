@@ -3,7 +3,6 @@ package com.example.tureguideversion1.Activities;
 import android.app.Dialog;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

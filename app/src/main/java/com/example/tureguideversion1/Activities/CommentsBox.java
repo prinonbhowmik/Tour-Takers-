@@ -1,5 +1,7 @@
 package com.example.tureguideversion1.Activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tureguideversion1.Adapters.ChatAdapter;
 import com.example.tureguideversion1.Model.Chat;
-import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.Notifications.APIService;
 import com.example.tureguideversion1.Notifications.Client;
 import com.example.tureguideversion1.Notifications.Data;
@@ -43,6 +46,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import co.ceryle.radiorealbutton.RadioRealButton;
+import co.ceryle.radiorealbutton.RadioRealButtonGroup;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -58,6 +63,10 @@ public class CommentsBox extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     private APIService apiService;
     private boolean notify = false;
+    private RadioRealButtonGroup radioGroup;
+    private LinearLayout radioLayout;
+    private ImageView notiBTMS, closeBTMS;
+    private int e, d;
 
 
     @Override
@@ -101,8 +110,59 @@ public class CommentsBox extends AppCompatActivity {
             }
         });
 
-        Profile profile = new Profile();
-        Chat chat = new Chat();
+
+        notiBTMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (radioLayout.getVisibility() == View.GONE) {
+                    radioLayout.setVisibility(View.VISIBLE);
+                    radioLayout.setAlpha(0.0f);
+
+                    // Start the animation
+                    radioLayout.animate()
+                            .translationY(0)
+                            .alpha(1.0f)
+                            .setDuration(200)
+                            .setListener(null);
+                } else if (radioLayout.getVisibility() == View.VISIBLE) {
+                    radioLayout.animate()
+                            .translationY(-150)
+                            .alpha(0.0f)
+                            .setDuration(200)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    radioLayout.setVisibility(View.GONE);
+                                }
+                            });
+                }
+            }
+        });
+
+        radioGroup.setOnClickedButtonListener(new RadioRealButtonGroup.OnClickedButtonListener() {
+            @Override
+            public void onClickedButton(RadioRealButton button, int position) {
+                if (position == 0) {
+                    e = 1;
+                    d = 0;
+
+                } else if (position == 1) {
+                    e = 0;
+                    d = 1;
+
+                }
+                //Toast.makeText(getContext(), "Clicked! Position: " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        closeBTMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         readMessage();
     }
 
@@ -129,6 +189,10 @@ public class CommentsBox extends AppCompatActivity {
         chatRecyclerView.setAdapter(chatAdapter);
         //chatRecyclerView.setHasFixedSize(true);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+        radioGroup = findViewById(R.id.radioGroup);
+        notiBTMS = findViewById(R.id.notiBTMS);
+        closeBTMS = findViewById(R.id.closeBTMS);
+        radioLayout = findViewById(R.id.radioLayout);
     }
 
     void setSendMessage(String message, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
@@ -299,5 +363,10 @@ public class CommentsBox extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         currentUser("none");
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
     }
 }
