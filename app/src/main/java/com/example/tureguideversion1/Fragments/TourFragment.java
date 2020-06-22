@@ -57,6 +57,7 @@ import com.example.tureguideversion1.LocationSelection_bottomSheet;
 import com.example.tureguideversion1.Model.DailyForcastList;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.LocationItem;
+import com.example.tureguideversion1.Notifications.Token;
 import com.example.tureguideversion1.R;
 import com.example.tureguideversion1.Weather.WeatherResponse;
 import com.glide.slider.library.SliderLayout;
@@ -66,6 +67,7 @@ import com.glide.slider.library.slidertypes.TextSliderView;
 import com.glide.slider.library.transformers.BaseTransformer;
 import com.glide.slider.library.tricks.ViewPagerEx;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -73,6 +75,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.polyak.iconswitch.IconSwitch;
 
 import java.io.IOException;
@@ -744,6 +748,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     addJoinMember();
                     addEventLoacationList();
                     setUserActivity(eventId);
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                        @Override
+                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                            setToken(instanceIdResult.getToken(),eventId);
+                            enableNotification(eventId);
+                        }
+                    });
                     FragmentTransaction event = getParentFragmentManager().beginTransaction();
                     event.replace(R.id.fragment_container, new EventFragment());
                     event.commit();
@@ -755,6 +766,23 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 }
             }
         });
+    }
+
+    private void setToken(String token, String eventID) {
+        DatabaseReference ref = databaseReference.child("eventCommentsTokens");
+        Token token1 = new Token(token);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("userID", auth.getUid());
+        hashMap.put("token", token1.getToken());
+        ref.child(eventID).child(auth.getUid()).setValue(hashMap);
+    }
+
+    private void enableNotification(String eventID){
+        DatabaseReference ref = databaseReference.child("notificationStatus").child("eventCommentNotifiaction").child(eventID);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("ID", auth.getUid());
+        hashMap.put("status", "enabled");
+        ref.child(auth.getUid()).setValue(hashMap);
     }
 
     private void addJoinMember() {
