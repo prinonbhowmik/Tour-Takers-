@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -17,14 +19,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tureguideversion1.Adapters.ChatAdapter;
-import com.example.tureguideversion1.Fragments.EventFragment;
-import com.example.tureguideversion1.Fragments.TourFragment;
-import com.example.tureguideversion1.Fragments.WeatherFragment;
 import com.example.tureguideversion1.Model.Chat;
 import com.example.tureguideversion1.Notifications.APIService;
 import com.example.tureguideversion1.Notifications.Client;
@@ -50,10 +50,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
 
 import co.ceryle.radiorealbutton.RadioRealButton;
 import co.ceryle.radiorealbutton.RadioRealButtonGroup;
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -235,6 +235,8 @@ public class CommentsBox extends AppCompatActivity {
                 finish();
             }
         });
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(chatRecyclerView);
 
         readMessage();
     }
@@ -245,7 +247,48 @@ public class CommentsBox extends AppCompatActivity {
         if (requestCode == 1) {
             currentEventId = data.getStringExtra("eventId");
         }
+        if (requestCode == 2) {
+            recreate();
+        }
+
     }
+
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            if (direction == ItemTouchHelper.RIGHT) {
+                Intent intent = new Intent(CommentsBox.this, ReplyBox.class);
+                startActivityForResult(intent, 2);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+
+        }
+
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    .addSwipeRightActionIcon(R.drawable.ic_forward_24)
+                    .addSwipeRightLabel("Forward")
+                    .setSwipeRightLabelTypeface(Typeface.DEFAULT_BOLD)
+                    .addSwipeRightBackgroundColor(ContextCompat.getColor(CommentsBox.this, R.color.colorYellow))
+                    .create()
+                    .decorate();
+
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
+
+        @Override
+        public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
+            return 0.9f;
+        }
+    };
+
 
     private void init() {
         commentET = findViewById(R.id.commentET);
@@ -570,5 +613,6 @@ public class CommentsBox extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

@@ -57,7 +57,7 @@ import es.dmoral.toasty.Toasty;
 public class EventDetails extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView event_place, event_date, return_date, event_time, meeting_place, event_description, publish_date,
-            publisher_name, publisher_phone, event_attending_member, event_cost, group_name, view, deleteTV, txt7, commentCountTV;
+            publisher_name, publisher_phone, event_attending_member, event_cost, group_name, viewMember, deleteTV, txt7, commentCountTV;
     private ImageView descriptionIV, meetingIV, groupIV, costIV, event_image;
     private CircleImageView event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
@@ -177,14 +177,13 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
             }
         });
 
-        view.setOnClickListener(new View.OnClickListener() {
+        viewMember.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 Intent intent = new Intent(EventDetails.this, JoinMemberDetails.class);
-
                 intent.putExtra("event_id", event_Id);
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
 
@@ -260,9 +259,9 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EventDetails.this, CommentsBox.class);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 intent.putExtra("eventId", event_Id);
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
 //
 //                Bundle args = new Bundle();
@@ -758,7 +757,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         publish_date = findViewById(R.id.event_publish_dateTV);
         publisher_name = findViewById(R.id.event_publish_nameTV);
         event_attending_member = findViewById(R.id.attending_memberTV);
-        view = findViewById(R.id.viewTV);
+        viewMember = findViewById(R.id.viewTV);
         deleteTV = findViewById(R.id.deleteTV);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
@@ -805,7 +804,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     @Override
     public void onSliderClick(BaseSliderView slider) {
         if (checkConnection()) {
-            Intent i = new Intent(view.getContext(), LocationImage.class)
+            Intent i = new Intent(viewMember.getContext(), LocationImage.class)
                     .putExtra("slide", slider.getBundle().getString("extra"))
                     .putExtra("location", place.toLowerCase())
                     .putStringArrayListExtra("willVisit", (ArrayList<String>) locationWillBeVisit);

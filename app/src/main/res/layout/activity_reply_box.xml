@@ -41,7 +41,7 @@
                         android:layout_height="match_parent">
 
                         <ImageView
-                            android:id="@+id/backToReply"
+                            android:id="@+id/backToComment"
                             android:layout_width="50dp"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
@@ -52,7 +52,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginEnd="50dp"
-                            android:layout_toEndOf="@+id/backToReply"
+                            android:layout_toEndOf="@+id/backToComment"
                             android:background="@null"
                             android:gravity="center_horizontal|center_vertical"
                             android:paddingStart="10dp"

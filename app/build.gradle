@@ -114,4 +114,7 @@ dependencies {
     //FancyButtonProj
     implementation 'com.ekalips.android:fancyprogressbutton:1.2.1'
 
+    //RecyclerView Swipe Gesture
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
+
 }

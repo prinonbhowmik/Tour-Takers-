@@ -1,7 +1,6 @@
 package com.example.tureguideversion1.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tureguideversion1.Activities.ReplyBox;
 import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Chat;
 import com.example.tureguideversion1.Model.Profile;
@@ -39,7 +37,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     String userid;
     FirebaseUser fUser;
     FirebaseAuth auth;
-    private int row_index, pos, pos2 = -1;
+    private int row_index = -1, pos, pos2 = -1;
 
     private int timeVisibility = 0;
 
@@ -151,10 +149,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             public boolean onLongClick(View v) {
 
 
-                Intent intent = new Intent(mContext, ReplyBox.class);
+                // Intent intent = new Intent(mContext, ReplyBox.class);
                 //overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
-                mContext.startActivity(intent);
+                // mContext.startActivity(intent);
                 return true;
 
             }
