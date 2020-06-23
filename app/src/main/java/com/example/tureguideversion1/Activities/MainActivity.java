@@ -44,12 +44,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
 import com.example.tureguideversion1.Fragments.EventFragment;
 import com.example.tureguideversion1.Fragments.GuideFragment;
 import com.example.tureguideversion1.Fragments.LoaderFragment;
 import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
-import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.LocationSelection_bottomSheet;
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         userEmail.setText(email);
                         if (!image.isEmpty() || !image.matches("")) {
                             try {
-                                GlideApp.with(MainActivity.this)
+                                Glide.with(MainActivity.this)
                                         .load(image)
                                         .fitCenter()
                                         .into(circularImageView);
@@ -162,12 +162,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         } else {
                             String sex = profile.getSex();
                             if (sex.matches("male")) {
-                                GlideApp.with(MainActivity.this)
+                                Glide.with(MainActivity.this)
                                         .load(getImageFromDrawable("man"))
                                         .centerInside()
                                         .into(circularImageView);
                             } else if (sex.matches("female")) {
-                                GlideApp.with(MainActivity.this)
+                                Glide.with(MainActivity.this)
                                         .load(getImageFromDrawable("woman"))
                                         .centerInside()
                                         .into(circularImageView);

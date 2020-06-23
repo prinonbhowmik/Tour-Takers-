@@ -141,7 +141,8 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                                     startActivity(intent);
 
-                                } else {
+                                }
+                                else {
                                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("GuideProfile").child(ID);
                                     ref.addValueEventListener(new ValueEventListener() {
                                         @Override
