@@ -3,6 +3,7 @@ package com.example.tureguideversion1.Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.R;
 
 public class LoaderFragment extends Fragment {
+    public static final String TAG = "LoaderFragment";
     private LottieAnimationView loadinAmin;
 
     public LoaderFragment() {
@@ -40,20 +42,24 @@ public class LoaderFragment extends Fragment {
 
             public void onFinish() {
                 //startActivity(new Intent(getContext(), MainActivity.class).putExtra("FromLoader","tour"));
-                if(getArguments() != null) {
-                    if (bundle.getString("shortcut").matches("event")) {
+                try {
+                    if (getArguments() != null) {
+                        if (bundle.getString("shortcut").matches("event")) {
+                            FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                            event.replace(R.id.fragment_container, new EventFragment());
+                            event.commit();
+                        } else if (bundle.getString("shortcut").matches("weather")) {
+                            FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                            event.replace(R.id.fragment_container, new WeatherFragment());
+                            event.commit();
+                        }
+                    } else {
                         FragmentTransaction event = getParentFragmentManager().beginTransaction();
-                        event.replace(R.id.fragment_container, new EventFragment());
-                        event.commit();
-                    }else if (bundle.getString("shortcut").matches("weather")) {
-                        FragmentTransaction event = getParentFragmentManager().beginTransaction();
-                        event.replace(R.id.fragment_container, new WeatherFragment());
+                        event.replace(R.id.fragment_container, new TourFragment());
                         event.commit();
                     }
-                }else {
-                    FragmentTransaction event = getParentFragmentManager().beginTransaction();
-                    event.replace(R.id.fragment_container, new TourFragment());
-                    event.commit();
+                }catch (IllegalStateException e){
+                    Log.d(TAG, "onFinish: "+e.getMessage());
                 }
             }
         }.start();

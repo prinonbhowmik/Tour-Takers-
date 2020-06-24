@@ -2,10 +2,12 @@ package com.example.tureguideversion1.Activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -73,9 +75,9 @@ public class CommentsBox extends AppCompatActivity {
     private RadioRealButton radioBTN1, radioBTN2;
     private LinearLayout radioLayout;
     private ImageView notificationIcon, closeIcon;
-    private int e, d;
+    private int e = 1;
     private List<String> notificationMemberList;
-
+    private MediaPlayer sendSound, receiveSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,8 +122,6 @@ public class CommentsBox extends AppCompatActivity {
                 String commentTime = simpleDateFormat.format(calendar.getTime());
                 if (mess.trim().length() != 0) {
                     setSendMessage(mess, senderID, senderName, senderImage, senderSex, commentTime);
-                } else {
-                    Toast.makeText(CommentsBox.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
                 commentET.setText(null);
             }
@@ -253,7 +253,7 @@ public class CommentsBox extends AppCompatActivity {
 
     }
 
-    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             return false;
@@ -274,7 +274,7 @@ public class CommentsBox extends AppCompatActivity {
         public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
             new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                     .addSwipeRightActionIcon(R.drawable.ic_forward_24)
-                    .addSwipeRightLabel("Forward")
+                    .addSwipeRightLabel("Reply")
                     .setSwipeRightLabelTypeface(Typeface.DEFAULT_BOLD)
                     .addSwipeRightBackgroundColor(ContextCompat.getColor(CommentsBox.this, R.color.colorYellow))
                     .create()
@@ -309,8 +309,11 @@ public class CommentsBox extends AppCompatActivity {
         notificationIcon = findViewById(R.id.notiBTMS);
         closeIcon = findViewById(R.id.closeBTMS);
         radioLayout = findViewById(R.id.radioLayout);
+        radioLayout.setTranslationY(-150);
         radioBTN1 = (RadioRealButton) findViewById(R.id.radioBTN1);
         radioBTN2 = (RadioRealButton) findViewById(R.id.radioBTN2);
+        sendSound = MediaPlayer.create(this, R.raw.comment_send);
+        receiveSound = MediaPlayer.create(this,R.raw.appointed);
     }
 
     private void readNotificationStatus() {
@@ -333,7 +336,7 @@ public class CommentsBox extends AppCompatActivity {
                         radioGroup.setPosition(1);
                         radioBTN2.setText("Disabled");
                     }
-                    Log.d(TAG, "onDataChange: " + map.get("status"));
+                    //Log.d(TAG, "onDataChange: " + map.get("status"));
                 } else {
                     notificationIcon.setImageResource(R.drawable.ic_notifications_paused);
                 }
@@ -375,7 +378,12 @@ public class CommentsBox extends AppCompatActivity {
         hashMap.put("ID", id);
         hashMap.put("commentTime", commentTime);
         hashMap.put("eventID", currentEventId);
-        ref.child(id).setValue(hashMap);
+        ref.child(id).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                sendSound.start();
+            }
+        });
         DatabaseReference check = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(currentEventId);
         check.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -421,23 +429,7 @@ public class CommentsBox extends AppCompatActivity {
             sendNotifiaction(currentEventId, senderName, "also commented");
         }
         notify = false;
-
-//        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                User user = dataSnapshot.getValue(User.class);
-//                if (notify) {
-//                    sendNotifiaction(senderName, user.getUsername(), msg);
-//                }
-//                notify = false;
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+        e = 1;
     }
 
     private void readMessage() {
@@ -450,12 +442,17 @@ public class CommentsBox extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     mChat.clear();
                     for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-
                         Chat chat = childSnapshot.getValue(Chat.class);
                         mChat.add(chat);
                         chatAdapter = new ChatAdapter(CommentsBox.this, mChat);
                         chatRecyclerView.setAdapter(chatAdapter);
                         chatAdapter.notifyDataSetChanged();
+                    }
+                    if(e != 1) {
+                        receiveSound.start();
+                        e = 0;
+                    }else if(e == 1){
+                        e = 0;
                     }
                 }
             }
@@ -608,11 +605,28 @@ public class CommentsBox extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         currentUser("none");
+        receiveSound.stop();
+        sendSound.stop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sendSound.stop();
+        receiveSound.stop();
     }
 
     @Override
     public void finish() {
         super.finish();
+        sendSound.stop();
+        receiveSound.stop();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

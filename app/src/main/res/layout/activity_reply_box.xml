@@ -209,7 +209,7 @@
             android:layout_weight="4"
             android:background="@drawable/chatbox_edittext_design"
             android:gravity="top|left"
-            android:hint="Write a comment..."
+            android:hint="Write a reply..."
             android:inputType="textMultiLine"
             android:maxLines="6"
             android:minLines="1"
