@@ -261,19 +261,14 @@ public class CommentsBox extends AppCompatActivity {
 
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
-
             if (direction == ItemTouchHelper.RIGHT) {
                 String CID = chatAdapter.getSwipePosition(viewHolder.getAdapterPosition());
-
                 Intent intent2 = new Intent(CommentsBox.this, ReplyBox.class);
                 intent2.putExtra("commentId", CID);
                 intent2.putExtra("eventId", currentEventId);
                 startActivityForResult(intent2, 2);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
             }
-
         }
 
 
@@ -286,7 +281,6 @@ public class CommentsBox extends AppCompatActivity {
                     .addSwipeRightBackgroundColor(ContextCompat.getColor(CommentsBox.this, R.color.colorYellow))
                     .create()
                     .decorate();
-
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
 
@@ -343,7 +337,6 @@ public class CommentsBox extends AppCompatActivity {
                         radioGroup.setPosition(1);
                         radioBTN2.setText("Disabled");
                     }
-                    //Log.d(TAG, "onDataChange: " + map.get("status"));
                 } else {
                     notificationIcon.setImageResource(R.drawable.ic_notifications_paused);
                 }

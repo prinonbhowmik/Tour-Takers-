@@ -59,13 +59,9 @@ public class ReplyBox extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reply_box);
         init();
-
         Intent intent2 = getIntent();
-        //eventId=intent2.getStringExtra("eventID");
-        //commentId=intent2.getStringExtra("commentID");
-
-        commentId = "-MAcyZz5xl5T4PfLNNWs";
-        eventId = "-MATDe7YnxugIMJCuSHk";
+        eventId = intent2.getStringExtra("eventId");
+        commentId = intent2.getStringExtra("commentId");
         readCommentData();
         readReplyMessage();
         backToComment.setOnClickListener(new View.OnClickListener() {

@@ -396,11 +396,13 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 DatabaseReference lRef = databaseReference.child("eventLocationList").child(event_Id);
                 DatabaseReference cRef = databaseReference.child("eventComments").child(event_Id);
                 DatabaseReference commentsTokenRef = databaseReference.child("eventCommentsTokens").child(event_Id);
+                DatabaseReference replyRef = databaseReference.child("eventCommentsReply").child(event_Id);
                 eRef.setValue(null);
                 mRef.setValue(null);
                 lRef.setValue(null);
                 cRef.setValue(null);
                 commentsTokenRef.removeValue();
+                replyRef.setValue(null);
                 ArrayList<String> userIDs = new ArrayList<>();
                 DatabaseReference removeActivity = FirebaseDatabase.getInstance().getReference().child("userActivities");
                 removeActivity.addListenerForSingleValueEvent(new ValueEventListener() {
