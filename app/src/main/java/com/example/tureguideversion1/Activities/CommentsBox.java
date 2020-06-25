@@ -75,7 +75,7 @@ public class CommentsBox extends AppCompatActivity {
     private RadioRealButton radioBTN1, radioBTN2;
     private LinearLayout radioLayout;
     private ImageView notificationIcon, closeIcon;
-    private int e = 1;
+    private int e = 1, p = 0;
     private List<String> notificationMemberList;
     private MediaPlayer sendSound, receiveSound;
 
@@ -313,7 +313,7 @@ public class CommentsBox extends AppCompatActivity {
         radioBTN1 = (RadioRealButton) findViewById(R.id.radioBTN1);
         radioBTN2 = (RadioRealButton) findViewById(R.id.radioBTN2);
         sendSound = MediaPlayer.create(this, R.raw.comment_send);
-        receiveSound = MediaPlayer.create(this,R.raw.appointed);
+        receiveSound = MediaPlayer.create(this, R.raw.appointed);
     }
 
     private void readNotificationStatus() {
@@ -410,7 +410,7 @@ public class CommentsBox extends AppCompatActivity {
                             }
                         });
                     }
-                }else {
+                } else {
                     FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                         @Override
                         public void onSuccess(InstanceIdResult instanceIdResult) {
@@ -448,11 +448,13 @@ public class CommentsBox extends AppCompatActivity {
                         chatRecyclerView.setAdapter(chatAdapter);
                         chatAdapter.notifyDataSetChanged();
                     }
-                    if(e != 1) {
-                        receiveSound.start();
-                        e = 0;
-                    }else if(e == 1){
-                        e = 0;
+                    if (p != 1) {
+                        if (e != 1) {
+                            receiveSound.start();
+                            e = 0;
+                        } else if (e == 1) {
+                            e = 0;
+                        }
                     }
                 }
             }
@@ -599,14 +601,14 @@ public class CommentsBox extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         currentUser(auth.getUid());
+        p = 0;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         currentUser("none");
-        receiveSound.stop();
-        sendSound.stop();
+        p = 1;
     }
 
     @Override
@@ -618,14 +620,12 @@ public class CommentsBox extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        sendSound.stop();
         receiveSound.stop();
     }
 
     @Override
     public void finish() {
         super.finish();
-        sendSound.stop();
         receiveSound.stop();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
