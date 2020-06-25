@@ -2,7 +2,6 @@ package com.example.tureguideversion1.Activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
@@ -259,21 +258,29 @@ public class CommentsBox extends AppCompatActivity {
             return false;
         }
 
+
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 
+
             if (direction == ItemTouchHelper.RIGHT) {
-                Intent intent = new Intent(CommentsBox.this, ReplyBox.class);
-                startActivityForResult(intent, 2);
+                String CID = chatAdapter.getSwipePosition(viewHolder.getAdapterPosition());
+
+                Intent intent2 = new Intent(CommentsBox.this, ReplyBox.class);
+                intent2.putExtra("commentId", CID);
+                intent2.putExtra("eventId", currentEventId);
+                startActivityForResult(intent2, 2);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
             }
 
         }
 
+
         @Override
         public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
             new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                    .addSwipeRightActionIcon(R.drawable.ic_forward_24)
+                    .addSwipeRightActionIcon(R.drawable.ic_reply)
                     .addSwipeRightLabel("Reply")
                     .setSwipeRightLabelTypeface(Typeface.DEFAULT_BOLD)
                     .addSwipeRightBackgroundColor(ContextCompat.getColor(CommentsBox.this, R.color.colorYellow))

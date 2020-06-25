@@ -10,10 +10,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.example.tureguideversion1.Fragments.CommentBoxFragment;
 import com.example.tureguideversion1.R;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -45,7 +42,7 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
         View view = inflater.inflate(R.layout.activity_comment_box, container, false);
         init(view);
 
-
+/*
         Bundle bundle = getArguments();
         currentEventId = bundle.getString("event_id");
         Bundle args = new Bundle();
@@ -56,6 +53,7 @@ public class CommentBoxBottomSheet extends BottomSheetDialogFragment {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.commentBoxFrameLayout,fm);
         transaction.commit();
+        */
 /*
         Bundle bundle = getArguments();
         currentEventId = bundle.getString("event_id");

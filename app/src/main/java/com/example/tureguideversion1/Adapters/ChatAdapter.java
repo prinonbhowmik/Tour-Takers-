@@ -1,18 +1,19 @@
 package com.example.tureguideversion1.Adapters;
 
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Chat;
-import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,8 +32,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public static final int MSG_TYPE_RIGHT = 1;
     private Context mContext;
     private List<Chat> mChat;
-    private List<Profile> mProfile;
-    private String imageUrl = "";
     private DatabaseReference databaseReference;
     String userid;
     FirebaseUser fUser;
@@ -147,14 +146,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         holder.crl.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-
-
-                // Intent intent = new Intent(mContext, ReplyBox.class);
-                //overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-                // mContext.startActivity(intent);
+                ClipboardManager cm = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                cm.setText(holder.showMessage.getText());
+                Toast.makeText(mContext, "Copied to clipboard", Toast.LENGTH_SHORT).show();
                 return true;
-
             }
         });
     }
@@ -162,6 +157,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return mChat.size();
+    }
+
+    public String getSwipePosition(int position) {
+        Chat chat = mChat.get(position);
+        String commentId = chat.getID();
+        return commentId;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

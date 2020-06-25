@@ -81,7 +81,7 @@
         android:layout_marginBottom="10dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/reply_profileImage1"
+            android:id="@+id/comment_profileImage1"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/man" />
@@ -91,7 +91,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_toEndOf="@+id/reply_profileImage1"
+            android:layout_toEndOf="@+id/comment_profileImage1"
             android:background="@drawable/chat_background_left"
             android:padding="8dp">
 
@@ -125,68 +125,14 @@
             android:visibility="visible" />
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/secondRelativeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/topRelativeLayout"
-        android:layout_marginStart="45dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="5dp">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/reply_profileImage2"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="5dp"
-            android:src="@drawable/man" />
-
-        <RelativeLayout
-            android:id="@+id/crl2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_toEndOf="@+id/reply_profileImage2"
-            android:background="@drawable/chat_background_left"
-            android:padding="8dp">
-
-            <TextView
-                android:id="@+id/senderName2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="MIH"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/showMessage2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/senderName2"
-                android:text="this is testing comments reply. hope everythings work well"
-                android:textColor="@android:color/black"
-                android:textSize="16sp" />
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/commentTimeTV2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/crl2"
-            android:layout_marginStart="50dp"
-            android:text="now"
-            android:textColor="@color/color1"
-            android:visibility="visible" />
-    </RelativeLayout>
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chatRecycler"
+        android:id="@+id/replyRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/inputLayout2"
-        android:layout_below="@id/secondRelativeLayout"
+        android:layout_below="@id/topRelativeLayout"
         android:layout_marginStart="45dp"
         android:layout_marginEnd="5dp" />
 
@@ -200,7 +146,7 @@
         android:weightSum="5">
 
         <EditText
-            android:id="@+id/commentET2"
+            android:id="@+id/replyET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -208,7 +154,7 @@
             android:layout_marginEnd="5dp"
             android:layout_weight="4"
             android:background="@drawable/chatbox_edittext_design"
-            android:gravity="top|left"
+            android:gravity="top|start"
             android:hint="Write a reply..."
             android:inputType="textMultiLine"
             android:maxLines="6"
@@ -224,7 +170,7 @@
             android:textSize="18sp" />
 
         <ImageButton
-            android:id="@+id/sendMessage2"
+            android:id="@+id/sendReply"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_gravity="bottom"
@@ -232,7 +178,7 @@
             android:layout_marginBottom="3dp"
             android:layout_weight="0"
             android:background="@drawable/send_button_design"
-            android:contentDescription="sendButton"
+            android:contentDescription="replyButton"
             android:paddingStart="5dp"
             android:paddingEnd="0dp"
             android:src="@drawable/ic_send_blue" />
