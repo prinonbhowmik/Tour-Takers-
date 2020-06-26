@@ -1,48 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="350dp"
     android:layout_height="wrap_content"
     android:padding="5dp"
     android:animateLayoutChanges="true">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/chat_profileImage"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/man" />
-
     <RelativeLayout
-        android:id="@+id/crl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_toEndOf="@+id/chat_profileImage"
-        android:background="@drawable/chat_background_left"
-        android:padding="8dp">
+        android:id="@+id/mainCommentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/senderName"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/chat_profileImage"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/man" />
+
+        <RelativeLayout
+            android:id="@+id/crl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@+id/chat_profileImage"
+            android:background="@drawable/chat_background_left"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/senderName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/showMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/senderName"
+                android:textColor="@android:color/black"
+                android:textSize="18sp" />
+        </RelativeLayout>
 
         <TextView
-            android:id="@+id/showMessage"
+            android:id="@+id/commentTimeTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/senderName"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:layout_below="@+id/crl"
+            android:layout_marginStart="50dp"
+            android:textColor="@color/color1"
+            android:visibility="visible" />
+
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/commentTimeTV"
+        android:id="@+id/commentCounted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/crl"
-        android:textColor="@color/color1"
+        android:layout_below="@id/mainCommentLayout"
         android:layout_marginStart="50dp"
-        android:visibility="gone" />
+        android:layout_marginTop="5dp"
+        android:text="Swipe right to view comments"
+        android:textColor="#000000"
+        tools:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/replyLayoutView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/commentCounted"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        tools:visibility="visible">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/replyerImage"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/man" />
+
+        <TextView
+            android:id="@+id/replyerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:textColor="#000000"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/replyerComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:inputType="textLongMessage"
+            android:textColor="#000000" />
+
+    </LinearLayout>
+
+
 </RelativeLayout>
