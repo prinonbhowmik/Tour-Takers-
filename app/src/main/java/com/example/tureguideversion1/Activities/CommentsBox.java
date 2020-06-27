@@ -542,53 +542,53 @@ public class CommentsBox extends AppCompatActivity {
     }
 
     private void sendNotifiaction(String eventID, final String username, final String message) {
+        if (notificationMemberList != null) {
+            for (int i = 0; i < notificationMemberList.size(); i++) {
+                DatabaseReference tokens = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(eventID);
+                Query query = tokens.orderByKey().equalTo(notificationMemberList.get(i));
+                int finalI = i;
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-        for (int i = 0; i < notificationMemberList.size(); i++) {
-            DatabaseReference tokens = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(eventID);
-            Query query = tokens.orderByKey().equalTo(notificationMemberList.get(i));
-            int finalI = i;
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                //HashMap<String,Object> data = (HashMap<String, Object>) snapshot.getValue();
+                                Token token = snapshot.getValue(Token.class);
+                                Data data = new Data(eventID, R.drawable.ic_stat_ic_notification, username + " " + message, "Event", notificationMemberList.get(finalI), auth.getUid(), "CommentBox");
 
-                            //HashMap<String,Object> data = (HashMap<String, Object>) snapshot.getValue();
-                            Token token = snapshot.getValue(Token.class);
-                            Data data = new Data(eventID, R.drawable.ic_stat_ic_notification, username + " " + message, "Event", notificationMemberList.get(finalI), auth.getUid());
+                                Sender sender = new Sender(data, token.getToken());
 
-                            Sender sender = new Sender(data, token.getToken());
-
-                            apiService.sendNotification(sender)
-                                    .enqueue(new Callback<Response>() {
-                                        @Override
-                                        public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                                            if (response.code() == 200) {
-                                                if (response.body().success != 1) {
-                                                    Toast.makeText(getApplicationContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                                apiService.sendNotification(sender)
+                                        .enqueue(new Callback<Response>() {
+                                            @Override
+                                            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                                if (response.code() == 200) {
+                                                    if (response.body().success != 1) {
+                                                        Toast.makeText(getApplicationContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                        @Override
-                                        public void onFailure(Call<Response> call, Throwable t) {
+                                            @Override
+                                            public void onFailure(Call<Response> call, Throwable t) {
 
-                                        }
-                                    });
+                                            }
+                                        });
 
+                            }
+                        } else {
+                            Log.d(TAG, "onDataChange: not exist");
                         }
-                    } else {
-                        Log.d(TAG, "onDataChange: not exist");
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                }
-            });
+                    }
+                });
+            }
         }
-
     }
 
     private void currentUser(String userid) {

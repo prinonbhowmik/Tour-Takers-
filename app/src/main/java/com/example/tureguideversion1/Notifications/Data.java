@@ -7,14 +7,28 @@ public class Data {
     private String title;
     private String sented;
     private String userID;
+    private String fromActivity;
+    private String commentID;
 
-    public Data(String eventID, int icon, String body, String title, String sented, String userID) {
+    public Data(String eventID, int icon, String body, String title, String sented, String userID, String fromActivity, String commentID) {
         this.eventID = eventID;
         this.icon = icon;
         this.body = body;
         this.title = title;
         this.sented = sented;
         this.userID = userID;
+        this.fromActivity = fromActivity;
+        this.commentID = commentID;
+    }
+
+    public Data(String eventID, int icon, String body, String title, String sented, String userID, String fromActivity) {
+        this.eventID = eventID;
+        this.icon = icon;
+        this.body = body;
+        this.title = title;
+        this.sented = sented;
+        this.userID = userID;
+        this.fromActivity = fromActivity;
     }
 
     public Data() {
@@ -66,5 +80,21 @@ public class Data {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public String getFromActivity() {
+        return fromActivity;
+    }
+
+    public void setFromActivity(String fromActivity) {
+        this.fromActivity = fromActivity;
+    }
+
+    public String getCommentID() {
+        return commentID;
+    }
+
+    public void setCommentID(String commentID) {
+        this.commentID = commentID;
     }
 }

@@ -19,6 +19,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.tureguideversion1.Activities.CommentsBox;
 import com.example.tureguideversion1.Activities.MainActivity;
+import com.example.tureguideversion1.Activities.ReplyBox;
 import com.example.tureguideversion1.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -57,8 +58,7 @@ public static final String TAG = "FirebaseMessaging";
         PowerManager pm = (PowerManager)getApplicationContext().getSystemService(Context.POWER_SERVICE);
         boolean isScreenOn = pm.isInteractive();
         //Log.e(TAG, "isScreenOn "+isScreenOn);
-        if(!isScreenOn)
-        {
+        if(!isScreenOn) {
             //Log.d(TAG, "wakelock: access");
             PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"TourTakers: wakeLock");
             wl.acquire(10000);
@@ -127,6 +127,7 @@ public static final String TAG = "FirebaseMessaging";
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
         String eventID = remoteMessage.getData().get("eventID");
+        String from = remoteMessage.getData().get("fromActivity");
 
         DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("event").child(eventID);
         eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -137,45 +138,89 @@ public static final String TAG = "FirebaseMessaging";
                     String eventPlace = (String) hashMap.get("place");
                     RemoteMessage.Notification notification = remoteMessage.getNotification();
                     int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
-                    Intent intent = new Intent(getApplicationContext(), CommentsBox.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("eventId", eventID);
-                    intent.putExtras(bundle);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
-                    Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    if(from.matches("CommentBox")) {
+                        Intent intent = new Intent(getApplicationContext(), CommentsBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-                    OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
-                    Notification.Builder builder = oreoNotification.getOreoNotification(title+": "+eventPlace, body, pendingIntent,
-                            defaultSound, icon);
+                        OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
+                        Notification.Builder builder = oreoNotification.getOreoNotification(title + ": " + eventPlace, body, pendingIntent,
+                                defaultSound, icon);
 
-                    int i = 0;
-                    if (j > 0){
-                        i = j;
+                        int i = 0;
+                        if (j > 0) {
+                            i = j;
+                        }
+
+                        oreoNotification.getManager().notify(i, builder.build());
+                    }else if(from.matches("ReplyBox")) {
+                        Intent intent = new Intent(getApplicationContext(), ReplyBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        bundle.putString("commentId",remoteMessage.getData().get("commentID"));
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                        OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
+                        Notification.Builder builder = oreoNotification.getOreoNotification(title + ": " + eventPlace, body, pendingIntent,
+                                defaultSound, icon);
+
+                        int i = 0;
+                        if (j > 0) {
+                            i = j;
+                        }
+
+                        oreoNotification.getManager().notify(i, builder.build());
                     }
-
-                    oreoNotification.getManager().notify(i, builder.build());
                 }else {
                     RemoteMessage.Notification notification = remoteMessage.getNotification();
                     int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
-                    Intent intent = new Intent(getApplicationContext(), CommentsBox.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("eventId", eventID);
-                    intent.putExtras(bundle);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
-                    Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    if(from.matches("CommentBox")) {
+                        Intent intent = new Intent(getApplicationContext(), CommentsBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-                    OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
-                    Notification.Builder builder = oreoNotification.getOreoNotification(title, body, pendingIntent,
-                            defaultSound, icon);
+                        OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
+                        Notification.Builder builder = oreoNotification.getOreoNotification(title, body, pendingIntent,
+                                defaultSound, icon);
 
-                    int i = 0;
-                    if (j > 0){
-                        i = j;
+                        int i = 0;
+                        if (j > 0) {
+                            i = j;
+                        }
+
+                        oreoNotification.getManager().notify(i, builder.build());
+                    }else if(from.matches("ReplyBox")) {
+                        Intent intent = new Intent(getApplicationContext(), ReplyBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        bundle.putString("commentId",remoteMessage.getData().get("commentID"));
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                        OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
+                        Notification.Builder builder = oreoNotification.getOreoNotification(title, body, pendingIntent,
+                                defaultSound, icon);
+
+                        int i = 0;
+                        if (j > 0) {
+                            i = j;
+                        }
+
+                        oreoNotification.getManager().notify(i, builder.build());
                     }
-
-                    oreoNotification.getManager().notify(i, builder.build());
                 }
 
             }
@@ -195,6 +240,7 @@ public static final String TAG = "FirebaseMessaging";
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
         String userID = remoteMessage.getData().get("userID");
+        String from = remoteMessage.getData().get("fromActivity");
 
         //Log.d(TAG, "sendNotification: userID = "+userID);
         DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("event").child(eventID);
@@ -206,57 +252,103 @@ public static final String TAG = "FirebaseMessaging";
                     String eventPlace = (String) hashMap.get("place");
                     RemoteMessage.Notification notification = remoteMessage.getNotification();
                     int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
-                    Intent intent = new Intent(getApplicationContext(), CommentsBox.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("eventId", eventID);
-                    intent.putExtras(bundle);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                    if(from.matches("CommentBox")) {
+                        Intent intent = new Intent(getApplicationContext(), CommentsBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
+                                .setSmallIcon(Integer.parseInt(icon))
+                                .setContentTitle(title+": "+eventPlace)
+                                .setContentText(body)
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setAutoCancel(true)
+                                .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
+                                .setContentIntent(pendingIntent);
+                        NotificationManager noti = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
 
-                    //Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
-                            .setSmallIcon(Integer.parseInt(icon))
-                            .setContentTitle(title+": "+eventPlace)
-                            .setContentText(body)
-                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                            .setAutoCancel(true)
-                            .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
-                            .setContentIntent(pendingIntent);
-                    NotificationManager noti = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+                        int i = 0;
+                        if (j > 0){
+                            i = j;
+                        }
 
-                    int i = 0;
-                    if (j > 0){
-                        i = j;
+                        noti.notify(i, builder.build());
+                    }else if(from.matches("ReplyBox")){
+                        Intent intent = new Intent(getApplicationContext(), ReplyBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        bundle.putString("commentId",remoteMessage.getData().get("commentID"));
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
+                                .setSmallIcon(Integer.parseInt(icon))
+                                .setContentTitle(title+": "+eventPlace)
+                                .setContentText(body)
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setAutoCancel(true)
+                                .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
+                                .setContentIntent(pendingIntent);
+                        NotificationManager noti = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        int i = 0;
+                        if (j > 0){
+                            i = j;
+                        }
+
+                        noti.notify(i, builder.build());
                     }
-
-                    noti.notify(i, builder.build());
                 }else {
                     RemoteMessage.Notification notification = remoteMessage.getNotification();
                     int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
-                    Intent intent = new Intent(getApplicationContext(), CommentsBox.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("eventId", eventID);
-                    intent.putExtras(bundle);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                    if(from.matches("CommentBox")) {
+                        Intent intent = new Intent(getApplicationContext(), CommentsBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
+                                .setSmallIcon(Integer.parseInt(icon))
+                                .setContentTitle(title)
+                                .setContentText(body)
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setAutoCancel(true)
+                                .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
+                                .setContentIntent(pendingIntent);
+                        NotificationManager noti = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+                        int i = 0;
+                        if (j > 0){
+                            i = j;
+                        }
 
-                    //Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
-                            .setSmallIcon(Integer.parseInt(icon))
-                            .setContentTitle(title)
-                            .setContentText(body)
-                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                            .setAutoCancel(true)
-                            .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
-                            .setContentIntent(pendingIntent);
-                    NotificationManager noti = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+                        noti.notify(i, builder.build());
+                    }else if(from.matches("ReplyBox")){
+                        Intent intent = new Intent(getApplicationContext(), ReplyBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        bundle.putString("commentId",remoteMessage.getData().get("commentID"));
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
+                                .setSmallIcon(Integer.parseInt(icon))
+                                .setContentTitle(title)
+                                .setContentText(body)
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setAutoCancel(true)
+                                .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
+                                .setContentIntent(pendingIntent);
+                        NotificationManager noti = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+                        int i = 0;
+                        if (j > 0){
+                            i = j;
+                        }
 
-                    int i = 0;
-                    if (j > 0){
-                        i = j;
+                        noti.notify(i, builder.build());
                     }
-
-                    noti.notify(i, builder.build());
                 }
             }
 
