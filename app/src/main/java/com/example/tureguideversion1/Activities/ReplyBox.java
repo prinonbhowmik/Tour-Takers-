@@ -464,6 +464,7 @@ public class ReplyBox extends AppCompatActivity {
                         replyRecyclerView.setLayoutManager(new LinearLayoutManager(ReplyBox.this));
                         replyAdapter.notifyDataSetChanged();
                     }
+                    //for sound effect
                     if (p != 1) {
                         if (e != 1) {
                             receiveSound.start();
