@@ -414,23 +414,28 @@ public class Map extends AppCompatActivity implements
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                if (isContinue) {
-                    mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                if (intent.getStringExtra("from").matches("eventDetails")) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        getRoute();
+                    }
                 } else {
-                    mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null) {
-                                wayLatitude = location.getLatitude();
-                                wayLongitude = location.getLongitude();
-                                map.addMarker(new MarkerOptions().position(new LatLng(wayLatitude, wayLongitude)));
-                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(wayLatitude, wayLongitude), 18));
-                            } else {
-                                mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                    if (isContinue) {
+                        mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                    } else {
+                        mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                if (location != null) {
+                                    wayLatitude = location.getLatitude();
+                                    wayLongitude = location.getLongitude();
+                                    map.addMarker(new MarkerOptions().position(new LatLng(wayLatitude, wayLongitude)));
+                                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(wayLatitude, wayLongitude), 18));
+                                } else {
+                                    mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             } else {
                 Toasty.error(getApplicationContext(), "Location permission denied!", Toasty.LENGTH_SHORT).show();
@@ -552,7 +557,7 @@ public class Map extends AppCompatActivity implements
         for (PolylineData polylineData : polylineData) {
             Log.d(null, "onPolylineClick: toString: " + polylineData.toString());
             if (polyline.getId().equals(polylineData.getPolyline().getId())) {
-                polylineData.getPolyline().setColor(ContextCompat.getColor(getApplicationContext(),R.color.blue1));
+                polylineData.getPolyline().setColor(ContextCompat.getColor(getApplicationContext(), R.color.blue1));
                 polylineData.getPolyline().setZIndex(1);
                 LatLng endLocation = new LatLng(
                         polylineData.getLeg().endLocation.lat,

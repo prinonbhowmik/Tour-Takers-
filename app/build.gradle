@@ -117,4 +117,6 @@ dependencies {
     //RecyclerView Swipe Gesture
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
 
+    implementation 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
+
 }

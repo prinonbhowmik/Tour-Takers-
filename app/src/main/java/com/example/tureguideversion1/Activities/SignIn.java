@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.R;
@@ -37,7 +38,7 @@ import com.google.firebase.auth.SignInMethodQueryResult;
 
 public class SignIn extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
     private EditText nameET;
-    private Button singin;
+    private ActionProcessButton singin;
     private TextView txt1;
     private String email;
     private ImageView logo;
@@ -56,6 +57,7 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
         singin = findViewById(R.id.continue_BTN);
+        singin.setMode(ActionProcessButton.Mode.ENDLESS);
         nameET = findViewById(R.id.name_ET);
         auth = FirebaseAuth.getInstance();
         txt1 = findViewById(R.id.txt1);
@@ -107,9 +109,9 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
                     nameET.setError("Enter email address!");
                     nameET.requestFocus();
                 } else if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    singin.setProgress(1);
                     singin.setEnabled(false);
                     logo.startAnimation(blink);
-                    singin.setText("Connecting");
                     if (snackbar != null) {
                         snackbar.dismiss();
                     }
@@ -134,7 +136,7 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
                     public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
                         singin.setEnabled(true);
                         logo.clearAnimation();
-                        singin.setText("Continue");
+                        singin.setProgress(100);
                         try {
                             boolean check = !task.getResult().getSignInMethods().isEmpty();
                             if (!check) {

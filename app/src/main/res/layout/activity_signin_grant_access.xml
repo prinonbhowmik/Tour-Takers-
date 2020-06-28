@@ -56,19 +56,27 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.dd.processbutton.iml.ActionProcessButton
         android:id="@+id/signin_BTN"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/password_TIL"
+        android:layout_below="@+id/password_TIL"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="20dp"
-        android:background="@drawable/custom_btn"
+        android:inputType="textCapWords"
         android:text="Login"
         android:textAllCaps="false"
-        android:textColor="@color/colorYellow" />
+        android:textColor="@color/colorYellow"
+        app:pb_colorComplete="@color/colorPrimaryDark"
+        app:pb_colorError="@color/red_error"
+        app:pb_colorNormal="@color/colorPrimaryDark"
+        app:pb_colorPressed="@color/colorPrimaryDark"
+        app:pb_cornerRadius="5dp"
+        app:pb_textComplete="Login"
+        app:pb_textError="Login"
+        app:pb_textProgress="connecting" />
 
     <ImageView
         android:id="@+id/logoG"

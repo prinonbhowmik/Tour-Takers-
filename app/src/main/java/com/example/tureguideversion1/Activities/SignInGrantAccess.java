@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.R;
@@ -44,7 +45,7 @@ import es.dmoral.toasty.Toasty;
 public class SignInGrantAccess extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private EditText passEt;
-    private Button singin;
+    private ActionProcessButton singin;
     private String email, password;
     private TextView txt1;
     private ImageView logo;
@@ -62,6 +63,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         singin = findViewById(R.id.signin_BTN);
+        singin.setMode(ActionProcessButton.Mode.ENDLESS);
         passEt = findViewById(R.id.password_ET);
         passEt.setSelected(false);
         auth = FirebaseAuth.getInstance();
@@ -85,7 +87,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                 } else if (passEt.length() < 6) {
                     passEt.setError("At least 6 characters!", null);
                 } else {
-                    singin.setText("Connecting");
+                    singin.setProgress(1);
                     logo.startAnimation(blink);
                     singin.setEnabled(false);
                     signinuser(email, password);
@@ -122,7 +124,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                 if (task.isSuccessful()) {
                     logo.clearAnimation();
                     if (auth.getCurrentUser().isEmailVerified()) {
-                        singin.setText("Login");
+                        singin.setProgress(100);
                         final String ID = auth.getCurrentUser().getUid();
                         DatabaseReference showref = reference.child(ID);
                         showref.addValueEventListener(new ValueEventListener() {
@@ -180,7 +182,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
 
 
                     } else {
-                        singin.setText("Login");
+                        singin.setProgress(100);
                         Toasty.info(getApplicationContext(), "Please verify your email address!", Toasty.LENGTH_LONG).show();
                     }
 
@@ -189,9 +191,9 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                singin.setText("Login");
+                singin.setProgress(100);
                 logo.clearAnimation();
-                Toast.makeText(SignInGrantAccess.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toasty.error(SignInGrantAccess.this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
