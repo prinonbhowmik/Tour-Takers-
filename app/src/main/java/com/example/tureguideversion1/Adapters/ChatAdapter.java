@@ -197,20 +197,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             holder.mainCommentLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getReplyCount(new replyCount() {
-                        @Override
-                        public void onCallback(long l) {
-                            replyDataCount = l;
-                            long c = replyDataCount - 1;
-                            if(c >1){
-                                holder.commentCounted.setText("Swipe right to view "+c+" more previous replies...");
-                            }else if(c == 1){
-                                holder.commentCounted.setText("Swipe right to view "+c+" more previous reply...");
-                            }else if(c == 0){
-                                holder.commentCounted.setText("Swipe right to view reply...");
-                            }
-                        }
-                    },chat.getEventID(),chat.getID());
                     row_index = holder.getAdapterPosition();
                     notifyDataSetChanged();
                 }
@@ -222,20 +208,35 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             if (position > pos2 || position < pos2) {
                 if(holder.replyLayoutView.getVisibility() == View.GONE) {
                     if(holder.replyData != null) {
+                        getReplyCount(new replyCount() {
+                            @Override
+                            public void onCallback(long l) {
+                                replyDataCount = l;
+                                long c = replyDataCount - 1;
+                                if(c >1){
+                                    holder.commentCounted.setText("Swipe right to view "+c+" more previous replies...");
+                                }else if(c == 1){
+                                    holder.commentCounted.setText("Swipe right to view "+c+" more previous reply...");
+                                }else if(c == 0){
+                                    holder.commentCounted.setText("Swipe right to view reply...");
+                                }
+                            }
+                        },chat.getEventID(),chat.getID());
                         holder.replyLayoutView.setVisibility(View.VISIBLE);
                     }else {
                         holder.replyLayoutView.setVisibility(View.GONE);
                         holder.commentCounted.setText("Swipe right to reply...");
                     }
                 }
+                holder.commentCounted.setVisibility(View.VISIBLE);
                 holder.commentTimeTV.setVisibility(View.VISIBLE);
                 pos2 = position;
             } else if (position == pos2) {
                 if(holder.replyLayoutView.getVisibility() == View.VISIBLE) {
                     holder.replyLayoutView.setVisibility(View.GONE);
-                    holder.commentCounted.setText("Swipe right to reply...");
                 }
                 holder.commentTimeTV.setVisibility(View.GONE);
+                holder.commentCounted.setVisibility(View.GONE);
                 pos2 = -1;
             }
         } else {
@@ -243,9 +244,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 holder.mainCommentLayout.setSelected(false);
             }
             holder.commentTimeTV.setVisibility(View.GONE);
+            holder.commentCounted.setVisibility(View.GONE);
             if(holder.replyLayoutView != null) {
                 holder.replyLayoutView.setVisibility(View.GONE);
-                holder.commentCounted.setText("Swipe right to reply...");
             }
         }
         if(holder.mainCommentLayout != null) {
