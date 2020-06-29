@@ -48,32 +48,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/crl"
+            android:layout_alignParentEnd="false"
             android:layout_marginStart="50dp"
             android:textColor="@color/color1"
             android:visibility="visible" />
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/commentCounted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/commentTimeTV"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="5dp"
+            android:text="Swipe right to reply"
+            android:textColor="#000000"
+            tools:visibility="visible" />
 
-    <TextView
-        android:id="@+id/commentCounted"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/mainCommentLayout"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="5dp"
-        android:text="Swipe right to view comments"
-        android:textColor="#000000"
-        tools:visibility="gone" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/replyLayoutView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/commentCounted"
+        android:layout_below="@id/mainCommentLayout"
         android:layout_marginStart="50dp"
         android:layout_marginTop="5dp"
         android:orientation="horizontal"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/replyerImage"
@@ -92,12 +93,12 @@
 
         <TextView
             android:id="@+id/replyerComment"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="5dp"
             android:layout_weight="1"
-            android:inputType="textLongMessage"
+            android:inputType="textLongMessage|textFilter"
             android:textColor="#000000" />
 
     </LinearLayout>
