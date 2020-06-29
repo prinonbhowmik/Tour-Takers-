@@ -304,7 +304,7 @@ public class CommentsBox extends AppCompatActivity {
         chatRecyclerView.setLayoutManager(linearLayoutManager);
         chatAdapter = new ChatAdapter(getApplicationContext(), mChat);
         chatRecyclerView.setAdapter(chatAdapter);
-        //chatRecyclerView.setHasFixedSize(true);
+        chatRecyclerView.setHasFixedSize(true);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
         radioGroup = findViewById(R.id.radioGroup);
         notificationIcon = findViewById(R.id.notiBTMS);

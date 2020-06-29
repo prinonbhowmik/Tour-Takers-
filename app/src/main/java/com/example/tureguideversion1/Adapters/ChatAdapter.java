@@ -48,6 +48,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private int row_index = -1, pos, pos2 = -1;
     private long replyDataCount = 0;
     private int timeVisibility = 0;
+    private String CID;
 
     public ChatAdapter(Context context, List<Chat> mChat) {
         this.mContext = context;
@@ -79,6 +80,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             public void onCallback(HashMap<String, Object> data) {
                 holder.replyData = new HashMap<>();
                 holder.replyData = (HashMap<String, Object>) data;
+            }
+
+            @Override
+            public void onKey(String key) {
+
             }
         },chat.getEventID(),chat.getID());
         holder.showMessage.setText(chat.getMessage());
@@ -205,6 +211,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 public void onClick(View v) {
                     row_index = holder.getAdapterPosition();
                     notifyDataSetChanged();
+                    Log.d(TAG, "onClick: "+row_index);
                 }
             });
         }
@@ -298,6 +305,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     public interface replyData {
         void onCallback(HashMap<String,Object> data);
+        void onKey(String key);
     }
 
     private void getReplyData(replyData replyData, String eventID, String commentID){
@@ -307,6 +315,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
+                    replyData.onKey(dataSnapshot.getKey());
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         HashMap<String,Object> map = (HashMap<String, Object>) snapshot.getValue();
                         replyData.onCallback(map);
@@ -361,16 +370,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-//        fUser = FirebaseAuth.getInstance().getCurrentUser();
-//        auth = FirebaseAuth.getInstance();
-//        userid = auth.getUid();
+        return position;
 //        if (mChat.get(position).getSenderId().equals(fUser.getUid())) {
 //            //if(mChat.get(position).getSender().equals(userid)){
 //            return MSG_TYPE_RIGHT;
 //        } else {
 //            return MSG_TYPE_LEFT;
 //        }
-        return position;
     }
 
 }
