@@ -164,25 +164,31 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         HashMap<String,Object> map = (HashMap<String, Object>) snapshot.getValue();
                         if (!map.get("senderImage").toString().isEmpty()) {
-                            GlideApp.with(mContext)
-                                    .load(map.get("senderImage"))
-                                    .fitCenter()
-                                    .into(holder.replyerImage);
-                        } else {
-                            if (chat.getSenderSex().matches("male")) {
+                            if(holder.replyerImage != null) {
                                 GlideApp.with(mContext)
-                                        .load(R.drawable.man)
-                                        .centerInside()
-                                        .into(holder.replyerImage);
-                            } else if (chat.getSenderSex().matches("female")) {
-                                GlideApp.with(mContext)
-                                        .load(R.drawable.woman)
-                                        .centerInside()
+                                        .load(map.get("senderImage"))
+                                        .fitCenter()
                                         .into(holder.replyerImage);
                             }
+                        } else {
+                            if(holder.replyerImage != null) {
+                                if (chat.getSenderSex().matches("male")) {
+                                    GlideApp.with(mContext)
+                                            .load(R.drawable.man)
+                                            .centerInside()
+                                            .into(holder.replyerImage);
+                                } else if (chat.getSenderSex().matches("female")) {
+                                    GlideApp.with(mContext)
+                                            .load(R.drawable.woman)
+                                            .centerInside()
+                                            .into(holder.replyerImage);
+                                }
+                            }
                         }
-                        holder.replyerName.setText(map.get("senderName").toString());
-                        holder.replyerComment.setText(map.get("message").toString());
+                        if((holder.replyerName != null) && (holder.replyerComment != null)) {
+                            holder.replyerName.setText(map.get("senderName").toString());
+                            holder.replyerComment.setText(map.get("message").toString());
+                        }
                     }
                 }
             }
@@ -244,7 +250,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 holder.mainCommentLayout.setSelected(false);
             }
             holder.commentTimeTV.setVisibility(View.GONE);
-            holder.commentCounted.setVisibility(View.GONE);
+            if(holder.commentCounted != null) {
+                holder.commentCounted.setVisibility(View.GONE);
+            }
             if(holder.replyLayoutView != null) {
                 holder.replyLayoutView.setVisibility(View.GONE);
             }
