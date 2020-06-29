@@ -378,6 +378,7 @@ public class CommentsBox extends AppCompatActivity {
         hashMap.put("ID", id);
         hashMap.put("commentTime", commentTime);
         hashMap.put("eventID", currentEventId);
+        hashMap.put("hasReply", "no");
         ref.child(id).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

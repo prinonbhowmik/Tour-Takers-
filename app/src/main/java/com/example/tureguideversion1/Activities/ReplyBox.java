@@ -148,6 +148,8 @@ public class ReplyBox extends AppCompatActivity {
                 sendSound.start();
             }
         });
+        DatabaseReference cRef = databaseReference.child("eventComments").child(eventId).child(commentId);
+        cRef.child("hasReply").setValue("yes");
         DatabaseReference check = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(eventId);
         check.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
