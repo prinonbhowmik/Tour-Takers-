@@ -3,6 +3,8 @@ package com.example.tureguideversion1.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -79,6 +82,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
         singin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyboardFrom(getApplicationContext());
                 Intent intent = getIntent();
                 email = intent.getExtras().getString("email");
                 password = passEt.getText().toString();
@@ -229,6 +233,11 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
             textView.setGravity(Gravity.CENTER_HORIZONTAL);
         }
         snackbar.show();
+    }
+
+    private void hideKeyboardFrom(Context context) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(this.getWindow().getDecorView().getRootView().getWindowToken(), 0);
     }
 
     @Override

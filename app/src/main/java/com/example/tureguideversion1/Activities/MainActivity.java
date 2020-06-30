@@ -57,6 +57,7 @@ import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.Notifications.Token;
 import com.example.tureguideversion1.R;
 import com.example.tureguideversion1.Services.EventCommentsNotify;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -66,6 +67,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -297,18 +300,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 break;
 
-            case R.id.map:
-                if (checkConnection()) {
-                    currentFragment = "map";
-                    startActivity(new Intent(MainActivity.this, Map.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                    drawerLayout.closeDrawers();
-
-                } else {
-                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
-                }
-                break;
-
             case R.id.event:
                 if (checkConnection()) {
                     currentFragment = "event";
@@ -316,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     event.replace(R.id.fragment_container, new EventFragment());
                     event.commit();
                     drawerLayout.closeDrawers();
-                    navigationView.getMenu().getItem(2).setChecked(true);
+                    navigationView.getMenu().getItem(1).setChecked(true);
 
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
@@ -330,19 +321,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     weather.replace(R.id.fragment_container, new WeatherFragment());
                     weather.commit();
                     drawerLayout.closeDrawers();
-                    navigationView.getMenu().getItem(4).setChecked(true);
-                } else {
-                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
-                }
-                break;
-
-            case R.id.guide:
-                if (checkConnection()) {
-                    FragmentTransaction guide = getSupportFragmentManager().beginTransaction();
-                    guide.replace(R.id.fragment_container, new GuideFragment());
-                    guide.commit();
-                    drawerLayout.closeDrawers();
-                    navigationView.getMenu().getItem(1).setChecked(true);
+                    navigationView.getMenu().getItem(2).setChecked(true);
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
@@ -439,6 +418,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.exists()) {
                                         updateToken(token, eventIDs.get(finalI));
+                                        //Log.d(TAG, "onDataChange: " + eventIDs.get(finalI));
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                        preferences.edit().clear().apply();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }else {
+            DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens");
+            eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            eventIDs.add(snapshot.getKey());
+                            //Log.d(TAG, "events: "+snapshot.getKey());
+                        }
+                        for (int i = 0; i < eventIDs.size(); i++) {
+                            DatabaseReference IDRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(eventIDs.get(i));
+                            Query query = IDRef.orderByKey().equalTo(auth.getUid());
+                            int finalI = i;
+                            query.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                            @Override
+                                            public void onSuccess(InstanceIdResult instanceIdResult) {
+                                                updateToken(instanceIdResult.getToken(), eventIDs.get(finalI));
+                                            }
+                                        });
                                         //Log.d(TAG, "onDataChange: " + eventIDs.get(finalI));
                                     }
                                 }
@@ -618,7 +640,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void checked(int value) {
         if (value == 1) {
-            navigationView.getMenu().getItem(2).setChecked(true);
+            navigationView.getMenu().getItem(value).setChecked(true);
         }
     }
 

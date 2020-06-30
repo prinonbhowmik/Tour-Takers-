@@ -9,8 +9,10 @@ public class Data {
     private String userID;
     private String fromActivity;
     private String commentID;
+    private String userImage;
+    private String userSex;
 
-    public Data(String eventID, int icon, String body, String title, String sented, String userID, String fromActivity, String commentID) {
+    public Data(String eventID, int icon, String body, String title, String sented, String userID, String fromActivity, String commentID, String userImage, String userSex) {
         this.eventID = eventID;
         this.icon = icon;
         this.body = body;
@@ -19,9 +21,11 @@ public class Data {
         this.userID = userID;
         this.fromActivity = fromActivity;
         this.commentID = commentID;
+        this.userImage = userImage;
+        this.userSex = userSex;
     }
 
-    public Data(String eventID, int icon, String body, String title, String sented, String userID, String fromActivity) {
+    public Data(String eventID, int icon, String body, String title, String sented, String userID, String fromActivity, String userImage, String userSex) {
         this.eventID = eventID;
         this.icon = icon;
         this.body = body;
@@ -29,6 +33,8 @@ public class Data {
         this.sented = sented;
         this.userID = userID;
         this.fromActivity = fromActivity;
+        this.userImage = userImage;
+        this.userSex = userSex;
     }
 
     public Data() {

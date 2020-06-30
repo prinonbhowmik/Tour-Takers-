@@ -1,8 +1,6 @@
 package com.example.tureguideversion1.Adapters;
 
-import android.content.ClipboardManager;
 import android.content.Context;
-import android.telecom.Call;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,8 +35,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final String TAG = "ChatAdapter";
-    public static final int MSG_TYPE_LEFT = 0;
-    public static final int MSG_TYPE_RIGHT = 1;
+    public static final int CHAT_ITEM = 0;
+    public static final int CHAT_ITEM_WITH_REPLY = 1;
     private Context mContext;
     private List<Chat> mChat;
     private DatabaseReference databaseReference;
@@ -50,7 +46,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private int row_index = -1, pos, pos2 = -1;
     private long replyDataCount = 0;
     private int timeVisibility = 0;
-    private List<String> key;
 
     public ChatAdapter(Context context, List<Chat> mChat) {
         this.mContext = context;
@@ -64,98 +59,22 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == MSG_TYPE_RIGHT) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_right, parent, false);
+        if (viewType == CHAT_ITEM_WITH_REPLY) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_with_reply, parent, false);
             return new ViewHolderWithReply(view);
         } else {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_left, parent, false);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item, parent, false);
             return new ViewHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (getItemViewType(position) == MSG_TYPE_RIGHT) {
+        if (getItemViewType(position) == CHAT_ITEM_WITH_REPLY) {
             ((ViewHolderWithReply) holder).setDataWithReply(mChat.get(position));
         } else {
             ((ViewHolder) holder).setData(mChat.get(position));
         }
-        //Chat chat = mChat.get(position);
-
-    }
-
-    public interface replyCount{
-        void onCallback(long l);
-    }
-
-    private void getReplyCount(replyCount replyCount, String eventID, String commentID){
-        DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsReply").child(eventID).child(commentID);
-        commentRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    replyCount.onCallback(dataSnapshot.getChildrenCount());
-//                    if(c >1){
-//                        holder.commentCounted.setText("Swipe right to view "+c+" more previous replies...");
-//                    }else if(c == 1){
-//                        holder.commentCounted.setText("Swipe right to view "+c+" more previous reply...");
-//                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    public interface replyData {
-        void onCallback(HashMap<String,Object> data);
-    }
-
-    private static void getReplyData(replyData replyData, String eventID, String commentID){
-        DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsReply").child(eventID).child(commentID);
-        Query query = commentRef.orderByKey().limitToLast(1);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        HashMap<String,Object> map = (HashMap<String, Object>) snapshot.getValue();
-                        replyData.onCallback(map);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    public interface CID {
-        void onCallback(String ID);
-    }
-
-    private void getCID(CID cid, String eventID, String commentID){
-        DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsReply").child(eventID).child(commentID);
-        commentRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    cid.onCallback(dataSnapshot.getKey());
-                    Log.d(TAG, "onDataChange: "+dataSnapshot.getKey());
-                }else {
-                    Log.d(TAG, "onDataChange: not exist");
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Override
@@ -173,7 +92,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView showMessage, senderName, commentTimeTV;
         private CircleImageView profileImageView;
         private RelativeLayout mainCommentLayout;
-        private HashMap<String,Object> replyData;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -186,31 +104,24 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void setData(Chat chat) {
 
-            getReplyData(new replyData() {
-                @Override
-                public void onCallback(HashMap<String, Object> data) {
-                    replyData = new HashMap<>();
-                    replyData = (HashMap<String, Object>) data;
-                }
-            },chat.getEventID(),chat.getID());
             showMessage.setText(chat.getMessage());
 
             senderName.setText(chat.getSenderName());
 
-            if(chat.getSenderImage() != null){
+            if (chat.getSenderImage() != null) {
                 if (!chat.getSenderImage().isEmpty()) {
-                    GlideApp.with(itemView)
+                    GlideApp.with(itemView.getContext())
                             .load(chat.getSenderImage())
                             .fitCenter()
                             .into(profileImageView);
                 } else {
                     if (chat.getSenderSex().matches("male")) {
-                        GlideApp.with(itemView)
+                        GlideApp.with(itemView.getContext())
                                 .load(R.drawable.man)
                                 .centerInside()
                                 .into(profileImageView);
                     } else if (chat.getSenderSex().matches("female")) {
-                        GlideApp.with(itemView)
+                        GlideApp.with(itemView.getContext())
                                 .load(R.drawable.woman)
                                 .centerInside()
                                 .into(profileImageView);
@@ -328,7 +239,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private CircleImageView profileImageView, replyerImage;
         private RelativeLayout mainCommentLayout;
         private LinearLayout replyLayoutView;
-        private HashMap<String,Object> replyData;
 
         public ViewHolderWithReply(@NonNull View itemView) {
             super(itemView);
@@ -343,32 +253,26 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             replyerImage = itemView.findViewById(R.id.replyerImage);
             replyLayoutView = itemView.findViewById(R.id.replyLayoutView);
         }
+
         void setDataWithReply(Chat chat) {
-            getReplyData(new replyData() {
-                @Override
-                public void onCallback(HashMap<String, Object> data) {
-                    replyData = new HashMap<>();
-                    replyData = (HashMap<String, Object>) data;
-                }
-            },chat.getEventID(),chat.getID());
             showMessage.setText(chat.getMessage());
 
             senderName.setText(chat.getSenderName());
 
-            if(chat.getSenderImage() != null){
+            if (chat.getSenderImage() != null) {
                 if (!chat.getSenderImage().isEmpty()) {
-                    GlideApp.with(itemView)
+                    GlideApp.with(itemView.getContext())
                             .load(chat.getSenderImage())
                             .fitCenter()
                             .into(profileImageView);
                 } else {
                     if (chat.getSenderSex().matches("male")) {
-                        GlideApp.with(itemView)
+                        GlideApp.with(itemView.getContext())
                                 .load(R.drawable.man)
                                 .centerInside()
                                 .into(profileImageView);
                     } else if (chat.getSenderSex().matches("female")) {
-                        GlideApp.with(itemView)
+                        GlideApp.with(itemView.getContext())
                                 .load(R.drawable.woman)
                                 .centerInside()
                                 .into(profileImageView);
@@ -408,54 +312,68 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
 
             DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsReply").child(chat.getEventID()).child(chat.getID());
-//        commentRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//               if(dataSnapshot.exists()){
-//                   long c = dataSnapshot.getChildrenCount();
-//                   if(c >1){
-//                       holder.commentCounted.setText("Swipe right to view "+c+" more previous replies...");
-//                   }else if(c == 1){
-//                       holder.commentCounted.setText("Swipe right to view "+c+" more previous reply...");
-//                   }
-//               }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+            commentRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        long c = dataSnapshot.getChildrenCount() - 1;
+                        if (c > 1) {
+                            commentCounted.setText("Swipe right to view " + c + " more previous replies...");
+                        } else if (c == 1) {
+                            commentCounted.setText("Swipe right to view " + c + " more previous reply...");
+                        } else if (c == 0) {
+                            commentCounted.setText("Swipe right to view reply...");
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
             Query query = commentRef.orderByKey().limitToLast(1);
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
+                    if (dataSnapshot.exists()) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            HashMap<String,Object> map = (HashMap<String, Object>) snapshot.getValue();
+                            HashMap<String, Object> map = (HashMap<String, Object>) snapshot.getValue();
                             if (!map.get("senderImage").toString().isEmpty()) {
-                                if(replyerImage != null) {
-                                    GlideApp.with(itemView)
+                                if (replyerImage != null) {
+                                    try {
+                                    GlideApp.with(itemView.getContext())
                                             .load(map.get("senderImage"))
                                             .fitCenter()
                                             .into(replyerImage);
+                                } catch (IllegalArgumentException e) {
+                                    e.printStackTrace();
+                                }
                                 }
                             } else {
-                                if(replyerImage != null) {
+                                if (replyerImage != null) {
                                     if (chat.getSenderSex().matches("male")) {
-                                        GlideApp.with(itemView)
-                                                .load(R.drawable.man)
-                                                .centerInside()
-                                                .into(replyerImage);
+                                        try {
+                                            GlideApp.with(itemView.getContext())
+                                                    .load(R.drawable.man)
+                                                    .centerInside()
+                                                    .into(replyerImage);
+                                        } catch (IllegalArgumentException e) {
+                                            e.printStackTrace();
+                                        }
                                     } else if (chat.getSenderSex().matches("female")) {
-                                        GlideApp.with(itemView)
+                                        try{
+                                        GlideApp.with(itemView.getContext())
                                                 .load(R.drawable.woman)
                                                 .centerInside()
                                                 .into(replyerImage);
+                                    } catch (IllegalArgumentException e) {
+                                        e.printStackTrace();
+                                    }
                                     }
                                 }
                             }
-                            if((replyerName != null) && (replyerComment != null)) {
+                            if ((replyerName != null) && (replyerComment != null)) {
                                 replyerName.setText(map.get("senderName").toString());
                                 replyerComment.setText(map.get("message").toString());
                             }
@@ -551,30 +469,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemViewType(int position) {
 
-        getCID(new CID() {
-            @Override
-            public void onCallback(String ID) {
-                key = new ArrayList<>();
-                key.add(ID);
-                //Log.d(TAG, "onCallback: called "+key);
-            }
-        },mChat.get(position).getEventID(),mChat.get(position).getID());
-        //Log.d(TAG, "getItemViewType: eventID: "+mChat.get(position).getEventID()+" ID "+mChat.get(position).getID());
-        Log.d(TAG, "getItemViewType: "+key);
-        if(mChat.get(position).getHasReply().equals("yes")){
-            //Log.d(TAG, "getItemViewType: "+key);
-            return MSG_TYPE_RIGHT;
-        }else {
-            //Log.d(TAG, "getItemViewType: left"+key);
-            return MSG_TYPE_LEFT;
+        if (mChat.get(position).getHasReply().equals("yes")) {
+            return CHAT_ITEM_WITH_REPLY;
+        } else {
+            return CHAT_ITEM;
         }
-
-//        if (mChat.get(position).getSenderId().equals(fUser.getUid())) {
-//            //if(mChat.get(position).getSender().equals(userid)){
-//            return MSG_TYPE_RIGHT;
-//        } else {
-//            return MSG_TYPE_LEFT;
-//        }
     }
 
 }

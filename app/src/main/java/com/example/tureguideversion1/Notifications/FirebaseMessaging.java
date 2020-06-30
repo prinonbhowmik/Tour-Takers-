@@ -6,6 +6,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -31,6 +38,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -128,8 +139,20 @@ public static final String TAG = "FirebaseMessaging";
         String body = remoteMessage.getData().get("body");
         String eventID = remoteMessage.getData().get("eventID");
         String from = remoteMessage.getData().get("fromActivity");
-
+        String sex = remoteMessage.getData().get("userSex");
+        Bitmap bitmap = null;
+        //Log.d(TAG, "sendOreoNotification: "+remoteMessage.getData().get("userImage"));
+        if(remoteMessage.getData().get("userImage").trim().length() != 0) {
+            bitmap = getCroppedBitmap(getBitmapFromURL(remoteMessage.getData().get("userImage")));
+        }else {
+            if(sex.equals("male")) {
+                bitmap = getCroppedBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.man));
+            }else if(sex.equals("female")){
+                bitmap = getCroppedBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.woman));
+            }
+        }
         DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("event").child(eventID);
+        Bitmap finalBitmap = bitmap;
         eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -149,7 +172,7 @@ public static final String TAG = "FirebaseMessaging";
 
                         OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
                         Notification.Builder builder = oreoNotification.getOreoNotification(title + ": " + eventPlace, body, pendingIntent,
-                                defaultSound, icon);
+                                defaultSound, icon, finalBitmap);
 
                         int i = 0;
                         if (j > 0) {
@@ -169,7 +192,7 @@ public static final String TAG = "FirebaseMessaging";
 
                         OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
                         Notification.Builder builder = oreoNotification.getOreoNotification(title + ": " + eventPlace, body, pendingIntent,
-                                defaultSound, icon);
+                                defaultSound, icon, finalBitmap);
 
                         int i = 0;
                         if (j > 0) {
@@ -192,7 +215,7 @@ public static final String TAG = "FirebaseMessaging";
 
                         OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
                         Notification.Builder builder = oreoNotification.getOreoNotification(title, body, pendingIntent,
-                                defaultSound, icon);
+                                defaultSound, icon, finalBitmap);
 
                         int i = 0;
                         if (j > 0) {
@@ -212,7 +235,7 @@ public static final String TAG = "FirebaseMessaging";
 
                         OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
                         Notification.Builder builder = oreoNotification.getOreoNotification(title, body, pendingIntent,
-                                defaultSound, icon);
+                                defaultSound, icon, finalBitmap);
 
                         int i = 0;
                         if (j > 0) {
@@ -233,6 +256,43 @@ public static final String TAG = "FirebaseMessaging";
 
     }
 
+    public Bitmap getBitmapFromURL(String strURL) {
+        try {
+            URL url = new URL(strURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Bitmap getCroppedBitmap(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
+                bitmap.getWidth() / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
+        //return _bmp;
+        return output;
+    }
+
     private void sendNotification(RemoteMessage remoteMessage) {
 
         String eventID = remoteMessage.getData().get("eventID");
@@ -241,9 +301,20 @@ public static final String TAG = "FirebaseMessaging";
         String body = remoteMessage.getData().get("body");
         String userID = remoteMessage.getData().get("userID");
         String from = remoteMessage.getData().get("fromActivity");
-
+        String sex = remoteMessage.getData().get("userSex");
+        Bitmap bitmap = null;
+        if(remoteMessage.getData().get("userImage").trim().length() != 0) {
+            bitmap = getCroppedBitmap(getBitmapFromURL(remoteMessage.getData().get("userImage")));
+        }else {
+            if(sex.equals("male")) {
+                bitmap = getCroppedBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.man));
+            }else if(sex.equals("female")){
+                bitmap = getCroppedBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.woman));
+            }
+        }
         //Log.d(TAG, "sendNotification: userID = "+userID);
         DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("event").child(eventID);
+        Bitmap finalBitmap = bitmap;
         eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -261,6 +332,7 @@ public static final String TAG = "FirebaseMessaging";
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
                                 .setSmallIcon(Integer.parseInt(icon))
+                                .setLargeIcon(finalBitmap)
                                 .setContentTitle(title+": "+eventPlace)
                                 .setContentText(body)
                                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -285,6 +357,7 @@ public static final String TAG = "FirebaseMessaging";
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
                                 .setSmallIcon(Integer.parseInt(icon))
+                                .setLargeIcon(finalBitmap)
                                 .setContentTitle(title+": "+eventPlace)
                                 .setContentText(body)
                                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -312,6 +385,7 @@ public static final String TAG = "FirebaseMessaging";
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
                                 .setSmallIcon(Integer.parseInt(icon))
+                                .setLargeIcon(finalBitmap)
                                 .setContentTitle(title)
                                 .setContentText(body)
                                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -335,6 +409,7 @@ public static final String TAG = "FirebaseMessaging";
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
                                 .setSmallIcon(Integer.parseInt(icon))
+                                .setLargeIcon(finalBitmap)
                                 .setContentTitle(title)
                                 .setContentText(body)
                                 .setPriority(NotificationCompat.PRIORITY_HIGH)

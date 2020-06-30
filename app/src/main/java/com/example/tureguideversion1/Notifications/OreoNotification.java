@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.graphics.Bitmap;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
@@ -61,12 +62,13 @@ public class OreoNotification extends ContextWrapper {
 
     @TargetApi(Build.VERSION_CODES.O)
     public  Notification.Builder getOreoNotification(String title, String body,
-                                                     PendingIntent pendingIntent, Uri soundUri, String icon){
+                                                     PendingIntent pendingIntent, Uri soundUri, String icon, Bitmap userImage){
         return new Notification.Builder(getApplicationContext(), CHANNEL_ID)
                 .setContentIntent(pendingIntent)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSmallIcon(Integer.parseInt(icon))
+                .setLargeIcon(userImage)
                 .setAutoCancel(true);
     }
 }

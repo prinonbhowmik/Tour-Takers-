@@ -86,6 +86,22 @@ public class CommentsBox extends AppCompatActivity {
         Intent intent = getIntent();
         currentEventId = intent.getStringExtra("eventId");
         readNotificationStatus();
+        getUserInfo(new userInfoCallback() {
+            @Override
+            public void onImageCallback(String url) {
+                senderImage = url;
+            }
+
+            @Override
+            public void onNameCallback(String name) {
+                senderName = name;
+            }
+
+            @Override
+            public void onSexCallback(String sex) {
+                senderSex = sex;
+            }
+        });
         memberListForNotification(new memberListForNotificationCallback() {
             @Override
             public void onCallback(List<String> memberList) {
@@ -94,22 +110,22 @@ public class CommentsBox extends AppCompatActivity {
                 //Log.d(TAG, "onCallback: "+notificationMemberList);
             }
         });
-        DatabaseReference sendr = databaseReference.child("profile").child(senderID);
-        sendr.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                Map<String, Object> values = (Map<String, Object>) dataSnapshot.getValue();
-                senderName = values.get("name").toString();
-                senderImage = values.get("image").toString();
-                senderSex = values.get("sex").toString();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+//        DatabaseReference sendr = databaseReference.child("profile").child(senderID);
+//        sendr.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                Map<String, Object> values = (Map<String, Object>) dataSnapshot.getValue();
+//                senderName = values.get("name").toString();
+//                senderImage = values.get("image").toString();
+//                senderSex = values.get("sex").toString();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -542,6 +558,32 @@ public class CommentsBox extends AppCompatActivity {
         void onCallback(List<String> memberList);
     }
 
+    public interface userInfoCallback {
+        void onImageCallback(String url);
+        void onNameCallback(String name);
+        void onSexCallback(String sex);
+    }
+
+    private void getUserInfo(userInfoCallback infoCallback){
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("profile").child(auth.getUid());
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    HashMap<String,Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
+                    infoCallback.onImageCallback((String) map.get("image"));
+                    infoCallback.onNameCallback((String) map.get("name"));
+                    infoCallback.onSexCallback((String) map.get("sex"));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void sendNotifiaction(String eventID, final String username, final String message) {
         if (notificationMemberList != null) {
             for (int i = 0; i < notificationMemberList.size(); i++) {
@@ -556,7 +598,7 @@ public class CommentsBox extends AppCompatActivity {
 
                                 //HashMap<String,Object> data = (HashMap<String, Object>) snapshot.getValue();
                                 Token token = snapshot.getValue(Token.class);
-                                Data data = new Data(eventID, R.drawable.ic_stat_ic_notification, username + " " + message, "Event", notificationMemberList.get(finalI), auth.getUid(), "CommentBox");
+                                Data data = new Data(eventID, R.drawable.ic_stat_ic_notification, username + " " + message, "Event", notificationMemberList.get(finalI), auth.getUid(), "CommentBox",senderImage, senderSex);
 
                                 Sender sender = new Sender(data, token.getToken());
 
