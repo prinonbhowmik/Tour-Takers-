@@ -1,7 +1,7 @@
 package com.example.tureguideversion1.Adapters;
 
+import android.content.ClipboardManager;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,7 +91,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView showMessage, senderName, commentTimeTV;
         private CircleImageView profileImageView;
-        private RelativeLayout mainCommentLayout;
+        private RelativeLayout mainCommentLayout, crl1;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -100,6 +100,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             profileImageView = itemView.findViewById(R.id.chat_profileImage);
             commentTimeTV = itemView.findViewById(R.id.commentTimeTV);
             mainCommentLayout = itemView.findViewById(R.id.mainCommentLayout);
+            crl1 = itemView.findViewById(R.id.crl);
         }
 
         void setData(Chat chat) {
@@ -219,17 +220,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 //                    replyLayoutView.setVisibility(View.GONE);
 //                }
 //            }
-//            if(mainCommentLayout != null) {
-//                mainCommentLayout.setOnLongClickListener(new View.OnLongClickListener() {
-//                    @Override
-//                    public boolean onLongClick(View v) {
-//                        ClipboardManager cm = (ClipboardManager) itemView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-//                        cm.setText(showMessage.getText());
-//                        Toast.makeText(itemView.getContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
-//                        return true;
-//                    }
-//                });
-//            }
+
+            crl1.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    ClipboardManager cm = (ClipboardManager) itemView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    cm.setText(showMessage.getText());
+                    return true;
+                }
+            });
+
 
         }
     }
@@ -237,7 +237,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static class ViewHolderWithReply extends RecyclerView.ViewHolder {
         private TextView showMessage, senderName, commentTimeTV, replyerName, replyerComment, commentCounted;
         private CircleImageView profileImageView, replyerImage;
-        private RelativeLayout mainCommentLayout;
+        private RelativeLayout mainCommentLayout, crl2;
         private LinearLayout replyLayoutView;
 
         public ViewHolderWithReply(@NonNull View itemView) {
@@ -252,6 +252,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             commentCounted = itemView.findViewById(R.id.commentCounted);
             replyerImage = itemView.findViewById(R.id.replyerImage);
             replyLayoutView = itemView.findViewById(R.id.replyLayoutView);
+            crl2 = itemView.findViewById(R.id.crl);
         }
 
         void setDataWithReply(Chat chat) {
@@ -446,17 +447,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 //                    replyLayoutView.setVisibility(View.GONE);
 //                }
 //            }
-//            if(mainCommentLayout != null) {
-//                mainCommentLayout.setOnLongClickListener(new View.OnLongClickListener() {
-//                    @Override
-//                    public boolean onLongClick(View v) {
-//                        ClipboardManager cm = (ClipboardManager) itemView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-//                        cm.setText(showMessage.getText());
-//                        Toast.makeText(itemView.getContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
-//                        return true;
-//                    }
-//                });
-//            }
+
+            crl2.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    ClipboardManager cm = (ClipboardManager) itemView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    cm.setText(showMessage.getText());
+                    return true;
+                }
+            });
+
         }
 
     }

@@ -940,7 +940,12 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 } else {
                     format = "AM";
                 }
-                eventTime.setText(selectedHour + ":" + selectedMinute + " " + format);
+
+                if (selectedMinute < 10) {
+                    eventTime.setText(selectedHour + ":0" + selectedMinute + " " + format);
+                } else {
+                    eventTime.setText(selectedHour + ":" + selectedMinute + " " + format);
+                }
             }
         }, hour, minute, true);//Yes 24 hour time
         mTimePicker.show();

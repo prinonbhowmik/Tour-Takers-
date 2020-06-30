@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -130,7 +129,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
             public boolean onLongClick(View v) {
                 ClipboardManager cm = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
                 cm.setText(holder.showMessage2.getText());
-                Toast.makeText(mContext, "Copied to clipboard", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(mContext, "Copied to clipboard", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

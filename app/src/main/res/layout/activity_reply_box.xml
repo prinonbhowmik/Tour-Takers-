@@ -132,9 +132,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/inputLayout2"
-        android:layout_below="@id/topRelativeLayout"
-        android:layout_marginStart="55dp"
-        android:layout_marginEnd="5dp" />
+        android:layout_below="@id/topRelativeLayout" />
 
     <LinearLayout
         android:id="@+id/inputLayout2"
