@@ -18,11 +18,9 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.text.AndroidCharacter;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
@@ -46,7 +44,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.example.tureguideversion1.Fragments.EventFragment;
-import com.example.tureguideversion1.Fragments.GuideFragment;
 import com.example.tureguideversion1.Fragments.LoaderFragment;
 import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
@@ -295,6 +292,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     tour.commit();
                     drawerLayout.closeDrawers();
                     navigationView.getMenu().getItem(0).setChecked(true);
+                    navigationView.getMenu().getItem(1).setChecked(false);
+                    navigationView.getMenu().getItem(2).setChecked(false);
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
@@ -308,6 +307,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     event.commit();
                     drawerLayout.closeDrawers();
                     navigationView.getMenu().getItem(1).setChecked(true);
+                    navigationView.getMenu().getItem(0).setChecked(false);
+                    navigationView.getMenu().getItem(2).setChecked(false);
 
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
@@ -322,6 +323,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     weather.commit();
                     drawerLayout.closeDrawers();
                     navigationView.getMenu().getItem(2).setChecked(true);
+                    navigationView.getMenu().getItem(1).setChecked(false);
+                    navigationView.getMenu().getItem(0).setChecked(false);
                 } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
