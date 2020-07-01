@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:theme="@style/EditText">
 
     <TextView
         android:id="@+id/titleTV"
@@ -30,7 +31,8 @@
         app:boxStrokeColor="@color/colorGreen"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="15dp"
-        android:textColorHint="@android:color/black">
+        android:textColorHint="@android:color/black"
+        app:boxBackgroundMode="outline">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/updateTIET"

@@ -44,6 +44,12 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="EditText" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorYellow</item>
+        <item name="colorPrimaryDark">@color/colorBlue</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 
     //made by Imran (not use yet)
 

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true"
     android:background="#fff"
-    tools:context=".Activities.SignIn"
-    >
+    android:focusableInTouchMode="true"
+    android:theme="@style/EditText"
+    tools:context=".Activities.SignIn">
 
 
     <ImageView
@@ -50,17 +50,18 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
-        android:hint="Email"
         android:fontFamily="@font/amarante"
-        android:textColorHint="@color/colorYellow">
+        android:hint="Email"
+        android:textColorHint="@color/colorYellow"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="@color/colorYellow">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/name_ET"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/edit_text_design"
-            android:inputType="textEmailAddress"
             android:fontFamily="@font/amarante"
+            android:inputType="textEmailAddress"
             android:maxLines="1"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"

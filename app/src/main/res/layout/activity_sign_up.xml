@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="#fff"
     android:focusableInTouchMode="true"
+    android:theme="@style/EditText"
     tools:context=".Activities.SignUp">
 
     <ScrollView
@@ -45,13 +46,14 @@
                 android:layout_marginEnd="20dp"
                 android:fontFamily="@font/amarante"
                 android:hint="Full Name"
-                android:textColorHint="@color/colorYellow">
+                android:textColorHint="@color/colorYellow"
+                app:boxStrokeColor="@color/colorYellow"
+                app:boxBackgroundMode="outline">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/name_ET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_design"
                     android:fontFamily="@font/amarante"
                     android:inputType="text"
                     android:maxLines="1"
@@ -75,7 +77,9 @@
                 android:layout_marginEnd="20dp"
                 android:fontFamily="@font/amarante"
                 android:hint="Email"
-                android:textColorHint="@color/colorYellow">
+                android:textColorHint="@color/colorYellow"
+                app:boxStrokeColor="@color/colorYellow"
+                app:boxBackgroundMode="outline">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/email_ET"
@@ -107,14 +111,15 @@
                 android:hint="@string/password"
                 android:textColorHint="@color/colorYellow"
                 app:passwordToggleEnabled="true"
-                app:passwordToggleTint="@android:color/holo_orange_light">
+                app:passwordToggleTint="@android:color/holo_orange_light"
+                app:boxStrokeColor="@color/colorYellow"
+                app:boxBackgroundMode="outline">
 
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password_ET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_design"
                     android:fontFamily="@font/amarante"
                     android:inputType="textPassword"
                     android:maxLines="1"
@@ -138,14 +143,15 @@
                 android:layout_marginEnd="20dp"
                 android:fontFamily="@font/amarante"
                 android:hint="Phone No"
-                android:textColorHint="@color/colorYellow">
+                android:textColorHint="@color/colorYellow"
+                app:boxStrokeColor="@color/colorYellow"
+                app:boxBackgroundMode="outline">
 
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/phoneEt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_design"
                     android:fontFamily="@font/amarante"
                     android:inputType="number"
                     android:maxLines="1"
