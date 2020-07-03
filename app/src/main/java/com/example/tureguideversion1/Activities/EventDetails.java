@@ -55,6 +55,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,9 +172,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                             e_Ref.child("joinMemberCount").setValue(count);
                             String c = String.valueOf(count);
                             event_attending_member.setText(c);
-                            setSendNotification(event_Id,member_name,userId,event_Id);
-
-
+                            setSendNotification(event_Id,username,userId);
                         }
 
                         @Override
@@ -311,16 +311,17 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         });
     }
 
-    private void setSendNotification(String memberID, String memberName, String memberImage, String eventID) {
+    private void setSendNotification(String memberID, String memberName, String memberImage) {
 
         DatabaseReference joinRef = databaseReference.child("eventJoinNotification").child(event_Id);
+        memberID = auth.getUid();
+
         String id = joinRef.push().getKey();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("publisherId",publisher_id);
         hashMap.put("memberId", memberID);
-        hashMap.put("memberName", memberName);
-        hashMap.put("memberImage", memberImage);
-        hashMap.put("senderImage", event_Id);
+        hashMap.put("memberName", username);
+        hashMap.put("event", event_Id);
         hashMap.put("ID", id);
         joinRef.child(id).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -328,14 +329,39 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 sendSound.start();
             }
         });
-        DatabaseReference jointokenRef = FirebaseDatabase.getInstance().getReference().child("EventJoinToken").child(event_Id);
-        jointokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("eventJoinTokens").child(event_Id);
+        tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               if (notify){
-                   sendNotification(publisher_id,event_Id);
-               }
-               notify = false;
+                ArrayList<String> list = new ArrayList<>();
+                if (dataSnapshot.exists()){
+                    for (DataSnapshot childsnap : dataSnapshot.getChildren()){
+                        list.add(childsnap.getKey());
+
+                    }
+                    if (!list.contains(auth.getUid())) {
+                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                            @Override
+                            public void onSuccess(InstanceIdResult instanceIdResult) {
+                                updateToken(instanceIdResult.getToken());
+                            }
+                        });
+                    }else {
+                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                            @Override
+                            public void onSuccess(InstanceIdResult instanceIdResult) {
+                                updateToken(instanceIdResult.getToken());
+                            }
+                        });
+                    }
+                }else {
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                        @Override
+                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                            updateToken(instanceIdResult.getToken());
+                        }
+                    });
+                }
             }
 
             @Override
@@ -344,10 +370,25 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
             }
         });
 
+        if (notify){
+            sendNotification(publisher_id,event_Id);
+        }
+        notify = false;
+
+    }
+
+    private void updateToken(String token) {
+        DatabaseReference ref = databaseReference.child("eventJoinTokens");
+        Token token1 = new Token(token);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("userID", publisher_id);
+        hashMap.put("token", token1.getToken());
+        ref.child(event_Id).child(publisher_id).setValue(hashMap);
+
     }
 
     private void sendNotification(String publisher_id, String event_id) {
-        DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("joinEventToken").child(event_Id);
+        DatabaseReference tokenRef = databaseReference.child("joinEventToken").child(event_Id);
         Query query = tokenRef.orderByKey().equalTo(publisher_id);
         query.addValueEventListener(new ValueEventListener() {
             @Override
