@@ -55,8 +55,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -163,7 +161,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                             setUserActivity();
                         }
                     });
-                    DatabaseReference memberRef2 = databaseReference.child("joinMemberNotify").child(event_Id);
+                    DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
                     memberRef2.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -315,7 +313,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
 
     private void setSendNotification(String memberID, String memberName, String memberImage, String eventID) {
 
-        DatabaseReference joinRef = databaseReference.child("joinNotification").child(event_Id);
+        DatabaseReference joinRef = databaseReference.child("eventJoinNotification").child(event_Id);
         String id = joinRef.push().getKey();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("publisherId",publisher_id);
