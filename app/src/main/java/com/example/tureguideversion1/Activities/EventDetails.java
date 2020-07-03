@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -30,6 +32,13 @@ import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.EventLocationList;
+import com.example.tureguideversion1.Model.Profile;
+import com.example.tureguideversion1.Notifications.APIService;
+import com.example.tureguideversion1.Notifications.Client;
+import com.example.tureguideversion1.Notifications.Data;
+import com.example.tureguideversion1.Notifications.Response;
+import com.example.tureguideversion1.Notifications.Sender;
+import com.example.tureguideversion1.Notifications.Token;
 import com.example.tureguideversion1.R;
 import com.glide.slider.library.SliderLayout;
 import com.glide.slider.library.animations.DescriptionAnimation;
@@ -44,7 +53,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +65,8 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class EventDetails extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
@@ -61,7 +75,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private ImageView descriptionIV, meetingIV, groupIV, costIV, event_image;
     private CircleImageView event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
-    private String place, s_date, r_date, time, m_place, description, p_date, g_name, e_cost, publisher_id, counter, place1;
+    private String place, s_date, r_date, time, m_place, description, p_date, g_name, e_cost, publisher_id, counter,
+            place1,username;
     private int attend_member_count;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
@@ -84,6 +99,9 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private RelativeLayout relative16;
     private TextView viewComment;
     public static final String TAG = "EventDetails";
+    private APIService apiService;
+    private MediaPlayer sendSound, receiveSound;
+    private boolean notify = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +112,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         getData();
         commentCounter();
         userId = auth.getCurrentUser().getUid();
+        getUsername();
         moreImageShow();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(place.toLowerCase());
         ref.addListenerForSingleValueEvent(
@@ -136,6 +155,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
             public void onClick(View v) {
                 if (checkConnection()) {
                     joinAlertDialog();
+                    notify = true;
                     DatabaseReference memberRef = databaseReference.child("eventJoinMember").child(event_Id).child(userId);
                     memberRef.child("id").setValue(userId).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -143,7 +163,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                             setUserActivity();
                         }
                     });
-                    DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
+                    DatabaseReference memberRef2 = databaseReference.child("joinMemberNotify").child(event_Id);
                     memberRef2.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -152,6 +172,9 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                             e_Ref.child("joinMemberCount").setValue(count);
                             String c = String.valueOf(count);
                             event_attending_member.setText(c);
+                            setSendNotification(event_Id,member_name,userId,event_Id);
+
+
                         }
 
                         @Override
@@ -273,8 +296,96 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
             }
         });
 
+    }
+
+    private void getUsername() {
+        DatabaseReference nameRef = FirebaseDatabase.getInstance().getReference("profile").child(userId);
+        nameRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Profile profile =  dataSnapshot.getValue(Profile.class);
+                username = profile.getName();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void setSendNotification(String memberID, String memberName, String memberImage, String eventID) {
+
+        DatabaseReference joinRef = databaseReference.child("joinNotification").child(event_Id);
+        String id = joinRef.push().getKey();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("publisherId",publisher_id);
+        hashMap.put("memberId", memberID);
+        hashMap.put("memberName", memberName);
+        hashMap.put("memberImage", memberImage);
+        hashMap.put("senderImage", event_Id);
+        hashMap.put("ID", id);
+        joinRef.child(id).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                sendSound.start();
+            }
+        });
+        DatabaseReference jointokenRef = FirebaseDatabase.getInstance().getReference().child("EventJoinToken").child(event_Id);
+        jointokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+               if (notify){
+                   sendNotification(publisher_id,event_Id);
+               }
+               notify = false;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
+
+    private void sendNotification(String publisher_id, String event_id) {
+        DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("joinEventToken").child(event_Id);
+        Query query = tokenRef.orderByKey().equalTo(publisher_id);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Token token = snapshot.getValue(Token.class);
+                    Data data = new Data(event_id,R.drawable.ic_stat_ic_notification,username+" joined your event!",publisher_id,"EventDetails");
+
+                    Sender sender = new Sender(data, token.getToken());
+
+                    apiService.sendNotification(sender)
+                            .enqueue(new Callback<Response>() {
+                                @Override
+                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                    if (response.code() == 200) {
+                                        if (response.body().success != 1) {
+                                            Toast.makeText(getApplicationContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Response> call, Throwable t) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     private void commentCounter() {
         DatabaseReference comment = databaseReference.child("eventComments").child(event_Id);
@@ -788,7 +899,9 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         relative16 = findViewById(R.id.relative16);
         viewComment = findViewById(R.id.viewComment);
         commentCountTV = findViewById(R.id.commentCount);
-
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+        sendSound = MediaPlayer.create(this, R.raw.comment_send);
+        receiveSound = MediaPlayer.create(this, R.raw.appointed);
     }
 
 

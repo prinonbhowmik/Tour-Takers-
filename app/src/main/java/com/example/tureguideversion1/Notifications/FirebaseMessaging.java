@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.example.tureguideversion1.Activities.CommentsBox;
+import com.example.tureguideversion1.Activities.EventDetails;
 import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.Activities.ReplyBox;
 import com.example.tureguideversion1.R;
@@ -201,6 +202,7 @@ public static final String TAG = "FirebaseMessaging";
 
                         oreoNotification.getManager().notify(i, builder.build());
                     }
+
                 }else {
                     RemoteMessage.Notification notification = remoteMessage.getNotification();
                     int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
@@ -244,6 +246,7 @@ public static final String TAG = "FirebaseMessaging";
 
                         oreoNotification.getManager().notify(i, builder.build());
                     }
+
                 }
 
             }
@@ -355,6 +358,32 @@ public static final String TAG = "FirebaseMessaging";
                         intent.putExtras(bundle);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
+                                .setSmallIcon(Integer.parseInt(icon))
+                                .setLargeIcon(finalBitmap)
+                                .setContentTitle(title+": "+eventPlace)
+                                .setContentText(body)
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setAutoCancel(true)
+                                .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
+                                .setContentIntent(pendingIntent);
+                        NotificationManager noti = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        int i = 0;
+                        if (j > 0){
+                            i = j;
+                        }
+
+                        noti.notify(i, builder.build());
+                    }
+                    else if(from.matches("EventDetails")){
+                        Intent jintent = new Intent(getApplicationContext(), EventDetails.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("userID",userID);
+                        bundle.putString("eventId",eventID);
+                        jintent.putExtras(bundle);
+                        jintent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, jintent, PendingIntent.FLAG_ONE_SHOT);
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Events")
                                 .setSmallIcon(Integer.parseInt(icon))
                                 .setLargeIcon(finalBitmap)
