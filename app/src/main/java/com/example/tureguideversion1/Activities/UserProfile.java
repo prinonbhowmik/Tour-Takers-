@@ -50,7 +50,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import es.dmoral.toasty.Toasty;
 
-public class UserProfile extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
+public class UserProfile extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private LinearLayout ratingLayout, totalTourLayout, totalEventLayout;
     private TextView profilename, profileemail, profilephoneno, n2, p2;
@@ -107,18 +107,26 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
                         e.printStackTrace();
                         //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
                     }
-                }else {
+                } else {
                     String sex = profile.getSex();
-                    if(sex.matches("male")){
-                        GlideApp.with(UserProfile.this)
-                                .load(getImageFromDrawable("man"))
-                                .centerInside()
-                                .into(profileImage);
-                    }else if(sex.matches("female")){
-                        GlideApp.with(UserProfile.this)
-                                .load(getImageFromDrawable("woman"))
-                                .centerInside()
-                                .into(profileImage);
+                    if (sex.matches("male")) {
+                        try {
+                            GlideApp.with(UserProfile.this)
+                                    .load(getImageFromDrawable("man"))
+                                    .centerInside()
+                                    .into(profileImage);
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (sex.matches("female")) {
+                        try {
+                            GlideApp.with(UserProfile.this)
+                                    .load(getImageFromDrawable("woman"))
+                                    .centerInside()
+                                    .into(profileImage);
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
@@ -148,7 +156,7 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
         nameUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkConnection()) {
+                if (checkConnection()) {
                     Bundle args = new Bundle();
                     args.putString("name", "name");
                     args.putString("id", userId);
@@ -156,7 +164,7 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
                     Profile_bottom_sheet bottom_sheet = new Profile_bottom_sheet();
                     bottom_sheet.setArguments(args);
                     bottom_sheet.show(getSupportFragmentManager(), "bottomSheet");
-                }else {
+                } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
             }
@@ -165,7 +173,7 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
         phoneUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkConnection()) {
+                if (checkConnection()) {
                     Bundle args = new Bundle();
                     args.putString("phone", "phone");
                     args.putString("id", userId);
@@ -173,7 +181,7 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
                     Profile_bottom_sheet bottom_sheet = new Profile_bottom_sheet();
                     bottom_sheet.setArguments(args);
                     bottom_sheet.show(getSupportFragmentManager(), "bottomSheet");
-                }else {
+                } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
             }
@@ -183,13 +191,13 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkConnection()) {
+                if (checkConnection()) {
                     CropImage.activity()
                             .setFixAspectRatio(true)
                             .setGuidelines(CropImageView.Guidelines.ON)
                             .setCropShape(CropImageView.CropShape.OVAL)
                             .start(UserProfile.this);
-                }else {
+                } else {
                     startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                 }
             }
@@ -208,22 +216,22 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
                 imageUri = resultUri;
                 progressBar.setVisibility(View.VISIBLE);
                 if (!image.isEmpty()) {
-                    if(checkConnection()) {
+                    if (checkConnection()) {
                         deleteImage();
-                    }else {
+                    } else {
                         startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                     }
                 } else {
-                    if(checkConnection()) {
+                    if (checkConnection()) {
                         uploadImage();
-                    }else {
+                    } else {
                         startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                     }
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
                 progressBar.setVisibility(View.INVISIBLE);
-                Toast.makeText(getApplicationContext(),"Failed",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -260,11 +268,11 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                             double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot
                                     .getTotalByteCount();
-                            if(progress<100){
-                                Toasty.info(getApplicationContext(),"Uploading...",Toasty.LENGTH_SHORT).show();
+                            if (progress < 100) {
+                                Toasty.info(getApplicationContext(), "Uploading...", Toasty.LENGTH_SHORT).show();
                                 //Toasty.info(getApplicationContext(),"Uploaded " + (int) progress + "% done",Toasty.LENGTH_SHORT).show();
-                            }else {
-                                Toasty.success(getApplicationContext(),"Successfully uploaded",Toasty.LENGTH_SHORT).show();
+                            } else {
+                                Toasty.success(getApplicationContext(), "Successfully uploaded", Toasty.LENGTH_SHORT).show();
                             }
 
                             //Toast.makeText(UserProfile.this, "Uploaded " + (int) progress + "%", Toast.LENGTH_SHORT).show();

@@ -2,10 +2,12 @@ package com.example.tureguideversion1.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -13,6 +15,7 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -38,8 +41,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignIn extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
+    public static final String TAG = "SignIn";
     private EditText nameET;
     private ActionProcessButton singin;
     private TextView txt1;
@@ -52,6 +57,7 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
+    AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +81,9 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
 
         if (intent.getExtras() != null) {
             nameET.setText(intent.getExtras().getString("email"));
+            if(intent.getStringExtra("prevention").matches("true")){
+                preventionAlertDialog();
+            }
         }
         if (user != null && user.isEmailVerified()) {
             // User is signed in
@@ -163,6 +172,24 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
                 });
     }
 
+    private void preventionAlertDialog() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        Log.d(TAG, "preventionAlertDialog: "+auth.getUid());
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this,R.style.MyDialogTheme);
+        dialog.setTitle("Multiple login detected!");
+        dialog.setIcon(R.drawable.batman);
+        dialog.setMessage("You can't use you account with multiple devices at the same time. If you are not doing this then you should change your password to secure this account.");
+        dialog.setCancelable(false);
+        dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alertDialog = dialog.create();
+        alertDialog.show();
+    }
+
     // Showing the status in Snackbar
     private void showSnack(boolean isConnected) {
         String message;
@@ -242,7 +269,9 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
                 unregisterReceiver(connectivityReceiver);
 
         }catch(Exception e){}
-
+        if(alertDialog != null) {
+            alertDialog.dismiss();
+        }
     }
 
     /**
@@ -279,7 +308,9 @@ public class SignIn extends AppCompatActivity implements ConnectivityReceiver.Co
                 unregisterReceiver(connectivityReceiver);
 
         }catch(Exception e){}
-
+        if(alertDialog != null) {
+            alertDialog.dismiss();
+        }
         toast.cancel();
         super.onStop();
     }

@@ -112,7 +112,6 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         getData();
         commentCounter();
         userId = auth.getCurrentUser().getUid();
-        getUsername();
         moreImageShow();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(place.toLowerCase());
         ref.addListenerForSingleValueEvent(
@@ -172,7 +171,6 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                             e_Ref.child("joinMemberCount").setValue(count);
                             String c = String.valueOf(count);
                             event_attending_member.setText(c);
-                            setSendNotification(event_Id,username,userId);
                         }
 
                         @Override
@@ -180,6 +178,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
 
                         }
                     });
+                    sendNotification();
                     joinBtn.setVisibility(View.GONE);
                     relative16.setVisibility(View.VISIBLE);
                 } else {
@@ -296,86 +295,87 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
 
     }
 
-    private void getUsername() {
-        DatabaseReference nameRef = FirebaseDatabase.getInstance().getReference("profile").child(userId);
-        nameRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Profile profile =  dataSnapshot.getValue(Profile.class);
-                username = profile.getName();
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+//    private void getUsername() {
+//        DatabaseReference nameRef = FirebaseDatabase.getInstance().getReference("profile").child(userId);
+//        nameRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                Profile profile =  dataSnapshot.getValue(Profile.class);
+//                username = profile.getName();
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
-            }
-        });
-    }
+    //private void setSendNotification(String memberID, String memberName, String memberImage) {
 
-    private void setSendNotification(String memberID, String memberName, String memberImage) {
-
-        DatabaseReference joinRef = databaseReference.child("eventJoinNotification").child(event_Id);
-        memberID = auth.getUid();
-
-        String id = joinRef.push().getKey();
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("publisherId",publisher_id);
-        hashMap.put("memberId", memberID);
-        hashMap.put("memberName", username);
-        hashMap.put("event", event_Id);
-        hashMap.put("ID", id);
-        joinRef.child(id).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                sendSound.start();
-            }
-        });
-        DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("eventJoinTokens").child(event_Id);
-        tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<String> list = new ArrayList<>();
-                if (dataSnapshot.exists()){
-                    for (DataSnapshot childsnap : dataSnapshot.getChildren()){
-                        list.add(childsnap.getKey());
-
-                    }
-                    if (!list.contains(auth.getUid())) {
-                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                            @Override
-                            public void onSuccess(InstanceIdResult instanceIdResult) {
-                                updateToken(instanceIdResult.getToken());
-                            }
-                        });
-                    }else {
-                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                            @Override
-                            public void onSuccess(InstanceIdResult instanceIdResult) {
-                                updateToken(instanceIdResult.getToken());
-                            }
-                        });
-                    }
-                }else {
-                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                        @Override
-                        public void onSuccess(InstanceIdResult instanceIdResult) {
-                            updateToken(instanceIdResult.getToken());
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        if (notify){
-            sendNotification(publisher_id,event_Id);
-        }
-        notify = false;
-
-    }
+//        DatabaseReference joinRef = databaseReference.child("eventJoinNotification").child(event_Id);
+//        memberID = auth.getUid();
+//
+//        String id = joinRef.push().getKey();
+//        HashMap<String, Object> hashMap = new HashMap<>();
+//        hashMap.put("publisherId",publisher_id);
+//        hashMap.put("memberId", memberID);
+//        hashMap.put("memberName", username);
+//        hashMap.put("event", event_Id);
+//        hashMap.put("ID", id);
+//        joinRef.child(id).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void aVoid) {
+//                sendSound.start();
+//            }
+//        });
+//        DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("eventJoinTokens").child(event_Id);
+//        tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                ArrayList<String> list = new ArrayList<>();
+//                if (dataSnapshot.exists()){
+//                    for (DataSnapshot childsnap : dataSnapshot.getChildren()){
+//                        list.add(childsnap.getKey());
+//
+//                    }
+//                    if (!list.contains(auth.getUid())) {
+//                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+//                            @Override
+//                            public void onSuccess(InstanceIdResult instanceIdResult) {
+//                                updateToken(instanceIdResult.getToken());
+//                            }
+//                        });
+//                    }else {
+//                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+//                            @Override
+//                            public void onSuccess(InstanceIdResult instanceIdResult) {
+//                                updateToken(instanceIdResult.getToken());
+//                            }
+//                        });
+//                    }
+//                }else {
+//                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+//                        @Override
+//                        public void onSuccess(InstanceIdResult instanceIdResult) {
+//                            updateToken(instanceIdResult.getToken());
+//                        }
+//                    });
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//        if (notify){
+//            sendNotification(publisher_id,event_Id);
+//        }
+//        notify = false;
+//
+//
+//    }
 
     private void updateToken(String token) {
         DatabaseReference ref = databaseReference.child("eventJoinTokens");
@@ -387,34 +387,55 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
 
     }
 
-    private void sendNotification(String publisher_id, String event_id) {
-        DatabaseReference tokenRef = databaseReference.child("joinEventToken").child(event_Id);
-        Query query = tokenRef.orderByKey().equalTo(publisher_id);
-        query.addValueEventListener(new ValueEventListener() {
+    private void sendNotification() {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("profile").child(auth.getUid());
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Token token = snapshot.getValue(Token.class);
-                    Data data = new Data(event_id,R.drawable.ic_stat_ic_notification,username+" joined your event!",publisher_id,"EventDetails");
+                if(dataSnapshot.exists()) {
+                    HashMap<String, Object> userMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    DatabaseReference publisherRef = FirebaseDatabase.getInstance().getReference().child("profile").child(publisher_id);
+                    publisherRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                HashMap<String, Object> publishermMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                                Data data = new Data(event_Id,
+                                         R.drawable.ic_stat_ic_notification,
+                                        userMap.get("name")+" has joined your event!",
+                                        "Your Event: "+place,
+                                        publisher_id,
+                                        auth.getUid(),
+                                        "EventDetails",
+                                        (String) userMap.get("image"),
+                                        (String) userMap.get("sex"));
+                                Sender sender = new Sender(data, (String) publishermMap.get("token"));
+                                apiService.sendNotification(sender)
+                                        .enqueue(new Callback<Response>() {
+                                            @Override
+                                            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                                if (response.code() == 200) {
+                                                    if (response.body().success != 1) {
+                                                        Toast.makeText(getApplicationContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            }
 
-                    Sender sender = new Sender(data, token.getToken());
+                                            @Override
+                                            public void onFailure(Call<Response> call, Throwable t) {
 
-                    apiService.sendNotification(sender)
-                            .enqueue(new Callback<Response>() {
-                                @Override
-                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                                    if (response.code() == 200) {
-                                        if (response.body().success != 1) {
-                                            Toast.makeText(getApplicationContext(), "Failed!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                }
+                                            }
+                                        });
+                                publisherRef.removeEventListener(this);
+                            }
+                        }
 
-                                @Override
-                                public void onFailure(Call<Response> call, Throwable t) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
-                            });
+                        }
+                    });
+                    userRef.removeEventListener(this);
                 }
             }
 

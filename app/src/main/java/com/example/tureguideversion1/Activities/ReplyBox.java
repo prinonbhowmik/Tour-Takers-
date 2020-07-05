@@ -255,40 +255,44 @@ public class ReplyBox extends AppCompatActivity {
                             }
                         }
                     }
-                    DatabaseReference membersToken = FirebaseDatabase.getInstance().getReference()
-                            .child("eventCommentsReply")
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                            .child("eventComments")
                             .child(eventId)
                             .child(commentId);
-                    membersToken.addListenerForSingleValueEvent(new ValueEventListener() {
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 ArrayList<String> membersIDForNotification = new ArrayList<>();
-                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                    Map map = (Map) snapshot.getValue();
-                                    if (!auth.getUid().matches((String) map.get("senderID"))) {
-                                        if (membersIDEnableList.contains(map.get("senderID"))) {
-                                            if (!membersIDForNotification.contains(map.get("senderID"))) {
-                                                membersIDForNotification.add((String) map.get("senderID"));
-                                            }
+                                HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
+                                if (!auth.getUid().matches((String) map.get("senderID"))) {
+                                    if (membersIDEnableList.contains(map.get("senderID"))) {
+                                        if (!membersIDForNotification.contains(map.get("senderID"))) {
+                                            membersIDForNotification.add((String) map.get("senderID"));
                                         }
                                     }
-                                    //Log.d(TAG, "onDataChange: "+map.get("userID"));
                                 }
-                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
-                                        .child("eventComments")
+                                DatabaseReference membersToken = FirebaseDatabase.getInstance().getReference()
+                                        .child("eventCommentsReply")
                                         .child(eventId)
                                         .child(commentId);
-                                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                membersToken.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         if (dataSnapshot.exists()) {
-                                            HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
-                                            if (!auth.getUid().matches((String) map.get("senderID"))) {
-                                                if (!membersIDForNotification.contains(map.get("senderID"))) {
-                                                    membersIDForNotification.add((String) map.get("senderID"));
+                                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                                Map map = (Map) snapshot.getValue();
+                                                if (!auth.getUid().matches((String) map.get("senderID"))) {
+                                                    if (membersIDEnableList.contains(map.get("senderID"))) {
+                                                        if (!membersIDForNotification.contains(map.get("senderID"))) {
+                                                            membersIDForNotification.add((String) map.get("senderID"));
+                                                        }
+                                                    }
                                                 }
+                                                //Log.d(TAG, "onDataChange: "+map.get("userID"));
                                             }
+                                            memberListForNotificationCallback.onCallback(membersIDForNotification);
+                                        }else {
                                             memberListForNotificationCallback.onCallback(membersIDForNotification);
                                         }
                                     }
@@ -298,7 +302,6 @@ public class ReplyBox extends AppCompatActivity {
 
                                     }
                                 });
-                                //Log.d(TAG, "onDataChange: "+membersIDForNotification);
                             }
                         }
 
@@ -348,6 +351,7 @@ public class ReplyBox extends AppCompatActivity {
     }
 
     private void sendNotifiaction(String eventID, final String username, final String message) {
+        Log.d(TAG, "sendNotifiaction: "+notificationMemberList);
         if (notificationMemberList != null) {
             for (int i = 0; i < notificationMemberList.size(); i++) {
                 DatabaseReference tokens = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(eventID);

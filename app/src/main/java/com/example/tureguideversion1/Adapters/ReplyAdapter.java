@@ -49,21 +49,33 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
 
         if (reply.getSenderImage() != null) {
             if (!reply.getSenderImage().isEmpty()) {
-                GlideApp.with(mContext)
-                        .load(reply.getSenderImage())
-                        .fitCenter()
-                        .into(holder.reply_profileImage);
+                try {
+                    GlideApp.with(mContext)
+                            .load(reply.getSenderImage())
+                            .fitCenter()
+                            .into(holder.reply_profileImage);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
             } else {
                 if (reply.getSenderSex().matches("male")) {
-                    GlideApp.with(mContext)
-                            .load(R.drawable.man)
-                            .centerInside()
-                            .into(holder.reply_profileImage);
+                    try {
+                        GlideApp.with(mContext)
+                                .load(R.drawable.man)
+                                .centerInside()
+                                .into(holder.reply_profileImage);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
                 } else if (reply.getSenderSex().matches("female")) {
-                    GlideApp.with(mContext)
-                            .load(R.drawable.woman)
-                            .centerInside()
-                            .into(holder.reply_profileImage);
+                    try {
+                        GlideApp.with(mContext)
+                                .load(R.drawable.woman)
+                                .centerInside()
+                                .into(holder.reply_profileImage);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -129,7 +141,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
             public boolean onLongClick(View v) {
                 ClipboardManager cm = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
                 cm.setText(holder.showMessage2.getText());
-               // Toast.makeText(mContext, "Copied to clipboard", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(mContext, "Copied to clipboard", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

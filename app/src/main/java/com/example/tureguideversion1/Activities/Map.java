@@ -88,11 +88,12 @@ public class Map extends AppCompatActivity implements
         GoogleMap.OnPolylineClickListener,
         GoogleMap.OnInfoWindowClickListener {
 
+    public static final String TAG = "Map";
     private double latForMeetingPlace, lonForMeetingPlace;
     private GoogleMap map;
     private FloatingActionButton currentLocationBTN, locationPickBTN;
     private Geocoder geocoder;
-    private String apiKey, selectedPlace;
+    private String apiKey, selectedPlace, guidePlace;
     private StringBuilder stringBuilder;
     private FusedLocationProviderClient mFusedLocationClient;
     private boolean isContinue = false;
@@ -251,20 +252,36 @@ public class Map extends AppCompatActivity implements
         intent = getIntent();
         if (intent.getExtras() != null) {
             if (intent.getStringExtra("from").matches("tour")) {
-                List<Address> meetingPlace = null;
-                try {
-                    latForMeetingPlace = intent.getDoubleExtra("latForMeetingPlace", 0);
-                    lonForMeetingPlace = intent.getDoubleExtra("lonForMeetingPlace", 0);
-                    if (latForMeetingPlace != 0 && lonForMeetingPlace != 0) {
-                        meetingPlace = geocoder.getFromLocation(intent.getDoubleExtra("latForMeetingPlace", 0),
-                                intent.getDoubleExtra("lonForMeetingPlace", 0), 5);
-                        map.addMarker(new MarkerOptions().position(new LatLng(meetingPlace.get(0).getLatitude(), meetingPlace.get(0).getLongitude())));
-                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(meetingPlace.get(0).getLatitude(), meetingPlace.get(0).getLongitude()), 18));
-                    } else {
-                        getLocation();
+                if (intent.getStringExtra("for").matches("meetingPlace")) {
+                    List<Address> meetingPlace = null;
+                    try {
+                        Log.d(TAG, "onMapReady: "+intent.getStringExtra("for"));
+                        latForMeetingPlace = intent.getDoubleExtra("latForMeetingPlace", 0);
+                        lonForMeetingPlace = intent.getDoubleExtra("lonForMeetingPlace", 0);
+                        if (latForMeetingPlace != 0 && lonForMeetingPlace != 0) {
+                            meetingPlace = geocoder.getFromLocation(intent.getDoubleExtra("latForMeetingPlace", 0),
+                                    intent.getDoubleExtra("lonForMeetingPlace", 0), 5);
+                            map.addMarker(new MarkerOptions().position(new LatLng(meetingPlace.get(0).getLatitude(), meetingPlace.get(0).getLongitude())));
+                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(meetingPlace.get(0).getLatitude(), meetingPlace.get(0).getLongitude()), 18));
+                        } else {
+                            getLocation();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                }else if (intent.getStringExtra("for").matches("guidePlace")) {
+                    List<Address> meetingPlace = null;
+                    try {
+                        guidePlace = intent.getStringExtra("guideLocation");
+                        if (guidePlace.trim().length() != 0) {
+                            meetingPlace = geocoder.getFromLocationName(guidePlace,5);
+                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(meetingPlace.get(0).getLatitude(), meetingPlace.get(0).getLongitude()), Float.parseFloat("13.5")));
+                        } else {
+                            getLocation();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else if (intent.getStringExtra("from").matches("eventDetails")) {
                 latForMeetingPlace = intent.getDoubleExtra("latForMeetingPlace", 0);

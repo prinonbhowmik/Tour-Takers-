@@ -271,6 +271,56 @@
 
             </LinearLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/meetingPlaceWithGuide"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/amarante"
+                android:hint="Meetup with Guide"
+                android:textColorHint="@color/colorYellow"
+                app:boxStrokeColor="@color/colorYellow"
+                app:boxBackgroundMode="outline">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/meetingPlaceWithGuide_ET"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/amarante"
+                    android:inputType="text"
+                    android:focusable="false"
+                    android:maxLines="1"
+                    android:paddingStart="15dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="8dp"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="21sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.dd.processbutton.iml.ActionProcessButton
+                android:id="@+id/makeTourBTN"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="20dp"
+                android:text="Make Tour"
+                android:textColor="@color/colorYellow"
+                app:pb_colorComplete="@color/colorPrimaryDark"
+                app:pb_colorError="@color/red_error"
+                app:pb_colorNormal="@color/colorPrimaryDark"
+                app:pb_colorPressed="@color/colorPrimaryDark"
+                app:pb_colorProgress="@color/purple_progress"
+                app:pb_cornerRadius="5dp"
+                app:pb_textComplete="Make Tour"
+                app:pb_textError="Error"
+                app:pb_textProgress="Finding Guide..." />
+
             <LinearLayout
                 android:id="@+id/eventLayout"
                 android:layout_width="match_parent"

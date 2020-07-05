@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Build;
@@ -28,9 +29,11 @@ import android.widget.Toast;
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
+import com.example.tureguideversion1.Notifications.Token;
 import com.example.tureguideversion1.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
@@ -39,14 +42,19 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
 
 public class SignInGrantAccess extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
-
+    public static final String TAG = "SignInGrantAccess";
     private EditText passEt;
     private ActionProcessButton singin;
     private String email, password;
@@ -147,8 +155,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
                                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                                     startActivity(intent);
 
-                                }
-                                else {
+                                } else {
                                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("GuideProfile").child(ID);
                                     ref.addValueEventListener(new ValueEventListener() {
                                         @Override

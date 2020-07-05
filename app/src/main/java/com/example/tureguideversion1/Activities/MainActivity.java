@@ -69,6 +69,7 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
-    private DatabaseReference reference;
+    private DatabaseReference reference,prevRef;
     private StorageReference storageReference;
     private FirebaseAuth auth;
     private String userId, name, email, image, currentFragment;
@@ -96,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageView circularImageView;
     private TextView UserName, userEmail;
     private LinearLayout ratingLaout;
+    private Boolean tokenUpdated = false;
+    private ValueEventListener prevlistener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         init();
         registerReceiver(connectivityReceiver, intentFilter);
         if (checkConnection()) {
-            storageReference = FirebaseStorage.getInstance().getReference();
             if (getIntent().getAction() != null) {
                 if (getIntent().getAction().matches("event")) {
                     currentFragment = "event";
@@ -133,62 +135,71 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
             userId = auth.getUid();
+            if (userId != null) {
+                DatabaseReference showref = reference.child(userId);
 
-            DatabaseReference showref = reference.child(userId);
+                showref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-            showref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Profile profile = dataSnapshot.getValue(Profile.class);
 
-                    Profile profile = dataSnapshot.getValue(Profile.class);
+                        try {
+                            name = profile.getName();
+                            email = profile.getEmail();
+                            image = profile.getImage();
 
-                    try {
-                        name = profile.getName();
-                        email = profile.getEmail();
-                        image = profile.getImage();
-
-                        UserName.setText(name);
-                        userEmail.setText(email);
-                        if (!image.isEmpty() || !image.matches("")) {
-                            try {
-                                Glide.with(MainActivity.this)
-                                        .load(image)
-                                        .fitCenter()
-                                        .into(circularImageView);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                            UserName.setText(name);
+                            userEmail.setText(email);
+                            if (!image.isEmpty() || !image.matches("")) {
+                                try {
+                                    Glide.with(MainActivity.this)
+                                            .load(image)
+                                            .fitCenter()
+                                            .into(circularImageView);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                                }
+                            } else {
+                                String sex = profile.getSex();
+                                if (sex.matches("male")) {
+                                    try {
+                                        Glide.with(MainActivity.this)
+                                                .load(getImageFromDrawable("man"))
+                                                .centerInside()
+                                                .into(circularImageView);
+                                    } catch (IllegalArgumentException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else if (sex.matches("female")) {
+                                    try {
+                                        Glide.with(MainActivity.this)
+                                                .load(getImageFromDrawable("woman"))
+                                                .centerInside()
+                                                .into(circularImageView);
+                                    } catch (IllegalArgumentException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
-                        } else {
-                            String sex = profile.getSex();
-                            if (sex.matches("male")) {
-                                Glide.with(MainActivity.this)
-                                        .load(getImageFromDrawable("man"))
-                                        .centerInside()
-                                        .into(circularImageView);
-                            } else if (sex.matches("female")) {
-                                Glide.with(MainActivity.this)
-                                        .load(getImageFromDrawable("woman"))
-                                        .centerInside()
-                                        .into(circularImageView);
-                            }
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                            Toasty.error(getApplicationContext(), "Data has changed!", Toasty.LENGTH_LONG).show();
+                            FirebaseAuth.getInstance().signOut();
+                            startActivity(new Intent(MainActivity.this, SignIn.class));
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                        Toasty.error(getApplicationContext(), "Data has changed!", Toasty.LENGTH_LONG).show();
-                        FirebaseAuth.getInstance().signOut();
-                        startActivity(new Intent(MainActivity.this, SignIn.class));
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        //Toast.makeText(getApplicationContext(),image,Toast.LENGTH_LONG).show();
+
                     }
-                    //Toast.makeText(getApplicationContext(),image,Toast.LENGTH_LONG).show();
 
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+                    }
+                });
+            }
 
             circularImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -214,6 +225,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             //eventCommentsNotification();
             setNewTokens();
+            //preventMultiDeviceLogin();
+
+
         } else {
             startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
             finish();
@@ -351,8 +365,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return isConnected;
     }
 
-    private void bettaryOptimization(){
-        if(checkBatteryOptimized()){
+    private void bettaryOptimization() {
+        if (checkBatteryOptimized()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
             builder.setMessage("Please ignore Battery Optimization for working this app properly.")
                     .setCancelable(true)
@@ -376,17 +390,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 return !pwrm.isIgnoringBatteryOptimizations(getBaseContext().getPackageName());
             }
-        }catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
         return false;
     }
 
     @SuppressLint("BatteryLife")
-    private void startBatteryOptimizeDialog(){
+    private void startBatteryOptimizeDialog() {
         try {
             Intent intent = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                intent.setData(Uri.parse("package:"+getApplicationContext().getPackageName()));
+                intent.setData(Uri.parse("package:" + getApplicationContext().getPackageName()));
                 startActivity(intent);
             }
 
@@ -396,6 +411,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void setUserStatus(Boolean status) {
+        if (status) {
+            reference.child(auth.getUid()).child("status").setValue("active");
+            //reference.child(auth.getUid()).child("prevention").setValue("true");
+        } else {
+            reference.child(auth.getUid()).child("status").setValue("inactive");
+        }
+    }
+
+    private void preventMultiDeviceLogin() {
+        prevRef = FirebaseDatabase.getInstance().getReference().child("profile").child(auth.getUid()).child("token");
+        prevlistener = prevRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String token = (String) dataSnapshot.getValue();
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                        @Override
+                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                            if (!token.matches(instanceIdResult.getToken())) {
+                                FirebaseAuth.getInstance().signOut();
+                                Intent intent = new Intent(MainActivity.this, SignIn.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent.putExtra("prevention", "true"));
+                                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                                finish();
+                            }
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     private void setNewTokens() {
         ArrayList<String> eventIDs = new ArrayList<>();
@@ -422,6 +476,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     if (dataSnapshot.exists()) {
                                         updateToken(token, eventIDs.get(finalI));
                                         //Log.d(TAG, "onDataChange: " + eventIDs.get(finalI));
+                                        query.removeEventListener(this);
                                     }
                                 }
 
@@ -432,6 +487,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             });
                         }
                         preferences.edit().clear().apply();
+                        eventRef.removeEventListener(this);
                     }
                 }
 
@@ -440,7 +496,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
             });
-        }else {
+        } else {
             DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens");
             eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -451,30 +507,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             //Log.d(TAG, "events: "+snapshot.getKey());
                         }
                         for (int i = 0; i < eventIDs.size(); i++) {
-                            DatabaseReference IDRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(eventIDs.get(i));
-                            Query query = IDRef.orderByKey().equalTo(auth.getUid());
-                            int finalI = i;
-                            query.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                                            @Override
-                                            public void onSuccess(InstanceIdResult instanceIdResult) {
-                                                updateToken(instanceIdResult.getToken(), eventIDs.get(finalI));
-                                            }
-                                        });
-                                        //Log.d(TAG, "onDataChange: " + eventIDs.get(finalI));
+                            if (auth.getUid() != null) {
+                                DatabaseReference IDRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(eventIDs.get(i));
+                                Query query = IDRef.orderByKey().equalTo(auth.getUid());
+                                int finalI = i;
+                                query.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.exists()) {
+                                            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                                @Override
+                                                public void onSuccess(InstanceIdResult instanceIdResult) {
+                                                    updateToken(instanceIdResult.getToken(), eventIDs.get(finalI));
+                                                }
+                                            });
+                                            query.removeEventListener(this);
+                                            //Log.d(TAG, "onDataChange: " + eventIDs.get(finalI));
+                                        }
                                     }
-                                }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
-                            });
+                                    }
+                                });
+                            }
                         }
                         preferences.edit().clear().apply();
+                        eventRef.removeEventListener(this);
                     }
                 }
 
@@ -487,12 +547,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateToken(String token, String eventID) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens");
-        Token token1 = new Token(token);
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("userID", auth.getUid());
-        hashMap.put("token", token1.getToken());
-        ref.child(eventID).child(auth.getUid()).setValue(hashMap);
+        if (auth.getUid() != null) {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens");
+            Token token1 = new Token(token);
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("userID", auth.getUid());
+            hashMap.put("token", token1.getToken());
+            ref.child(eventID).child(auth.getUid()).setValue(hashMap);
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("profile").child(auth.getUid());
+            userRef.child("token").setValue(token1.getToken()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    //preventMultiDeviceLogin();
+                }
+            });
+        }
     }
 
     // Showing the status in Snackbar

@@ -45,6 +45,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.request.RequestOptions;
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.example.tureguideversion1.Activities.LocationImage;
 import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.Activities.NoInternetConnection;
@@ -104,7 +105,7 @@ import static android.app.Activity.RESULT_OK;
 public class TourFragment extends Fragment implements BaseSliderView.OnSliderClickListener,
         ViewPagerEx.OnPageChangeListener {
 
-    private EditText startDateET, endDateET, eventTime, groupName_ET, eventCost_ET, meetingPlace_ET, eventDescription_ET;
+    private EditText startDateET, endDateET, eventTime, groupName_ET, eventCost_ET, meetingPlace_ET, eventDescription_ET, meetingPlaceWithGuide_ET;
     private SliderLayout imageSlider;
     private ImageView logo, tour_nav_icon;
     private LottieAnimationView loading;
@@ -136,6 +137,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private double latForMeetingPlace;
     private double lonForMeetingPlace;
     private String subLocalityForMeetingPlace;
+    private ActionProcessButton makeTour;
 
     public TourFragment() {
         // Required empty public constructor
@@ -500,11 +502,23 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             }
         });
 
+        meetingPlaceWithGuide_ET.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), com.example.tureguideversion1.Activities.Map.class)
+                        .putExtra("from", "tour")
+                        .putExtra("for", "guidePlace")
+                        .putExtra("guideLocation",locationEt.getText().toString());
+                startActivityForResult(intent,2);
+            }
+        });
+
         meetingPlace_ET.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), com.example.tureguideversion1.Activities.Map.class)
                         .putExtra("from", "tour")
+                        .putExtra("for", "meetingPlace")
                         .putExtra("meetingPlace",meetingPlace_ET.getText().toString())
                         .putExtra("latForMeetingPlace",latForMeetingPlace)
                         .putExtra("lonForMeetingPlace",lonForMeetingPlace);
@@ -823,6 +837,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         createEvent = view.findViewById(R.id.createEvent);
         groupName_ET = view.findViewById(R.id.groupName_ET);
         eventCost_ET = view.findViewById(R.id.eventCost_ET);
+        meetingPlaceWithGuide_ET = view.findViewById(R.id.meetingPlaceWithGuide_ET);
         meetingPlace_ET = view.findViewById(R.id.meetingPlace_ET);
         eventDescription_ET = view.findViewById(R.id.eventDescription_ET);
         tScrollView = view.findViewById(R.id.tScrollView);
@@ -837,6 +852,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         weatherLocation = view.findViewById(R.id.weatherLocation);
         dailyForcastLayout = view.findViewById(R.id.dailyForcastLayout);
         locationListForWeather = new ArrayList<>();
+        makeTour = view.findViewById(R.id.makeTourBTN);
+        makeTour.setMode(ActionProcessButton.Mode.ENDLESS);
     }
 
     private void getDate() {
