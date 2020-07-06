@@ -58,7 +58,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
     private EditText passEt;
     private ActionProcessButton singin;
     private String email, password;
-    private TextView txt1;
+    private TextView txt1,forgot_passBtn;
     private ImageView logo;
     private FirebaseAuth auth;
     private DatabaseReference reference;
@@ -77,6 +77,7 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
         singin.setMode(ActionProcessButton.Mode.ENDLESS);
         passEt = findViewById(R.id.password_ET);
         passEt.setSelected(false);
+        forgot_passBtn = findViewById(R.id.forgot_passBtn);
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("profile");
         txt1 = findViewById(R.id.txt1);
@@ -107,6 +108,14 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
 
             }
         });
+
+        forgot_passBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SignInGrantAccess.this,ForgotPassword.class));
+            }
+        });
+
     }
 
     private void animation() {

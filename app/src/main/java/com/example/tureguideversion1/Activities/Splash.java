@@ -63,7 +63,6 @@ public class Splash extends AppCompatActivity {
                             finish();
                         }
                     }
-
 //                    Intent myintent = new Intent(Splash.this, SignIn.class);
 //                    myintent.putExtra("name", "Toast Test");
 //                    startActivity(myintent);

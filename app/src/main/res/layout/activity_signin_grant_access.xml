@@ -59,22 +59,22 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.dd.processbutton.iml.ActionProcessButton
-        android:id="@+id/signin_BTN"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/password_TIL"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="20dp"
-        android:text="Login"
-        android:textColor="@color/colorYellow"
-        app:pb_colorComplete="@color/colorPrimaryDark"
-        app:pb_colorError="@color/red_error"
-        app:pb_colorNormal="@color/colorPrimaryDark"
-        app:pb_colorPressed="@color/colorPrimaryDark"
-        app:pb_cornerRadius="5dp"
-        app:pb_textComplete="Login"
+    android:id="@+id/signin_BTN"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/password_TIL"
+    android:layout_centerHorizontal="true"
+    android:layout_marginStart="20dp"
+    android:layout_marginTop="12dp"
+    android:layout_marginEnd="20dp"
+    android:text="Login"
+    android:textColor="@color/colorYellow"
+    app:pb_colorComplete="@color/colorPrimaryDark"
+    app:pb_colorError="@color/red_error"
+    app:pb_colorNormal="@color/colorPrimaryDark"
+    app:pb_colorPressed="@color/colorPrimaryDark"
+    app:pb_cornerRadius="5dp"
+    app:pb_textComplete="Login"
         app:pb_textError="Login"
         app:pb_textProgress="connecting" />
 
@@ -90,6 +90,19 @@
         android:layout_marginTop="19dp"
         android:layout_marginEnd="81dp"
         app:srcCompat="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/forgot_passBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/signin_BTN"
+        android:layout_centerHorizontal="true"
+        android:text="Forgot Password?"
+        android:textColor="#000"
+        android:textSize="18sp"
+        android:textStyle="normal"
+        android:fontFamily="@font/amarante"
+        android:layout_marginTop="10dp"/>
 
 
 </RelativeLayout>
