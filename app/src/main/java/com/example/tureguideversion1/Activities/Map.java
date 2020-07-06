@@ -36,10 +36,12 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.ekalips.fancybuttonproj.FancyButton;
 import com.example.tureguideversion1.AppConstants;
+import com.example.tureguideversion1.ClusterManagerRenderer;
 import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
 import com.example.tureguideversion1.GpsUtils;
 import com.example.tureguideversion1.Model.CardView;
+import com.example.tureguideversion1.Model.ClusterMarker;
 import com.example.tureguideversion1.PolylineData;
 import com.example.tureguideversion1.R;
 import com.google.android.gms.common.api.Status;
@@ -68,9 +70,15 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PendingResult;
+import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
@@ -78,6 +86,7 @@ import com.google.maps.model.DirectionsRoute;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 
@@ -107,6 +116,9 @@ public class Map extends AppCompatActivity implements
     double duration = 999999999;
     private AutocompleteSupportFragment autocompleteFragment;
     private View event_searchCV;
+    private ClusterManager<ClusterMarker> mClusterManager;
+    private ClusterManagerRenderer mClusterManagerRenderer;
+    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
 
     public Map() {
         // Required empty public constructor
@@ -255,7 +267,7 @@ public class Map extends AppCompatActivity implements
                 if (intent.getStringExtra("for").matches("meetingPlace")) {
                     List<Address> meetingPlace = null;
                     try {
-                        Log.d(TAG, "onMapReady: "+intent.getStringExtra("for"));
+                        Log.d(TAG, "onMapReady: " + intent.getStringExtra("for"));
                         latForMeetingPlace = intent.getDoubleExtra("latForMeetingPlace", 0);
                         lonForMeetingPlace = intent.getDoubleExtra("lonForMeetingPlace", 0);
                         if (latForMeetingPlace != 0 && lonForMeetingPlace != 0) {
@@ -269,13 +281,18 @@ public class Map extends AppCompatActivity implements
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }else if (intent.getStringExtra("for").matches("guidePlace")) {
+                } else if (intent.getStringExtra("for").matches("guidePlace")) {
                     List<Address> meetingPlace = null;
                     try {
                         guidePlace = intent.getStringExtra("guideLocation");
                         if (guidePlace.trim().length() != 0) {
-                            meetingPlace = geocoder.getFromLocationName(guidePlace,5);
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(meetingPlace.get(0).getLatitude(), meetingPlace.get(0).getLongitude()), Float.parseFloat("13.5")));
+                            meetingPlace = geocoder.getFromLocationName(guidePlace, 5);
+                            map.animateCamera(
+                                    CameraUpdateFactory.newLatLngZoom(
+                                            new LatLng(meetingPlace.get(0).getLatitude(),
+                                                    meetingPlace.get(0).getLongitude()),
+                                            Float.parseFloat("13.5")));
+                            addMapMarkers(guidePlace);
                         } else {
                             getLocation();
                         }
@@ -548,6 +565,67 @@ public class Map extends AppCompatActivity implements
                 }
             }
         });
+    }
+
+    private void addMapMarkers(String place) {
+
+        if (map != null) {
+
+            if (mClusterManager == null) {
+                mClusterManager = new ClusterManager<ClusterMarker>(getApplicationContext(), map);
+            }
+            if (mClusterManagerRenderer == null) {
+                mClusterManagerRenderer = new ClusterManagerRenderer(
+                        getApplicationContext(),
+                        map,
+                        mClusterManager
+                );
+                mClusterManager.setRenderer(mClusterManagerRenderer);
+            }
+            int avatar = R.drawable.guide_icon; // set the default avatar
+            DatabaseReference onlineGuideRef = FirebaseDatabase.getInstance().getReference().child("guidesAreOnline").child(place);
+            onlineGuideRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        mClusterManager.clearItems();
+                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                            HashMap<String, Object> onlineMap = (HashMap<String, Object>) childSnapshot.getValue();
+                            Log.d(TAG, "onDataChange: " + onlineMap.get("ID"));
+                            DatabaseReference guideRef = FirebaseDatabase.getInstance().getReference().child("GuideProfile").child((String) onlineMap.get("ID"));
+                            guideRef.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        HashMap<String, Object> userMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                                        ClusterMarker newClusterMarker = new ClusterMarker(
+                                                new LatLng((double) onlineMap.get("currentLocationLatitude"),
+                                                        (double) onlineMap.get("currentLocationLongitude")),
+                                                (String) userMap.get("name"),
+                                                "",
+                                                avatar
+                                        );
+                                        mClusterManager.addItem(newClusterMarker);
+                                        mClusterMarkers.add(newClusterMarker);
+                                        mClusterManager.cluster();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
     public void zoomRoute(List<LatLng> lstLatLngRoute) {
