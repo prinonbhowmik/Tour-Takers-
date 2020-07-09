@@ -72,6 +72,7 @@ import com.glide.slider.library.tricks.ViewPagerEx;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -143,6 +144,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private double lonForGuidePlace;
     private String subLocalityForMeetingPlace;
     private ActionProcessButton makeTour;
+    private TextInputLayout meetingPlace, meetingPlaceWithGuide;
 
     public TourFragment() {
         // Required empty public constructor
@@ -400,6 +402,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 if(locationDistrict == null) {
                     Toasty.error(getContext(),"Select district first!",Toasty.LENGTH_SHORT).show();
                 }else {
+                    meetingPlaceWithGuide.setHint("Opening map...");
                     Intent intent = new Intent(view.getContext(), com.example.tureguideversion1.Activities.Map.class)
                             .putExtra("from", "tour")
                             .putExtra("for", "guidePlace")
@@ -414,6 +417,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         meetingPlace_ET.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                meetingPlace.setHint("Opening map...");
                 Intent intent = new Intent(view.getContext(), com.example.tureguideversion1.Activities.Map.class)
                         .putExtra("from", "tour")
                         .putExtra("for", "meetingPlace")
@@ -459,6 +463,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     // the user is done typing.
                     if (locationDistrict.trim().length() != 0) {
                         selectedLocation.clear();
+                        latForGuidePlace = 0;
+                        lonForGuidePlace = 0;
+                        meetingPlaceWithGuide_ET.setText("");
                         getForcast();
                         logo.setVisibility(View.INVISIBLE);
                         loading.setVisibility(View.VISIBLE);
@@ -521,6 +528,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
+            meetingPlace.setHint("Meetup with Members");
+            meetingPlaceWithGuide.setHint("Meetup with Guide");
             if (resultCode == RESULT_OK) {
                 slide = data.getIntExtra("slide", 0);
                 loading.setVisibility(View.INVISIBLE);
@@ -544,7 +553,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     e.printStackTrace();
                 }
             }else if(resultCode == 2){
-                Log.d(TAG, "onActivityResult: request");
                 if(data.getStringExtra("for").matches("meetingPlace")) {
                     String location = data.getStringExtra("location");
                     latForMeetingPlace = data.getDoubleExtra("latForMeetingPlace", 0);
@@ -800,6 +808,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         locationListForWeather = new ArrayList<>();
         makeTour = view.findViewById(R.id.makeTourBTN);
         makeTour.setMode(ActionProcessButton.Mode.ENDLESS);
+        meetingPlace = view.findViewById(R.id.meetingPlace);
+        meetingPlaceWithGuide = view.findViewById(R.id.meetingPlaceWithGuide);
     }
 
     private void getDate() {

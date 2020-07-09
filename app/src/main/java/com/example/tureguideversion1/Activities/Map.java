@@ -334,6 +334,7 @@ public class Map extends AppCompatActivity implements
                     }
                 } else if (intent.getStringExtra("for").matches("guidePlace")) {
                     currentLocationBTN.setVisibility(View.GONE);
+                    event_searchCV.setVisibility(View.GONE);
                     List<Address> meetingPlace = null;
                     try {
                         latForMeetingPlace = intent.getDoubleExtra("latForMeetingPlace", 0);
