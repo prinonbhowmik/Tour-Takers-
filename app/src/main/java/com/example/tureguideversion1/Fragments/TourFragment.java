@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -45,6 +46,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.request.RequestOptions;
+import com.chivorn.smartmaterialspinner.SmartMaterialSpinner;
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.example.tureguideversion1.Activities.LocationImage;
 import com.example.tureguideversion1.Activities.MainActivity;
@@ -105,16 +107,17 @@ import static android.app.Activity.RESULT_OK;
 public class TourFragment extends Fragment implements BaseSliderView.OnSliderClickListener,
         ViewPagerEx.OnPageChangeListener {
 
+    public static final String TAG = "TourFragment";
     private EditText startDateET, endDateET, eventTime, groupName_ET, eventCost_ET, meetingPlace_ET, eventDescription_ET, meetingPlaceWithGuide_ET;
+    private SmartMaterialSpinner locationEt;
     private SliderLayout imageSlider;
     private ImageView logo, tour_nav_icon;
     private LottieAnimationView loading;
-    private List<LocationItem> locationList;
+    private List<String> locationList;
     private List<String> selectedLocation, locationListForWeather;
-    private AutoCompleteTextView locationEt;
     private ArrayList<String> location;
     private String locationForViewPage, districtForLocationImage, districtFromLocationSelection, format,
-            userID, publishDate, s_date, r_date, time, place, description, meetPlace, group_name, cost;
+            userID, publishDate, s_date, r_date, time, place, description, meetPlace, group_name, cost, locationDistrict;
     private Button locationSelection, createEvent;
     private int slide;
     View view;
@@ -125,7 +128,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
     private static String eventId;
-    private int joinMemberCount;
+    private int joinMemberCount, scrollPosition;
     private navDrawerCheck check;
     private ScrollView tScrollView;
     private DrawerLayout tDrawerLayout;
@@ -136,6 +139,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private List<DailyForcastList> dailyForcastLists;
     private double latForMeetingPlace;
     private double lonForMeetingPlace;
+    private double latForGuidePlace;
+    private double lonForGuidePlace;
     private String subLocalityForMeetingPlace;
     private ActionProcessButton makeTour;
 
@@ -166,24 +171,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 });
             }
         });
-
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("locationList");
-        ref.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        //Get map of users in datasnapshot
-
-                        //loading.setVisibility(View.VISIBLE);
-                        fillLocationList((Map<String, Object>) dataSnapshot.getValue());
-                        //collectImageNInfo((Map<String,Object>) dataSnapshot.getValue());
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        //handle databaseError
-                    }
-                });
         tour_nav_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,6 +178,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 hideKeyboardFrom(view.getContext());
             }
         });
+
+        initDistrictSpinner();
 
         startDateET.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,6 +193,20 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 getEndDate();
             }
         });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            tScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+                    if (i1 > 0){
+                        if(makeTour.getVisibility() == View.GONE) {
+                            if(dailyForcastLayout.getVisibility() == View.GONE) {
+                                makeTour.setTranslationY(-view.getHeight());
+                            }
+                        }
+                    }
+                }
+            });
+        }
         loading.setVisibility(View.INVISIBLE);
         iconSwitch.setCheckedChangeListener(new IconSwitch.CheckedChangeListener() {
             @Override
@@ -225,6 +228,15 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                             }
                         });
                         tourTitle.startAnimation(anim);
+                        if (makeTour.getVisibility() == View.GONE) {
+                            makeTour.setVisibility(View.VISIBLE);
+                            makeTour.setAlpha(0.0f);
+                            makeTour.animate()
+                                    .translationY(0)
+                                    .alpha(1.0f)
+                                    .setDuration(300)
+                                    .setListener(null);
+                        }
                         if (eventLayout.getVisibility() == View.VISIBLE) {
                             eventLayout.animate()
                                     .translationY(view.getHeight())
@@ -255,6 +267,21 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                             }
                         });
                         tourTitle.startAnimation(anim);
+                        if (makeTour.getVisibility() == View.VISIBLE) {
+                            //makeTour.setVisibility(View.GONE);
+                            makeTour.setAlpha(0.0f);
+                            makeTour.animate()
+                                    .translationY(view.getHeight())
+                                    .alpha(0.0f)
+                                    .setDuration(300)
+                                    .setListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            makeTour.setVisibility(View.GONE);
+                                        }
+                                    });
+                        }
                         if (eventLayout.getVisibility() == View.GONE) {
                             eventLayout.setVisibility(View.VISIBLE);
                             eventLayout.setAlpha(0.0f);
@@ -278,122 +305,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
             }
         });
 
-        locationEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (selectedLocation.isEmpty()) {
-                    if (locationEt.getText().toString().isEmpty()) {
-                        locationSelection.setVisibility(View.GONE);
-                        locationSelection.setTranslationY(-150);
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-
-        locationEt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View v, int i, long l) {
-                if (checkConnection()) {
-                    selectedLocation.clear();
-                    locationSelection.setText("Select tourism places");
-                    locationSelection.setTextColor(getResources().getColor(R.color.colorYellow));
-                    hideKeyboardFrom(view.getContext(), view);
-                    logo.setVisibility(View.INVISIBLE);
-                    loading.setVisibility(View.VISIBLE);
-                    String location = locationEt.getText().toString();
-                    getForcast();
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location.toLowerCase());
-                    ref.addListenerForSingleValueEvent(
-                            new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    //Get map of users in datasnapshot
-                                    locationForViewPage = locationEt.getText().toString().toLowerCase();
-                                    //loading.setVisibility(View.VISIBLE);
-                                    collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    //handle databaseError
-                                }
-                            });
-                } else {
-                    startActivity(new Intent(view.getContext(), NoInternetConnection.class));
-                }
-            }
-        });
-
-        locationEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_SEARCH ||
-                        i == EditorInfo.IME_ACTION_DONE ||
-                        keyEvent != null &&
-                                keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
-                                keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    if (keyEvent == null || !keyEvent.isShiftPressed()) {
-                        if (checkConnection()) {
-                            // the user is done typing.
-                            if (locationEt.getText().toString().trim().length() != 0) {
-                                getForcast();
-                                hideKeyboardFrom(view.getContext(), view);
-                                locationEt.dismissDropDown();
-                                logo.setVisibility(View.INVISIBLE);
-                                loading.setVisibility(View.VISIBLE);
-                                String location = locationEt.getText().toString();
-                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(location.toLowerCase());
-                                ref.addListenerForSingleValueEvent(
-                                        new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                //Get map of users in datasnapshot
-                                                //loading.setVisibility(View.VISIBLE);
-                                                collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
-                                                locationForViewPage = districtForLocationImage;
-                                            }
-
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
-                                                //handle databaseError
-                                            }
-                                        });
-                                return true; // consume.
-                            }
-                        } else {
-                            startActivity(new Intent(view.getContext(), NoInternetConnection.class));
-                        }
-                    }
-                }
-                return false; // pass on to other listeners.
-            }
-
-        });
-
         locationSelection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (checkConnection()) {
                     LocationSelection_bottomSheet bottom_sheet = new LocationSelection_bottomSheet();
                     Bundle args = new Bundle();
-                    if (locationEt.getText().toString().isEmpty() && !selectedLocation.isEmpty() || !selectedLocation.isEmpty()) {
-                        locationEt.setFocusable(false);
-                        locationEt.setFocusableInTouchMode(false);
-                        locationEt.setText(districtFromLocationSelection);
-                        int pos = locationEt.getText().length();
-                        locationEt.setSelection(pos);
-                        locationEt.setFocusable(true);
-                        locationEt.setFocusableInTouchMode(true);
-                    }
-                    args.putString("location", locationEt.getText().toString());
+                    args.putString("location", locationDistrict);
                     if (selectedLocation != null) {
                         args.putStringArrayList("selectedLocation", (ArrayList<String>) selectedLocation);
                     }
@@ -418,8 +336,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     s_date = startDateET.getText().toString();
                     r_date = endDateET.getText().toString();
                     time = eventTime.getText().toString();
-                    if (!locationEt.getText().toString().isEmpty()) {
-                        place = locationEt.getText().toString().substring(0, 1).toUpperCase() + locationEt.getText().toString().substring(1);
+                    if (locationDistrict != null) {
+                        place = locationDistrict.substring(0, 1).toUpperCase() + locationDistrict.substring(1);
                     }
                     description = eventDescription_ET.getText().toString();
                     meetPlace = meetingPlace_ET.getText().toString();
@@ -428,35 +346,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     joinMemberCount = 1;
 
                     if (TextUtils.isEmpty(place)) {
-                        if (!selectedLocation.isEmpty()) {
-                            if (!TextUtils.isEmpty(s_date) &&
-                                    !TextUtils.isEmpty(r_date) &&
-                                    !TextUtils.isEmpty(group_name) &&
-                                    !TextUtils.isEmpty(cost) &&
-                                    !TextUtils.isEmpty(time) &&
-                                    !TextUtils.isEmpty(meetPlace) &&
-                                    !TextUtils.isEmpty(description)) {
-                                locationEt.setFocusable(false);
-                                locationEt.setFocusableInTouchMode(false);
-                                locationEt.setText(districtFromLocationSelection);
-                                int pos = locationEt.getText().length();
-                                locationEt.setSelection(pos);
-                                locationEt.setFocusable(true);
-                                locationEt.setFocusableInTouchMode(true);
-                                Toasty.info(view.getContext(), "Press again to create Event!", Toasty.LENGTH_SHORT).show();
-                            } else {
-                                locationEt.setFocusable(false);
-                                locationEt.setFocusableInTouchMode(false);
-                                locationEt.setText(districtFromLocationSelection);
-                                int pos = locationEt.getText().length();
-                                locationEt.setSelection(pos);
-                                locationEt.setFocusable(true);
-                                locationEt.setFocusableInTouchMode(true);
-                            }
-                        } else {
-                            Toasty.error(view.getContext(), "Enter District!", Toasty.LENGTH_SHORT).show();
-                            locationEt.requestFocus();
-                        }
+                        Toasty.error(view.getContext(), "Select District!", Toasty.LENGTH_SHORT).show();
+                        locationEt.setErrorText("Select District!");
+                        locationEt.setErrorTextColor(Color.RED);
                     } else if (locationSelection.getVisibility() == View.GONE) {
                         locationSelection.setTextColor(Color.RED);
                         Toasty.error(view.getContext(), "Select district from suggestion or press done from keyboard!", Toasty.LENGTH_SHORT).show();
@@ -505,11 +397,17 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         meetingPlaceWithGuide_ET.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), com.example.tureguideversion1.Activities.Map.class)
-                        .putExtra("from", "tour")
-                        .putExtra("for", "guidePlace")
-                        .putExtra("guideLocation",locationEt.getText().toString());
-                startActivityForResult(intent,2);
+                if(locationDistrict == null) {
+                    Toasty.error(getContext(),"Select district first!",Toasty.LENGTH_SHORT).show();
+                }else {
+                    Intent intent = new Intent(view.getContext(), com.example.tureguideversion1.Activities.Map.class)
+                            .putExtra("from", "tour")
+                            .putExtra("for", "guidePlace")
+                            .putExtra("latForMeetingPlace", latForGuidePlace)
+                            .putExtra("lonForMeetingPlace", lonForGuidePlace)
+                            .putExtra("guideLocation", locationDistrict);
+                    startActivityForResult(intent, 1);
+                }
             }
         });
 
@@ -527,6 +425,70 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         });
 
         return view;
+    }
+
+    private void initDistrictSpinner() {
+        DatabaseReference districtRef = FirebaseDatabase.getInstance().getReference().child("location");
+        districtRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                locationList = new ArrayList<>();
+                if(dataSnapshot.exists()){
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        //Log.d(TAG, "onDataChange: "+snapshot.getKey());
+                        locationList.add(snapshot.getKey().substring(0,1).toUpperCase()+snapshot.getKey().substring(1));
+                    }
+                    locationEt.setItem(locationList);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        locationEt.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                locationDistrict = locationList.get(position);
+                locationEt.setErrorText("District is Selected");
+                locationEt.setErrorTextColor(getResources().getColor(R.color.colorGreen));
+
+                if (checkConnection()) {
+                    // the user is done typing.
+                    if (locationDistrict.trim().length() != 0) {
+                        selectedLocation.clear();
+                        getForcast();
+                        logo.setVisibility(View.INVISIBLE);
+                        loading.setVisibility(View.VISIBLE);
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(locationDistrict.toLowerCase());
+                        ref.addListenerForSingleValueEvent(
+                                new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        //Get map of users in datasnapshot
+                                        //loading.setVisibility(View.VISIBLE);
+                                        //locationForViewPage = locationDistrict;
+                                        collectImageNInfo((Map<String, Object>) dataSnapshot.getValue());
+                                        locationForViewPage = districtForLocationImage;
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        //handle databaseError
+                                    }
+                                });
+                    }
+                } else {
+                    startActivity(new Intent(view.getContext(), NoInternetConnection.class));
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
     }
 
     public void receivedLocationData(String pickedLocation) {
@@ -582,37 +544,21 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     e.printStackTrace();
                 }
             }else if(resultCode == 2){
-                String location = data.getStringExtra("location");
-                latForMeetingPlace = data.getDoubleExtra("latForMeetingPlace",0);
-                lonForMeetingPlace = data.getDoubleExtra("lonForMeetingPlace",0);
-                subLocalityForMeetingPlace = data.getStringExtra("subLocality");
-                meetingPlace_ET.setText(location);
+                Log.d(TAG, "onActivityResult: request");
+                if(data.getStringExtra("for").matches("meetingPlace")) {
+                    String location = data.getStringExtra("location");
+                    latForMeetingPlace = data.getDoubleExtra("latForMeetingPlace", 0);
+                    lonForMeetingPlace = data.getDoubleExtra("lonForMeetingPlace", 0);
+                    subLocalityForMeetingPlace = data.getStringExtra("subLocality");
+                    meetingPlace_ET.setText(location);
+                }else if(data.getStringExtra("for").matches("guidePlace")) {
+                    String location = data.getStringExtra("location");
+                    latForGuidePlace = data.getDoubleExtra("latForMeetingPlace", 0);
+                    lonForGuidePlace = data.getDoubleExtra("lonForMeetingPlace", 0);
+                    meetingPlaceWithGuide_ET.setText(location);
+                }
             }
         }
-    }
-
-    private void fillLocationList(Map<String, Object> users) {
-        locationList = new ArrayList<>();
-
-        for (Map.Entry<String, Object> entry : users.entrySet()) {
-
-            //Get user map
-            Map singleUser = (Map) entry.getValue();
-            //Get district field and append to list
-            String location = (String) singleUser.get("district");
-            locationListForWeather.add((String) singleUser.get("district"));
-            String[] strArray = location.split(" ");
-            StringBuilder uppercaseWord = new StringBuilder();
-            for (String s : strArray) {
-                String cap = s.substring(0, 1).toUpperCase() + s.substring(1);
-                uppercaseWord.append(cap + " ");
-            }
-            String pureString = uppercaseWord.substring(0, uppercaseWord.length() - 1);
-            locationList.add(new LocationItem(pureString, R.drawable.travel_icon));
-            locationListForWeather.add(pureString);
-        }
-        AutoCompleteLocationAdapter adapter = new AutoCompleteLocationAdapter(view.getContext(), locationList);
-        locationEt.setAdapter(adapter);
     }
 
     private void collectImageNInfo(Map<String, Object> locations) {
@@ -671,7 +617,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         .setListener(null);
             }
             // set Slider Transition Animation
-            districtForLocationImage = locationEt.getText().toString().toLowerCase();
+            districtForLocationImage = locationDistrict;
             selectedLocation.clear();
             locationSelection.setText("Select tourism places");
             locationSelection.setTextColor(getResources().getColor(R.color.colorYellow));
@@ -914,7 +860,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         MainActivity main = new MainActivity();
         if (main.checkConnection()) {
             //Toast.makeText(getActivity(), slider.getBundle().getString("extra") + "", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(view.getContext(), LocationImage.class).putExtra("slide", slider.getBundle().getString("extra")).putExtra("location", locationForViewPage);
+            Intent i = new Intent(view.getContext(), LocationImage.class)
+                    .putExtra("slide", slider.getBundle().getString("extra"))
+                    .putExtra("location", locationForViewPage);
             startActivityForResult(i, 1);
             //startActivity(new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")));
         } else {
@@ -1011,15 +959,14 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 long diff = endDate1.getTime() - currentDate.getTime();
                 long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS) + 1;
                 if (days <= 8) {
-                    if (locationEt.getText().toString().trim().length() != 0) {
-                        if (locationListForWeather.contains(locationEt.getText().toString())) {
+                    if (locationDistrict != null) {
                             dailyForcastLayout.setVisibility(View.VISIBLE);
                             dailyForcastLists.clear();
                             Geocoder coder = new Geocoder(getContext());
                             List<Address> latlonaddress = null;
                             List<Address> address = null;
                             try {
-                                latlonaddress = coder.getFromLocationName(locationEt.getText().toString(), 5);
+                                latlonaddress = coder.getFromLocationName(locationDistrict, 5);
                                 if (latlonaddress != null) {
                                     Address location = latlonaddress.get(0);
                                     Call<WeatherResponse> call = api.getWeather(location.getLatitude(), location.getLongitude(), "metric", weatherAPI);
@@ -1039,7 +986,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                                         if (addresses.size() > 0) {
                                                             address = addresses.get(0).getLocality();
                                                             if (address == null) {
-                                                                weatherLocation.setText(locationEt.getText().toString());
+                                                                weatherLocation.setText(locationDistrict);
                                                             } else {
                                                                 weatherLocation.setText(address);
                                                             }
@@ -1092,7 +1039,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                 e.printStackTrace();
                                 Log.e("Error", "grpc failed: " + e.getMessage(), e);
                             }
-                        }
                     }
                 }
             } catch (ParseException e) {

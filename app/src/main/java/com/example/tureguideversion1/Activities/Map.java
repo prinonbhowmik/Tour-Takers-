@@ -69,6 +69,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -100,7 +101,8 @@ public class Map extends AppCompatActivity implements
     public static final String TAG = "Map";
     private double latForMeetingPlace, lonForMeetingPlace;
     private GoogleMap map;
-    private FloatingActionButton currentLocationBTN, locationPickBTN;
+    private FloatingActionButton currentLocationBTN;
+    private ExtendedFloatingActionButton locationPickBTN;
     private Geocoder geocoder;
     private String apiKey, selectedPlace, guidePlace;
     private StringBuilder stringBuilder;
@@ -119,6 +121,7 @@ public class Map extends AppCompatActivity implements
     private ClusterManager<ClusterMarker> mClusterManager;
     private ClusterManagerRenderer mClusterManagerRenderer;
     private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
+    private ArrayList<Marker> markers = new ArrayList<>();
 
     public Map() {
         // Required empty public constructor
@@ -201,15 +204,29 @@ public class Map extends AppCompatActivity implements
                 try {
                     address = geocoder.getFromLocation(latForMeetingPlace, lonForMeetingPlace, 5);
                     //Toast.makeText(getApplicationContext(),address.get(0).getSubLocality(),Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent();
+
                     if (!address.isEmpty()) {
-                        intent.putExtra("location", address.get(0).getAddressLine(0))
-                                .putExtra("latForMeetingPlace", latForMeetingPlace)
-                                .putExtra("lonForMeetingPlace", lonForMeetingPlace)
-                                .putExtra("subLocality", address.get(0).getSubLocality());
-                        setResult(2, intent);
+                        if((intent.getStringExtra("from").matches("tour")) && (intent.getStringExtra("for").matches("guidePlace"))){
+                            Intent intent2 = new Intent();
+                            intent2.putExtra("location", address.get(0).getAddressLine(0))
+                                    .putExtra("latForMeetingPlace", latForMeetingPlace)
+                                    .putExtra("lonForMeetingPlace", lonForMeetingPlace)
+                                    .putExtra("for", "guidePlace");
+                            setResult(2, intent2);
+                            finish();
+                        }else if((intent.getStringExtra("from").matches("tour")) && (intent.getStringExtra("for").matches("meetingPlace"))){
+                            Intent intent2 = new Intent();
+                            intent2.putExtra("location", address.get(0).getAddressLine(0))
+                                    .putExtra("latForMeetingPlace", latForMeetingPlace)
+                                    .putExtra("lonForMeetingPlace", lonForMeetingPlace)
+                                    .putExtra("for", "meetingPlace")
+                                    .putExtra("subLocality", address.get(0).getSubLocality());
+                            setResult(2, intent2);
+                            finish();
+                        }
+                    }else {
+                        Toasty.info(getApplicationContext(),"Pick a location from map.",Toasty.LENGTH_SHORT).show();
                     }
-                    finish();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -245,6 +262,7 @@ public class Map extends AppCompatActivity implements
         autocompleteFragment.setCountries("BD");
         currentLocationBTN = findViewById(R.id.currentLocationBTN);
         locationPickBTN = findViewById(R.id.locationPickBTN);
+        locationPickBTN.shrink();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -267,32 +285,88 @@ public class Map extends AppCompatActivity implements
                 if (intent.getStringExtra("for").matches("meetingPlace")) {
                     List<Address> meetingPlace = null;
                     try {
-                        Log.d(TAG, "onMapReady: " + intent.getStringExtra("for"));
                         latForMeetingPlace = intent.getDoubleExtra("latForMeetingPlace", 0);
                         lonForMeetingPlace = intent.getDoubleExtra("lonForMeetingPlace", 0);
                         if (latForMeetingPlace != 0 && lonForMeetingPlace != 0) {
                             meetingPlace = geocoder.getFromLocation(intent.getDoubleExtra("latForMeetingPlace", 0),
                                     intent.getDoubleExtra("lonForMeetingPlace", 0), 5);
                             map.addMarker(new MarkerOptions().position(new LatLng(meetingPlace.get(0).getLatitude(), meetingPlace.get(0).getLongitude())));
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(meetingPlace.get(0).getLatitude(), meetingPlace.get(0).getLongitude()), 18));
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(meetingPlace.get(0).getLatitude(), meetingPlace.get(0).getLongitude()), 18));
+                            locationPickBTN.setText("Picked Location");
+                            locationPickBTN.extend();
                         } else {
-                            getLocation();
+                            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                                        AppConstants.LOCATION_REQUEST);
+
+                            } else {
+                                if (isContinue) {
+                                    mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                                } else {
+                                    mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                                        @SuppressLint("MissingPermission")
+                                        @Override
+                                        public void onSuccess(Location location) {
+                                            if (location != null) {
+                                                wayLatitude = location.getLatitude();
+                                                wayLongitude = location.getLongitude();
+//                                                latForMeetingPlace = location.getLatitude();
+//                                                lonForMeetingPlace = location.getLongitude();
+                                                List<Address> address = null;
+                                                try {
+                                                    address = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 5);
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                map.clear();
+                                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(wayLatitude, wayLongitude), 18), 600, null);
+                                            } else {
+                                                mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                                            }
+                                        }
+                                    });
+                                }
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } else if (intent.getStringExtra("for").matches("guidePlace")) {
+                    currentLocationBTN.setVisibility(View.GONE);
                     List<Address> meetingPlace = null;
                     try {
+                        latForMeetingPlace = intent.getDoubleExtra("latForMeetingPlace", 0);
+                        lonForMeetingPlace = intent.getDoubleExtra("lonForMeetingPlace", 0);
                         guidePlace = intent.getStringExtra("guideLocation");
                         if (guidePlace.trim().length() != 0) {
-                            meetingPlace = geocoder.getFromLocationName(guidePlace, 5);
-                            map.animateCamera(
-                                    CameraUpdateFactory.newLatLngZoom(
-                                            new LatLng(meetingPlace.get(0).getLatitude(),
-                                                    meetingPlace.get(0).getLongitude()),
-                                            Float.parseFloat("13.5")));
-                            addMapMarkers(guidePlace);
+                            if (latForMeetingPlace != 0 && lonForMeetingPlace != 0) {
+                                meetingPlace = geocoder.getFromLocation(intent.getDoubleExtra("latForMeetingPlace", 0),
+                                        intent.getDoubleExtra("lonForMeetingPlace", 0), 5);
+                                map.moveCamera(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                                new LatLng(meetingPlace.get(0).getLatitude(),
+                                                        meetingPlace.get(0).getLongitude()),
+                                                Float.parseFloat("13.5")));
+                                addMapMarkers(guidePlace);
+                                LatLng latLng = new LatLng(meetingPlace.get(0).getLatitude(),meetingPlace.get(0).getLongitude());
+                                Marker marker = map.addMarker(new MarkerOptions()
+                                        .position(latLng)
+                                        .title(meetingPlace.get(0).getAddressLine(0))
+                                );
+                                marker.showInfoWindow();
+                                locationPickBTN.setText("Picked Location");
+                                locationPickBTN.extend();
+                                markers.add(marker);
+                            }else {
+                                meetingPlace = geocoder.getFromLocationName(guidePlace, 5);
+                                map.moveCamera(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                                new LatLng(meetingPlace.get(0).getLatitude(),
+                                                        meetingPlace.get(0).getLongitude()),
+                                                Float.parseFloat("13.5")));
+                                addMapMarkers(guidePlace);
+                            }
                         } else {
                             getLocation();
                         }
@@ -314,33 +388,82 @@ public class Map extends AppCompatActivity implements
 
         if (intent.getExtras() != null) {
             if (intent.getStringExtra("from").matches("tour")) {
-                map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(LatLng latLng) {
-                        // Creating a marker
-                        MarkerOptions markerOptions = new MarkerOptions();
-                        // Setting the position for the marker
-                        markerOptions.position(latLng);
-                        // Setting the title for the marker.
-                        // This will be displayed on taping the marker
-                        List<Address> address = null;
-                        try {
-                            address = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 5);
-                            markerOptions.title(address.get(0).getAddressLine(0));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        latForMeetingPlace = latLng.latitude;
-                        lonForMeetingPlace = latLng.longitude;
-                        // Clears the previously touched position
-                        map.clear();
-                        // Animating to the touched position
-                        map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                if (intent.getStringExtra("for").matches("guidePlace")) {
+                    map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                        @Override
+                        public void onMapClick(LatLng latLng) {
+                            // Creating a marker
+                            MarkerOptions markerOptions = new MarkerOptions();
+                            // Setting the position for the marker
+                            markerOptions.position(latLng);
+                            // Setting the title for the marker.
+                            // This will be displayed on taping the marker
+                            List<Address> address = null;
+                            try {
+                                address = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 5);
+                                markerOptions.title(address.get(0).getAddressLine(0));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            latForMeetingPlace = latLng.latitude;
+                            lonForMeetingPlace = latLng.longitude;
+                            // Clears the previously touched position
+                            for(Marker marker: markers){
+                                marker.remove();
+                            }
+                            // Animating to the touched position
+                            map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
 
-                        // Placing a marker on the touched position
-                        map.addMarker(markerOptions);
-                    }
-                });
+                            // Placing a marker on the touched position
+                            Marker marker = map.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .title(address.get(0).getAddressLine(0))
+                            );
+                            marker.showInfoWindow();
+                            locationPickBTN.shrink();
+                            locationPickBTN.setText("Pick location");
+                            locationPickBTN.extend();
+                            //map.addMarker(markerOptions);
+                            markers.add(marker);
+                        }
+                    });
+                }else if (intent.getStringExtra("for").matches("meetingPlace")) {
+                    map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                        @Override
+                        public void onMapClick(LatLng latLng) {
+                            // Creating a marker
+                            MarkerOptions markerOptions = new MarkerOptions();
+                            // Setting the position for the marker
+                            markerOptions.position(latLng);
+                            // Setting the title for the marker.
+                            // This will be displayed on taping the marker
+                            List<Address> address = null;
+                            try {
+                                address = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 5);
+                                markerOptions.title(address.get(0).getAddressLine(0));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            latForMeetingPlace = latLng.latitude;
+                            lonForMeetingPlace = latLng.longitude;
+                            // Clears the previously touched position
+                            map.clear();
+                            // Animating to the touched position
+                            map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
+                            // Placing a marker on the touched position
+                            //map.addMarker(markerOptions);
+                            Marker marker = map.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .title(address.get(0).getAddressLine(0))
+                            );
+                            marker.showInfoWindow();
+                            locationPickBTN.shrink();
+                            locationPickBTN.setText("Pick location");
+                            locationPickBTN.extend();
+                        }
+                    });
+                }
             }
         }
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -385,6 +508,7 @@ public class Map extends AppCompatActivity implements
                             wayLongitude = location.getLongitude();
                             latForMeetingPlace = location.getLatitude();
                             lonForMeetingPlace = location.getLongitude();
+                            LatLng latLng = new LatLng(wayLatitude,wayLongitude);
                             List<Address> address = null;
                             try {
                                 address = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 5);
@@ -392,8 +516,15 @@ public class Map extends AppCompatActivity implements
                                 e.printStackTrace();
                             }
                             map.clear();
-                            map.addMarker(new MarkerOptions().position(new LatLng(wayLatitude, wayLongitude)).title(address.get(0).getAddressLine(0)));
+                            Marker marker = map.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .title(address.get(0).getAddressLine(0))
+                            );
+                            marker.showInfoWindow();
                             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(wayLatitude, wayLongitude), 18), 600, null);
+                            locationPickBTN.shrink();
+                            locationPickBTN.setText("Pick location");
+                            locationPickBTN.extend();
                         } else {
                             mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
                         }

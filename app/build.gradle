@@ -118,6 +118,10 @@ dependencies {
     //RecyclerView Swipe Gesture
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
 
+    //process button
     implementation 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
+
+    //SmartMaterialSpinner
+    implementation 'com.github.chivorns.androidx:smartmaterialspinner:1.2.1'
 
 }

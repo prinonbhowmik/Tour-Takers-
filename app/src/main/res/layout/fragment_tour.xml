@@ -101,36 +101,40 @@
 
             </RelativeLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/location_TIL"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            <com.chivorn.smartmaterialspinner.SmartMaterialSpinner
+                android:id="@+id/location_Et"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginStart="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="35dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:focusableInTouchMode="true"
-                android:fontFamily="@font/amarante"
-                android:hint="@string/district"
-                android:textColorHint="@color/colorYellow"
-                app:boxStrokeColor="@color/colorYellow"
-                app:boxBackgroundMode="outline">
-
-                <AutoCompleteTextView
-                    android:id="@+id/location_Et"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:completionThreshold="1"
-                    android:fontFamily="@font/amarante"
-                    android:imeOptions="actionDone"
-                    android:inputType="textNoSuggestions|textCapWords"
-                    android:maxLines="1"
-                    android:paddingStart="15dp"
-                    android:paddingEnd="20dp"
-                    android:textColor="#000"
-                    android:textSize="21sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginEnd="35dp"
+                android:soundEffectsEnabled="true"
+                android:spinnerMode="dropdown"
+                android:splitMotionEvents="true"
+                app:smsp_alignLabel="true"
+                app:smsp_enableDismissSearch="false"
+                app:smsp_errorText="Tap to select District"
+                app:smsp_errorTextColor="#face2f"
+                app:smsp_errorTextSize="15sp"
+                app:smsp_floatingLabelColor="#face2f"
+                app:smsp_floatingLabelText="District"
+                app:smsp_hint="District"
+                app:smsp_hintColor="#face2f"
+                app:smsp_hintSize="20sp"
+                app:smsp_isSearchable="true"
+                app:smsp_itemColor="#000000"
+                app:smsp_itemListColor="#000000"
+                app:smsp_itemListHintBackgroundColor="#808080"
+                app:smsp_itemListHintColor="#FFFFFF"
+                app:smsp_itemSize="25dp"
+                app:smsp_searchHeaderBackgroundColor="#face2f"
+                app:smsp_searchHeaderText="Select District"
+                app:smsp_searchHeaderTextColor="#000000"
+                app:smsp_searchHint="Search here..."
+                app:smsp_searchHintColor="@color/common_google_signin_btn_text_dark_disabled"
+                app:smsp_searchTextColor="#000000"
+                app:smsp_selectedItemListColor="@color/colorGreen"
+                app:smsp_underlineSize="0dp" />
 
             <Button
                 android:id="@+id/locationSelection"
@@ -275,7 +279,7 @@
                 android:id="@+id/meetingPlaceWithGuide"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="20dp"
@@ -289,10 +293,9 @@
                     android:id="@+id/meetingPlaceWithGuide_ET"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fontFamily="@font/amarante"
-                    android:inputType="text"
                     android:focusable="false"
-                    android:maxLines="1"
+                    android:fontFamily="@font/amarante"
+                    android:inputType="textMultiLine"
                     android:paddingStart="15dp"
                     android:paddingTop="8dp"
                     android:paddingEnd="10dp"
@@ -309,6 +312,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="20dp"
+                android:layout_marginBottom="50dp"
                 android:text="Make Tour"
                 android:textColor="@color/colorYellow"
                 app:pb_colorComplete="@color/colorPrimaryDark"
@@ -339,8 +343,8 @@
                     android:fontFamily="@font/amarante"
                     android:hint="@string/group_name"
                     android:textColorHint="@color/colorYellow"
-                    app:boxStrokeColor="@color/colorYellow"
-                    app:boxBackgroundMode="outline">
+                    app:boxBackgroundMode="outline"
+                    app:boxStrokeColor="@color/colorYellow">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/groupName_ET"
@@ -375,8 +379,8 @@
                         android:fontFamily="@font/amarante"
                         android:hint="@string/total_cost"
                         android:textColorHint="@color/colorYellow"
-                        app:boxStrokeColor="@color/colorYellow"
-                        app:boxBackgroundMode="outline">
+                        app:boxBackgroundMode="outline"
+                        app:boxStrokeColor="@color/colorYellow">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/eventCost_ET"
@@ -405,8 +409,8 @@
                         android:fontFamily="@font/amarante"
                         android:hint="@string/event_time"
                         android:textColorHint="@color/colorYellow"
-                        app:boxStrokeColor="@color/colorYellow"
-                        app:boxBackgroundMode="outline">
+                        app:boxBackgroundMode="outline"
+                        app:boxStrokeColor="@color/colorYellow">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/eventTime_ET"
@@ -429,24 +433,23 @@
                     android:id="@+id/meetingPlace"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="20dp"
                     android:fontFamily="@font/amarante"
                     android:hint="@string/meeting_place"
                     android:textColorHint="@color/colorYellow"
-                    app:boxStrokeColor="@color/colorYellow"
-                    app:boxBackgroundMode="outline">
+                    app:boxBackgroundMode="outline"
+                    app:boxStrokeColor="@color/colorYellow">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/meetingPlace_ET"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:fontFamily="@font/amarante"
-                        android:inputType="text"
                         android:focusable="false"
-                        android:maxLines="1"
+                        android:fontFamily="@font/amarante"
+                        android:inputType="textMultiLine"
                         android:paddingStart="15dp"
                         android:paddingTop="8dp"
                         android:paddingEnd="10dp"
@@ -467,8 +470,8 @@
                     android:fontFamily="@font/amarante"
                     android:hint="@string/event_description"
                     android:textColorHint="@color/colorYellow"
-                    app:boxStrokeColor="@color/colorYellow"
-                    app:boxBackgroundMode="outline">
+                    app:boxBackgroundMode="outline"
+                    app:boxStrokeColor="@color/colorYellow">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/eventDescription_ET"

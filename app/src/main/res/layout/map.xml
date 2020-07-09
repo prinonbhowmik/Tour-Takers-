@@ -56,7 +56,7 @@
         android:src="@drawable/current_location"
         tools:ignore="RelativeOverlap" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/locationPickBTN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,14 +64,14 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        android:background="#face2f"
-        android:clickable="true"
-        android:focusable="true"
-        android:fontFamily="@font/amarante"
-        android:src="@drawable/ic_location_on_black_24dp"
+        android:backgroundTint="#face2f"
         android:text="Pick Location"
         android:textColor="#000000"
-        app:fabSize="normal" />
+        android:theme="@style/MyMaterialTheme"
+        app:cornerRadius="10dp"
+        app:fabSize="normal"
+        app:icon="@drawable/ic_location_on_black_24dp"
+        tools:visibility="visible" />
 
 
 </RelativeLayout>

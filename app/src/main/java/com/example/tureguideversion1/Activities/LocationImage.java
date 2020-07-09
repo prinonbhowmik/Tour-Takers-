@@ -5,6 +5,7 @@ import android.animation.ArgbEvaluator;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -33,6 +34,7 @@ import java.util.Objects;
 
 public class LocationImage extends AppCompatActivity {
 
+    public static final String TAG = "LocationImage";
     private View rootLayout;
     ArrayList<String> location, locationFromEvent;
     private ViewPager viewPager;
@@ -67,7 +69,7 @@ public class LocationImage extends AppCompatActivity {
             }
         }
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(locationForViewPage);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(locationForViewPage.toLowerCase());
         ref.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -114,24 +116,24 @@ public class LocationImage extends AppCompatActivity {
                 resources.getDisplayMetrics());
     }
 
-    private void collectImageNInfo(Map<String, Object> locatios) {
+    private void collectImageNInfo(Map<String, Object> location) {
 
-        location = new ArrayList<>();
+        this.location = new ArrayList<>();
 
         //iterate through each user, ignoring their UID
         models = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : locatios.entrySet()) {
+        for (Map.Entry<String, Object> entry : location.entrySet()) {
 
             //Get user map
             Map singleUser = (Map) entry.getValue();
             //Get phone field and append to list
             if(locationFromEvent != null) {
                 if (locationFromEvent.contains(singleUser.get("locationName").toString())) {
-                    location.add((String) singleUser.get("locationName"));
+                    this.location.add((String) singleUser.get("locationName"));
                     models.add(new CardView((String) singleUser.get("image"), (String) singleUser.get("locationName"), (String) singleUser.get("description")));
                 }
             }else {
-                location.add((String) singleUser.get("locationName"));
+                this.location.add((String) singleUser.get("locationName"));
                 models.add(new CardView((String) singleUser.get("image"), (String) singleUser.get("locationName"), (String) singleUser.get("description")));
             }
         }
@@ -142,7 +144,7 @@ public class LocationImage extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0, 130, 0);
         //Toast.makeText(getApplicationContext(),slide,Toast.LENGTH_LONG).show();
-        viewPager.setCurrentItem(location.indexOf(slide),true);
+        viewPager.setCurrentItem(this.location.indexOf(slide),true);
 
         colors = new Integer[]{
                 getResources().getColor(R.color.color1),
