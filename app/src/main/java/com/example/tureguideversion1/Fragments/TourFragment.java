@@ -35,6 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
@@ -60,6 +61,10 @@ import com.example.tureguideversion1.LocationSelection_bottomSheet;
 import com.example.tureguideversion1.Model.DailyForcastList;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.LocationItem;
+import com.example.tureguideversion1.Notifications.APIService;
+import com.example.tureguideversion1.Notifications.Client;
+import com.example.tureguideversion1.Notifications.Data;
+import com.example.tureguideversion1.Notifications.Sender;
 import com.example.tureguideversion1.Notifications.Token;
 import com.example.tureguideversion1.R;
 import com.example.tureguideversion1.Weather.WeatherResponse;
@@ -145,6 +150,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private String subLocalityForMeetingPlace;
     private ActionProcessButton makeTour;
     private TextInputLayout meetingPlace, meetingPlaceWithGuide;
+    private APIService apiService;
 
     public TourFragment() {
         // Required empty public constructor
@@ -322,6 +328,61 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 } else {
                     startActivity(new Intent(view.getContext(), NoInternetConnection.class));
                 }
+            }
+        });
+
+        makeTour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                makeTour.setProgress(50);
+                DatabaseReference onlineRef = FirebaseDatabase.getInstance().getReference().child("guidesAreOnline").child(locationDistrict);
+                onlineRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.exists()){
+                            for(DataSnapshot childSnapShot: snapshot.getChildren()){
+                                HashMap<String, Object> onlineMap = (HashMap<String, Object>) childSnapShot.getValue();
+                                DatabaseReference guideRef = FirebaseDatabase.getInstance().getReference().child("GuideProfile").child((String) onlineMap.get("ID"));
+                                guideRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if(snapshot.exists()) {
+                                            HashMap<String, Object> guideMap = (HashMap<String, Object>) snapshot.getValue();
+                                            Token token = snapshot.getValue(Token.class);
+                                            Data data = new Data("Guide request for a tour","Request",(String) guideMap.get("Id"),auth.getUid());
+                                            Sender sender = new Sender(data, token.getToken());
+                                            apiService.sendNotification(sender)
+                                                    .enqueue(new Callback<com.example.tureguideversion1.Notifications.Response>() {
+                                                        @Override
+                                                        public void onResponse(Call<com.example.tureguideversion1.Notifications.Response> call, retrofit2.Response<com.example.tureguideversion1.Notifications.Response> response) {
+                                                            if (response.code() == 200) {
+                                                                if (response.body().success != 1) {
+                                                                    Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(Call<com.example.tureguideversion1.Notifications.Response> call, Throwable t) {}
+                                                    });
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
 
@@ -810,6 +871,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         makeTour.setMode(ActionProcessButton.Mode.ENDLESS);
         meetingPlace = view.findViewById(R.id.meetingPlace);
         meetingPlaceWithGuide = view.findViewById(R.id.meetingPlaceWithGuide);
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
     }
 
     private void getDate() {

@@ -12,6 +12,13 @@ public class Data {
     private String userImage;
     private String userSex;
 
+    public Data(String body, String title, String sented, String userID) {
+        this.body = body;
+        this.title = title;
+        this.sented = sented;
+        this.userID = userID;
+    }
+
     public Data(String eventID, int icon, String body, String title, String sented, String userID, String fromActivity, String commentID, String userImage, String userSex) {
         this.eventID = eventID;
         this.icon = icon;

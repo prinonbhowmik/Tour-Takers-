@@ -67,7 +67,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        //Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+        Log.d(TAG, "onMessageReceived: "+remoteMessage.getData());
 
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         boolean isScreenOn = pm.isInteractive();
@@ -97,17 +97,6 @@ public class FirebaseMessaging extends FirebaseMessagingService {
 
         if (firebaseUser != null && sented.equals(firebaseUser.getUid())) {
             if (!currentUser.equals(user) && currentUser.equals("none")) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    sendOreoNotification(remoteMessage);
-                    //Log.d(TAG, "onMessageReceived: send oreo");
-                } else {
-                    sendNotification(remoteMessage);
-                    //Log.d(TAG, "onMessageReceived: send normal");
-                }
-            }
-        }
-        if (firebaseUser != null && sented.equals(firebaseUser.getUid())) {
-            if (remoteMessage.getData().get("fromActivity").matches("EventDetails")) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     sendOreoNotification(remoteMessage);
                     //Log.d(TAG, "onMessageReceived: send oreo");
