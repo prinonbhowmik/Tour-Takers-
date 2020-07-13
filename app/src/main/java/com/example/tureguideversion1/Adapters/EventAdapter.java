@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,7 +25,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     private String member_id, member_name, member_image, member_phone;
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
+    String currentDate, currentTime, date, time;
 
     public EventAdapter(List<Event> eventList, Context context) {
         this.eventList = eventList;
@@ -57,122 +59,145 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final Event event = eventList.get(position);
-        //Toast.makeText(context,event.getId(),Toast.LENGTH_SHORT).show();
-        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference().child("eventLocationList").child(event.getId());
-        ref1.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        //Get map of users in datasnapshot
-                        Map<String, Object> locationList = (Map<String, Object>) dataSnapshot.getValue();
-                        if (locationList != null) {
-                            holder.locationWillBeVisit.clear();
-                            for (Map.Entry<String, Object> entry : locationList.entrySet()) {
-                                //Get user map
-                                Map singleUser = (Map) entry.getValue();
-                                //Get location field and append to list
-                                holder.locationWillBeVisit.add((String) singleUser.get("locationName"));
-                            }
-                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(event.getPlace().toLowerCase());
-                            ref.addListenerForSingleValueEvent(
-                                    new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            //Get map of users in datasnapshot
-                                            Map<String, Object> collectImageNInfo = (Map<String, Object>) dataSnapshot.getValue();
-                                            ArrayList<String> location = new ArrayList<>();
-                                            ArrayList<String> image = new ArrayList<>();
-                                            if (collectImageNInfo != null) {
-                                                for (Map.Entry<String, Object> entry : collectImageNInfo.entrySet()) {
-                                                    //Get user map
-                                                    Map singleUser = (Map) entry.getValue();
-                                                    //Get phone field and append to list
-                                                    if (holder.locationWillBeVisit.contains(singleUser.get("locationName").toString())) {
-                                                        location.add((String) singleUser.get("locationName"));
-                                                        image.add((String) singleUser.get("image"));
+
+        String sDate = holder.rDate.getText().toString();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+        currentDate = dateFormat.format(new Date()).toString();
+        currentTime = timeFormat.format(new Date()).toString();
+
+        Date lastDate = null;
+        try {
+            lastDate = dateFormat.parse(sDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        //dateFormat.parse(holder.rDate.getText().toString())<System.currentTimeMillis()
+        if (position == 10) {
+
+            holder.itemView.setVisibility(View.GONE);
+            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+
+        } else {
+            holder.itemView.setVisibility(View.VISIBLE);
+            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            //Toast.makeText(context,event.getId(),Toast.LENGTH_SHORT).show();
+            DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference().child("eventLocationList").child(event.getId());
+            ref1.addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            //Get map of users in datasnapshot
+                            Map<String, Object> locationList = (Map<String, Object>) dataSnapshot.getValue();
+                            if (locationList != null) {
+                                holder.locationWillBeVisit.clear();
+                                for (Map.Entry<String, Object> entry : locationList.entrySet()) {
+                                    //Get user map
+                                    Map singleUser = (Map) entry.getValue();
+                                    //Get location field and append to list
+                                    holder.locationWillBeVisit.add((String) singleUser.get("locationName"));
+                                }
+                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("location").child(event.getPlace().toLowerCase());
+                                ref.addListenerForSingleValueEvent(
+                                        new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                //Get map of users in datasnapshot
+                                                Map<String, Object> collectImageNInfo = (Map<String, Object>) dataSnapshot.getValue();
+                                                ArrayList<String> location = new ArrayList<>();
+                                                ArrayList<String> image = new ArrayList<>();
+                                                if (collectImageNInfo != null) {
+                                                    for (Map.Entry<String, Object> entry : collectImageNInfo.entrySet()) {
+                                                        //Get user map
+                                                        Map singleUser = (Map) entry.getValue();
+                                                        //Get phone field and append to list
+                                                        if (holder.locationWillBeVisit.contains(singleUser.get("locationName").toString())) {
+                                                            location.add((String) singleUser.get("locationName"));
+                                                            image.add((String) singleUser.get("image"));
+                                                        }
+                                                    }
+
+                                                    RequestOptions requestOptions = new RequestOptions();
+                                                    requestOptions.centerCrop();
+                                                    //.diskCacheStrategy(DiskCacheStrategy.NONE);
+                                                    //.placeholder(R.drawable.placeholder)
+                                                    //.error(R.drawable.placeholder);
+                                                    holder.imageSlider.removeAllSliders();
+
+                                                    for (int i = 0; i < image.size(); i++) {
+                                                        TextSliderView sliderView = new TextSliderView(context);
+                                                        // initialize SliderLayout
+                                                        sliderView
+                                                                .image(image.get(i))
+                                                                .description(location.get(i))
+                                                                .setRequestOption(requestOptions)
+                                                                .setProgressBarVisible(false);
+
+                                                        holder.imageSlider.addSlider(sliderView);
+                                                    }
+                                                    // set Slider Transition Animation
+                                                    if (holder.imageSlider.getSliderImageCount() < 2) {
+                                                        holder.imageSlider.stopAutoCycle();
+                                                        holder.imageSlider.setPagerTransformer(false, new BaseTransformer() {
+                                                            @Override
+                                                            protected void onTransform(View view, float v) {
+                                                            }
+                                                        });
+                                                        holder.imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
+                                                    } else {
+                                                        holder.imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
+                                                        holder.imageSlider.startAutoCycle();
+                                                        holder.imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
+                                                        holder.imageSlider.setCustomAnimation(new DescriptionAnimation());
+                                                        holder.imageSlider.setDuration(4000);
                                                     }
                                                 }
-
-                                                RequestOptions requestOptions = new RequestOptions();
-                                                requestOptions.centerCrop();
-                                                //.diskCacheStrategy(DiskCacheStrategy.NONE);
-                                                //.placeholder(R.drawable.placeholder)
-                                                //.error(R.drawable.placeholder);
-                                                holder.imageSlider.removeAllSliders();
-
-                                                for (int i = 0; i < image.size(); i++) {
-                                                    TextSliderView sliderView = new TextSliderView(context);
-                                                    // initialize SliderLayout
-                                                    sliderView
-                                                            .image(image.get(i))
-                                                            .description(location.get(i))
-                                                            .setRequestOption(requestOptions)
-                                                            .setProgressBarVisible(false);
-
-                                                    holder.imageSlider.addSlider(sliderView);
-                                                }
-                                                // set Slider Transition Animation
-                                                if (holder.imageSlider.getSliderImageCount() < 2) {
-                                                    holder.imageSlider.stopAutoCycle();
-                                                    holder.imageSlider.setPagerTransformer(false, new BaseTransformer() {
-                                                        @Override
-                                                        protected void onTransform(View view, float v) {
-                                                        }
-                                                    });
-                                                    holder.imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
-                                                } else {
-                                                    holder.imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
-                                                    holder.imageSlider.startAutoCycle();
-                                                    holder.imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Top);
-                                                    holder.imageSlider.setCustomAnimation(new DescriptionAnimation());
-                                                    holder.imageSlider.setDuration(4000);
-                                                }
                                             }
-                                        }
 
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-                                            //handle databaseError
-                                        }
-                                    });
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+                                                //handle databaseError
+                                            }
+                                        });
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        //handle databaseError
-                    }
-                });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            //handle databaseError
+                        }
+                    });
 
-        holder.eTitle.setText(event.getPlace());
-        holder.eDate.setText(event.getStartDate());
-        holder.rDate.setText(event.getReturnDate());
-        holder.eTime.setText(event.getTime());
-        holder.ePlace.setText(event.getSubLocalityForMeetingPlace());
-        holder.eMembers.setText(String.valueOf(event.getJoinMemberCount()));
-        holder.eCost.setText(event.getCost());
-        holder.eGroupName.setText(event.getGroupName());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, EventDetails.class);
-                intent.putExtra("event_place", event.getPlace());
-                intent.putExtra("event_start_date", event.getStartDate());
-                intent.putExtra("event_return_date", event.getReturnDate());
-                intent.putExtra("event_time", event.getTime());
-                intent.putExtra("event_description", event.getDescription());
-                intent.putExtra("event_publish_date", event.getPublishDate());
-                intent.putExtra("event_join_member_count", String.valueOf(event.getJoinMemberCount()));
-                intent.putExtra("event_meeting_place", event.getMeetPlace());
-                intent.putExtra("group_name", event.getGroupName());
-                intent.putExtra("cost", event.getCost());
-                intent.putExtra("event_id", event.getId());
-                intent.putExtra("member_id", event.getEventPublisherId());
-                context.startActivity(intent);
+            holder.eTitle.setText(event.getPlace());
+            holder.eDate.setText(event.getStartDate());
+            holder.rDate.setText(event.getReturnDate());
+            holder.eTime.setText(event.getTime());
+            holder.ePlace.setText(event.getSubLocalityForMeetingPlace());
+            holder.eMembers.setText(String.valueOf(event.getJoinMemberCount()));
+            holder.eCost.setText(event.getCost());
+            holder.eGroupName.setText(event.getGroupName());
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, EventDetails.class);
+                    intent.putExtra("event_place", event.getPlace());
+//                intent.putExtra("event_start_date", event.getStartDate());
+//                intent.putExtra("event_return_date", event.getReturnDate());
+//                intent.putExtra("event_time", event.getTime());
+//                intent.putExtra("event_description", event.getDescription());
+//                intent.putExtra("event_publish_date", event.getPublishDate());
+//                intent.putExtra("event_join_member_count", String.valueOf(event.getJoinMemberCount()));
+//                intent.putExtra("event_meeting_place", event.getMeetPlace());
+//                intent.putExtra("group_name", event.getGroupName());
+//                intent.putExtra("cost", event.getCost());
+                    intent.putExtra("event_id", event.getId());
+                    intent.putExtra("member_id", event.getEventPublisherId());
+                    context.startActivity(intent);
 
-            }
-        });
-
+                }
+            });
+        }
     }
 
     @Override

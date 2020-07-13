@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
@@ -29,7 +28,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tureguideversion1.Adapters.EventAdapter;
-import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,8 +37,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -262,15 +263,28 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+
+
                     eventList.clear();
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        Event event = data.getValue(Event.class);
-                        eventList.add(event);
-                        //eventAdapter.notifyDataSetChanged();
+                        String date1 = (String) data.child("returnDate").getValue().toString();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        Date eDate = null;
+                        try {
+                            eDate = dateFormat.parse(date1);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        if (System.currentTimeMillis() <= eDate.getTime()) {
+                            Event event = data.getValue(Event.class);
+                            eventList.add(event);
+                            //eventAdapter.notifyDataSetChanged();
+                        }
 
                     }
                     Collections.reverse(eventList);
                     eventAdapter.notifyDataSetChanged();
+
                 }
             }
             @Override

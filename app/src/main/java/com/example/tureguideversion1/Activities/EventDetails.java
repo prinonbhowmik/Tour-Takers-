@@ -32,7 +32,6 @@ import com.example.tureguideversion1.Internet.Connection;
 import com.example.tureguideversion1.Internet.ConnectivityReceiver;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.EventLocationList;
-import com.example.tureguideversion1.Model.Profile;
 import com.example.tureguideversion1.Notifications.APIService;
 import com.example.tureguideversion1.Notifications.Client;
 import com.example.tureguideversion1.Notifications.Data;
@@ -53,12 +52,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,12 +70,12 @@ import retrofit2.Callback;
 public class EventDetails extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView event_place, event_date, return_date, event_time, meeting_place, event_description, publish_date,
-            publisher_name, publisher_phone, event_attending_member, event_cost, group_name, viewMember, deleteTV, txt7, commentCountTV;
+            publisher_name, publisher_phone, event_attending_member, event_cost, group_name, viewMember, deleteTV, txt7, commentCountTV, eventRunning, lateForJoin;
     private ImageView descriptionIV, meetingIV, groupIV, costIV, event_image;
     private CircleImageView event_publisher_image;
     private Button joinBtn, cancel_joinBtn;
     private String place, s_date, r_date, time, m_place, description, p_date, g_name, e_cost, publisher_id, counter,
-            place1,username;
+            place1, username;
     private int attend_member_count;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
@@ -392,18 +391,18 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
+                if (dataSnapshot.exists()) {
                     HashMap<String, Object> userMap = (HashMap<String, Object>) dataSnapshot.getValue();
                     DatabaseReference publisherRef = FirebaseDatabase.getInstance().getReference().child("profile").child(publisher_id);
                     publisherRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists()){
+                            if (dataSnapshot.exists()) {
                                 HashMap<String, Object> publishermMap = (HashMap<String, Object>) dataSnapshot.getValue();
                                 Data data = new Data(event_Id,
-                                         R.drawable.ic_stat_ic_notification,
-                                        userMap.get("name")+" has joined your event!",
-                                        "Your Event: "+place,
+                                        R.drawable.ic_stat_ic_notification,
+                                        userMap.get("name") + " has joined your event!",
+                                        "Your Event: " + place,
                                         publisher_id,
                                         auth.getUid(),
                                         "EventDetails",
@@ -498,11 +497,11 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 removeActivity.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()){
+                        if (dataSnapshot.exists()) {
                             for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                                 //eventKeys.add(childSnapshot.getKey());
-                                HashMap<String,Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
-                                if(hashMap.get("eventID").toString().equals(event_Id)){
+                                HashMap<String, Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
+                                if (hashMap.get("eventID").toString().equals(event_Id)) {
                                     eventKeys.add(childSnapshot.getKey());
                                     //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
                                 }
@@ -579,7 +578,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 removeActivity.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()){
+                        if (dataSnapshot.exists()) {
                             for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                                 userIDs.add(childSnapshot.getKey());
                                 //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
@@ -590,10 +589,10 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                                 eventsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.exists()){
+                                        if (dataSnapshot.exists()) {
                                             for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                                                HashMap<String,Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
-                                                if(hashMap.get("eventID").toString().equals(event_Id)){
+                                                HashMap<String, Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
+                                                if (hashMap.get("eventID").toString().equals(event_Id)) {
                                                     DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference()
                                                             .child("userActivities")
                                                             .child(userIDs.get(finalI))
@@ -746,7 +745,15 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
 
 
     private void moreImageShow() {
+        /*SimpleDateFormat dteFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date lDate = null;
+        try {
+            lDate = dteFormat.parse(s_date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }*/
         if (publisher_id != null) {
+
             if (publisher_id.equals(userId)) {
                 deleteTV.setVisibility(View.VISIBLE);
                 txt7.setVisibility(View.VISIBLE);
@@ -755,8 +762,11 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 groupIV.setVisibility(View.VISIBLE);
                 costIV.setVisibility(View.VISIBLE);
                 relative16.setVisibility(View.VISIBLE);
+            }/*else if (publisher_id.equals(userId) && System.currentTimeMillis() > lDate.getTime()) {
+                    txt7.setVisibility(View.VISIBLE);
+                    eventRunning.setVisibility(View.VISIBLE);
 
-            } else {
+            }*/ else {
                 joinButtonShow();
             }
         }
@@ -771,12 +781,65 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     String id = (String) data.child("id").getValue();
-                    if (userId.equals(id)) {
-                        cancel_joinBtn.setVisibility(View.VISIBLE);
-                        relative16.setVisibility(View.VISIBLE);
-                    } else {
-                        joinBtn.setVisibility(View.VISIBLE);
-                        //relative16.setVisibility(View.GONE);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    Date sDate = null;
+                    try {
+                        sDate = dateFormat.parse(s_date);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (id != null) {
+                        if (userId.equals(id)) {
+                            //dateFormat.parse(holder.rDate.getText().toString())<System.currentTimeMillis()
+                            if (System.currentTimeMillis() < sDate.getTime()) {
+                                joinBtn.setVisibility(View.GONE);
+                                cancel_joinBtn.setVisibility(View.VISIBLE);
+                                relative16.setVisibility(View.VISIBLE);
+                                Toast.makeText(EventDetails.this, "1", Toast.LENGTH_SHORT).show();
+
+                            } else if (System.currentTimeMillis() == sDate.getTime()) {
+                                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
+                                Date sTime = null;
+                                try {
+                                    sTime = dateFormat.parse(time);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                                if (System.currentTimeMillis() <= sTime.getTime()) {
+                                    joinBtn.setVisibility(View.GONE);
+                                    cancel_joinBtn.setVisibility(View.VISIBLE);
+                                    Toast.makeText(EventDetails.this, "2", Toast.LENGTH_SHORT).show();
+
+                                } else {
+                                    eventRunning.setVisibility(View.VISIBLE);
+                                    cancel_joinBtn.setVisibility(View.GONE);
+                                    joinBtn.setVisibility(View.GONE);
+                                    Toast.makeText(EventDetails.this, "3", Toast.LENGTH_SHORT).show();
+                                }
+                                relative16.setVisibility(View.VISIBLE);
+
+                            } else if (System.currentTimeMillis() > sDate.getTime()) {
+                                eventRunning.setVisibility(View.VISIBLE);
+                                cancel_joinBtn.setVisibility(View.GONE);
+                                joinBtn.setVisibility(View.GONE);
+                                relative16.setVisibility(View.VISIBLE);
+                                Toast.makeText(EventDetails.this, "4", Toast.LENGTH_SHORT).show();
+
+                            }
+                        } else {
+                            if (System.currentTimeMillis() < sDate.getTime()) {
+                                joinBtn.setVisibility(View.VISIBLE);
+                                Toast.makeText(EventDetails.this, "5", Toast.LENGTH_SHORT).show();
+
+                            } else if (System.currentTimeMillis() >= sDate.getTime()) {
+                                lateForJoin.setVisibility(View.VISIBLE);
+                                Toast.makeText(EventDetails.this, "6", Toast.LENGTH_SHORT).show();
+
+                            }
+
+                        }
+
                     }
                 }
             }
@@ -962,6 +1025,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
         sendSound = MediaPlayer.create(this, R.raw.comment_send);
         receiveSound = MediaPlayer.create(this, R.raw.appointed);
+        eventRunning = findViewById(R.id.eventRunning);
+        lateForJoin = findViewById(R.id.lateForJoin);
     }
 
 

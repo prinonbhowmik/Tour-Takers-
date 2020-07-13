@@ -580,7 +580,7 @@
             android:layout_height="45dp"
             android:layout_below="@id/relative16"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="50dp">
+            android:layout_marginBottom="10dp">
 
             <Button
                 android:id="@+id/joinBtn"
@@ -624,6 +624,34 @@
                 android:textSize="18sp"
                 android:visibility="gone" />
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/eventRunning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginBottom="20dp"
+            android:text="Event is running"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:layout_below="@id/relative15"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/lateForJoin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginBottom="30dp"
+            android:text="Soory!! You are late."
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:layout_below="@id/eventRunning"
+            android:visibility="gone" />
     </RelativeLayout>
 
 
