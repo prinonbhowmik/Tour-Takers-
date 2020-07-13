@@ -162,15 +162,15 @@
                     android:id="@+id/date1_TIL"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="5dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/amarante"
                     android:hint="@string/start_date"
                     android:textColorHint="@color/colorYellow"
-                    app:boxStrokeColor="@color/colorYellow"
-                    app:boxBackgroundMode="outline">
+                    app:boxBackgroundMode="outline"
+                    app:boxStrokeColor="@color/colorYellow">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/startDate_Et"
@@ -200,15 +200,15 @@
                     android:id="@+id/date2_TIL"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="20dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/amarante"
                     android:hint="@string/return_date"
                     android:textColorHint="@color/colorYellow"
-                    app:boxStrokeColor="@color/colorYellow"
-                    app:boxBackgroundMode="outline">
+                    app:boxBackgroundMode="outline"
+                    app:boxStrokeColor="@color/colorYellow">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/endDate_Et"

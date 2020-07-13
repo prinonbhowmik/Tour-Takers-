@@ -1,5 +1,7 @@
 package com.example.tureguideversion1.Fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -34,14 +36,11 @@ public class LoaderFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_loader, container, false);
         loadinAmin = view.findViewById(R.id.loadinAmin);
         Bundle bundle = getArguments();
-        new CountDownTimer(5000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            public void onFinish() {
-                //startActivity(new Intent(getContext(), MainActivity.class).putExtra("FromLoader","tour"));
+        loadinAmin.setAnimation("dot_circle_loading.json");
+        loadinAmin.playAnimation();
+        loadinAmin.addAnimatorListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
                 try {
                     if (getArguments() != null) {
                         if (bundle.getString("shortcut").matches("event")) {
@@ -62,7 +61,7 @@ public class LoaderFragment extends Fragment {
                     Log.d(TAG, "onFinish: "+e.getMessage());
                 }
             }
-        }.start();
+        });
 
         return view;
     }

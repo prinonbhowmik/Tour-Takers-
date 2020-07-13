@@ -11,12 +11,16 @@ public class Data {
     private String commentID;
     private String userImage;
     private String userSex;
+    private String startDate;
+    private String returnDate;
+    private String type;
 
-    public Data(String body, String title, String sented, String userID) {
-        this.body = body;
-        this.title = title;
+    public Data(String sented, String userID, String startDate, String returnDate, String type) {
         this.sented = sented;
         this.userID = userID;
+        this.startDate = startDate;
+        this.returnDate = returnDate;
+        this.type = type;
     }
 
     public Data(String eventID, int icon, String body, String title, String sented, String userID, String fromActivity, String commentID, String userImage, String userSex) {

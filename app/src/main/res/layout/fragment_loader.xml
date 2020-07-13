@@ -8,9 +8,6 @@
         android:id="@+id/loadinAmin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        app:lottie_autoPlay="true"
-        app:lottie_fileName="I_stay_at_home.json"
-        app:lottie_loop="true" />
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

@@ -46,6 +46,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.request.RequestOptions;
 import com.chivorn.smartmaterialspinner.SmartMaterialSpinner;
 import com.dd.processbutton.iml.ActionProcessButton;
@@ -88,6 +96,9 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.polyak.iconswitch.IconSwitch;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -123,7 +134,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private List<String> selectedLocation, locationListForWeather;
     private ArrayList<String> location;
     private String locationForViewPage, districtForLocationImage, districtFromLocationSelection, format,
-            userID, publishDate, s_date, r_date, time, place, description, meetPlace, group_name, cost, locationDistrict;
+            userID, publishDate, s_date, r_date, time, place, description, meetPlace, meetingWithGuide, group_name, cost, locationDistrict;
     private Button locationSelection, createEvent;
     private int slide;
     View view;
@@ -149,7 +160,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private double lonForGuidePlace;
     private String subLocalityForMeetingPlace;
     private ActionProcessButton makeTour;
-    private TextInputLayout meetingPlace, meetingPlaceWithGuide;
+    private TextInputLayout meetingPlace, meetingPlaceWithGuide, startDate, returnDate, timeLayout;
     private APIService apiService;
 
     public TourFragment() {
@@ -334,55 +345,78 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         makeTour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                makeTour.setProgress(50);
-                DatabaseReference onlineRef = FirebaseDatabase.getInstance().getReference().child("guidesAreOnline").child(locationDistrict);
-                onlineRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()){
-                            for(DataSnapshot childSnapShot: snapshot.getChildren()){
-                                HashMap<String, Object> onlineMap = (HashMap<String, Object>) childSnapShot.getValue();
-                                DatabaseReference guideRef = FirebaseDatabase.getInstance().getReference().child("GuideProfile").child((String) onlineMap.get("ID"));
-                                guideRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if(snapshot.exists()) {
-                                            HashMap<String, Object> guideMap = (HashMap<String, Object>) snapshot.getValue();
-                                            Token token = snapshot.getValue(Token.class);
-                                            Data data = new Data("Guide request for a tour","Request",(String) guideMap.get("Id"),auth.getUid());
-                                            Sender sender = new Sender(data, token.getToken());
-                                            apiService.sendNotification(sender)
-                                                    .enqueue(new Callback<com.example.tureguideversion1.Notifications.Response>() {
-                                                        @Override
-                                                        public void onResponse(Call<com.example.tureguideversion1.Notifications.Response> call, retrofit2.Response<com.example.tureguideversion1.Notifications.Response> response) {
-                                                            if (response.code() == 200) {
-                                                                if (response.body().success != 1) {
-                                                                    Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                s_date = startDateET.getText().toString();
+                r_date = endDateET.getText().toString();
+                meetingWithGuide = meetingPlaceWithGuide_ET.getText().toString();
+
+                if(TextUtils.isEmpty(locationDistrict)){
+                    Toasty.error(view.getContext(), "Select District!", Toasty.LENGTH_SHORT).show();
+                    locationEt.setErrorText("Select District!");
+                    locationEt.setErrorTextColor(Color.RED);
+                }else if (selectedLocation.isEmpty()) {
+                    locationSelection.setTextColor(Color.RED);
+                    Toasty.error(view.getContext(), "Select Tourism Places!", Toasty.LENGTH_SHORT).show();
+                }else if(TextUtils.isEmpty(s_date)){
+                    //Toasty.error(view.getContext(), "Pick Start Date!", Toasty.LENGTH_SHORT).show();
+                    startDate.setError("Tap for pick date!");
+                }else if(TextUtils.isEmpty(r_date)){
+                    //Toasty.error(view.getContext(), "Pick Return Date!", Toasty.LENGTH_SHORT).show();
+                    returnDate.setError("Tap for pick date!");
+                }else if(TextUtils.isEmpty(meetingWithGuide)){
+                    //Toasty.error(view.getContext(), "Pick location for meetup with guide!", Toasty.LENGTH_SHORT).show();
+                    meetingPlaceWithGuide.setError(" Tap to pick location for meetup with guide!");
+                }else {
+                    Log.d(TAG, "onClick: "+s_date+r_date);
+                    makeTour.setProgress(50);
+                    DatabaseReference onlineRef = FirebaseDatabase.getInstance().getReference().child("guidesAreOnline").child(locationDistrict);
+                    onlineRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+                                for(DataSnapshot childSnapShot: snapshot.getChildren()){
+                                    HashMap<String, Object> onlineMap = (HashMap<String, Object>) childSnapShot.getValue();
+                                    DatabaseReference guideRef = FirebaseDatabase.getInstance().getReference().child("GuideProfile").child((String) onlineMap.get("ID"));
+                                    guideRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if(snapshot.exists()) {
+                                                HashMap<String, Object> guideMap = (HashMap<String, Object>) snapshot.getValue();
+                                                Token token = snapshot.getValue(Token.class);
+                                                Data data = new Data((String) guideMap.get("Id"),auth.getUid(),s_date,r_date,"request");
+                                                Sender sender = new Sender(data, token.getToken());
+                                                apiService.sendNotification(sender)
+                                                        .enqueue(new Callback<com.example.tureguideversion1.Notifications.Response>() {
+                                                            @Override
+                                                            public void onResponse(Call<com.example.tureguideversion1.Notifications.Response> call, retrofit2.Response<com.example.tureguideversion1.Notifications.Response> response) {
+                                                                if (response.code() == 200) {
+                                                                    if (response.body().success != 1) {
+                                                                        Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                                                                    }
                                                                 }
                                                             }
-                                                        }
 
-                                                        @Override
-                                                        public void onFailure(Call<com.example.tureguideversion1.Notifications.Response> call, Throwable t) {}
-                                                    });
+                                                            @Override
+                                                            public void onFailure(Call<com.example.tureguideversion1.Notifications.Response> call, Throwable t) {}
+                                                        });
+                                                //send(s_date,r_date,(String) guideMap.get("Id"),auth.getUid(),token.getToken());
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
 
                                         }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
+                                    });
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
+                        }
+                    });
+                }
             }
         });
 
@@ -412,9 +446,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         Toasty.error(view.getContext(), "Select District!", Toasty.LENGTH_SHORT).show();
                         locationEt.setErrorText("Select District!");
                         locationEt.setErrorTextColor(Color.RED);
-                    } else if (locationSelection.getVisibility() == View.GONE) {
-                        locationSelection.setTextColor(Color.RED);
-                        Toasty.error(view.getContext(), "Select district from suggestion or press done from keyboard!", Toasty.LENGTH_SHORT).show();
                     } else if (selectedLocation.isEmpty()) {
                         locationSelection.setTextColor(Color.RED);
                         Toasty.error(view.getContext(), "Select Tourism Places!", Toasty.LENGTH_SHORT).show();
@@ -490,6 +521,79 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         });
 
         return view;
+    }
+
+    private void send(String startDate, String returnDate, String sented, String userID, String token) {
+
+        JSONObject obj = null;
+        JSONObject objData = null;
+        JSONObject dataobjData = null;
+        JSONObject android = null;
+        JSONObject apns = null;
+        JSONObject apnsh = null;
+        JSONObject webPush = null;
+        JSONObject webPushH = null;
+
+        try {
+
+            obj = new JSONObject();
+            objData = new JSONObject();
+            dataobjData = new JSONObject();
+            android = new JSONObject();
+            apns = new JSONObject();
+            apnsh = new JSONObject();
+            webPush = new JSONObject();
+            webPushH = new JSONObject();
+            dataobjData.put("startDate", startDate);
+            dataobjData.put("returnDate", returnDate);
+            dataobjData.put("sented", sented);
+            dataobjData.put("userID", userID);
+
+            objData.put("content_available","true");
+            objData.put("priority", "high");
+
+            android.put("priority","high");
+            apnsh.put("apns-priority","10");
+            apns.put("headers",apnsh);
+            webPushH.put("Urgency","high");
+            webPush.put("headers",webPushH);
+
+            obj.put("to", token);
+            obj.put("notification", objData);
+            obj.put("data", dataobjData);
+            obj.put("android", android);
+
+            Log.e("MYOBJs", obj.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, "https://fcm.googleapis.com/fcm/send", obj,
+                new com.android.volley.Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e("SUCCESS", response + "");
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("ERRORS", error + "");
+                    }
+                }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", "key=AAAAgbNQHYY:APA91bGdhyJtQep7JFxDZYxDu3VF0-bV1H_lSLX4Lyvek8QViU0Y0N_x42ftIf85luF0UEQEidMJj0vJBD7MqniuDWMOZzK2SjgQswp4RmFCse38wbx3nbJ0WguBbQ-SYXmi-O1r1bcY");
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        int socketTimeout = 1000 * 60;// 60 seconds
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        jsObjRequest.setRetryPolicy(policy);
+        requestQueue.add(jsObjRequest);
     }
 
     private void initDistrictSpinner() {
@@ -591,6 +695,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         if (requestCode == 1) {
             meetingPlace.setHint("Meetup with Members");
             meetingPlaceWithGuide.setHint("Meetup with Guide");
+            meetingPlaceWithGuide.setErrorEnabled(false);
             if (resultCode == RESULT_OK) {
                 slide = data.getIntExtra("slide", 0);
                 loading.setVisibility(View.INVISIBLE);
@@ -732,7 +837,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
+                returnDate.setErrorEnabled(false);
                 endDateET.setText(dateFormat.format(date));
                 long milisec = date.getTime();
                 getForcast();
@@ -832,7 +937,10 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private void init(View view) {
         locationEt = view.findViewById(R.id.location_Et);
         startDateET = view.findViewById(R.id.startDate_Et);
+        startDate = view.findViewById(R.id.date1_TIL);
         endDateET = view.findViewById(R.id.endDate_Et);
+        returnDate = view.findViewById(R.id.date2_TIL);
+        timeLayout = view.findViewById(R.id.eventTime);
         imageSlider = view.findViewById(R.id.slider);
         logo = view.findViewById(R.id.logoT);
         loading = view.findViewById(R.id.loading);
@@ -888,6 +996,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                startDate.setErrorEnabled(false);
                 startDateET.setText(dateFormat.format(date));
                 long milisec = date.getTime();
                 getForcast();
