@@ -95,7 +95,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
     private double latForMeetingPlace, lonForMeetingPlace;
-    private RelativeLayout relative16;
+    private RelativeLayout relative16, relative15;
     private TextView viewComment;
     public static final String TAG = "EventDetails";
     private APIService apiService;
@@ -762,6 +762,8 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 groupIV.setVisibility(View.VISIBLE);
                 costIV.setVisibility(View.VISIBLE);
                 relative16.setVisibility(View.VISIBLE);
+                lateForJoin.setVisibility(View.GONE);
+                eventRunning.setVisibility(View.GONE);
             }/*else if (publisher_id.equals(userId) && System.currentTimeMillis() > lDate.getTime()) {
                     txt7.setVisibility(View.VISIBLE);
                     eventRunning.setVisibility(View.VISIBLE);
@@ -796,7 +798,6 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                                 joinBtn.setVisibility(View.GONE);
                                 cancel_joinBtn.setVisibility(View.VISIBLE);
                                 relative16.setVisibility(View.VISIBLE);
-                                Toast.makeText(EventDetails.this, "1", Toast.LENGTH_SHORT).show();
 
                             } else if (System.currentTimeMillis() == sDate.getTime()) {
                                 SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
@@ -809,13 +810,13 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                                 if (System.currentTimeMillis() <= sTime.getTime()) {
                                     joinBtn.setVisibility(View.GONE);
                                     cancel_joinBtn.setVisibility(View.VISIBLE);
-                                    Toast.makeText(EventDetails.this, "2", Toast.LENGTH_SHORT).show();
+
 
                                 } else {
                                     eventRunning.setVisibility(View.VISIBLE);
                                     cancel_joinBtn.setVisibility(View.GONE);
                                     joinBtn.setVisibility(View.GONE);
-                                    Toast.makeText(EventDetails.this, "3", Toast.LENGTH_SHORT).show();
+
                                 }
                                 relative16.setVisibility(View.VISIBLE);
 
@@ -824,17 +825,21 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                                 cancel_joinBtn.setVisibility(View.GONE);
                                 joinBtn.setVisibility(View.GONE);
                                 relative16.setVisibility(View.VISIBLE);
-                                Toast.makeText(EventDetails.this, "4", Toast.LENGTH_SHORT).show();
+                                lateForJoin.setVisibility(View.GONE);
+                                relative15.setVisibility(View.GONE);
 
                             }
+                            break;
                         } else {
                             if (System.currentTimeMillis() < sDate.getTime()) {
                                 joinBtn.setVisibility(View.VISIBLE);
-                                Toast.makeText(EventDetails.this, "5", Toast.LENGTH_SHORT).show();
+
 
                             } else if (System.currentTimeMillis() >= sDate.getTime()) {
                                 lateForJoin.setVisibility(View.VISIBLE);
-                                Toast.makeText(EventDetails.this, "6", Toast.LENGTH_SHORT).show();
+                                eventRunning.setVisibility(View.VISIBLE);
+                                relative15.setVisibility(View.GONE);
+
 
                             }
 
@@ -1020,6 +1025,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         connectivityReceiver = new ConnectivityReceiver();
         relative16 = findViewById(R.id.relative16);
+        relative15 = findViewById(R.id.relative15);
         viewComment = findViewById(R.id.viewComment);
         commentCountTV = findViewById(R.id.commentCount);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);

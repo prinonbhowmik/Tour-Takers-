@@ -278,7 +278,7 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
                         if (System.currentTimeMillis() <= eDate.getTime()) {
                             Event event = data.getValue(Event.class);
                             eventList.add(event);
-                            //eventAdapter.notifyDataSetChanged();
+                            
                         }
 
                     }

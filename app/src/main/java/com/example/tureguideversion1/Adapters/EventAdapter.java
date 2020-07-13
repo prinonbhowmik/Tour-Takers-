@@ -25,10 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -60,37 +57,22 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final Event event = eventList.get(position);
 
-        String sDate = holder.rDate.getText().toString();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-        currentDate = dateFormat.format(new Date()).toString();
-        currentTime = timeFormat.format(new Date()).toString();
 
-        Date lastDate = null;
-        try {
-            lastDate = dateFormat.parse(sDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        //dateFormat.parse(holder.rDate.getText().toString())<System.currentTimeMillis()
-        if (position == 10) {
-
-            holder.itemView.setVisibility(View.GONE);
+            /*holder.itemView.setVisibility(View.GONE);
             holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
-
-        } else {
             holder.itemView.setVisibility(View.VISIBLE);
             holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            //Toast.makeText(context,event.getId(),Toast.LENGTH_SHORT).show();
-            DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference().child("eventLocationList").child(event.getId());
-            ref1.addListenerForSingleValueEvent(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            //Get map of users in datasnapshot
-                            Map<String, Object> locationList = (Map<String, Object>) dataSnapshot.getValue();
-                            if (locationList != null) {
+            */
+
+        //Toast.makeText(context,event.getId(),Toast.LENGTH_SHORT).show();
+        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference().child("eventLocationList").child(event.getId());
+        ref1.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+                        Map<String, Object> locationList = (Map<String, Object>) dataSnapshot.getValue();
+                        if (locationList != null) {
                                 holder.locationWillBeVisit.clear();
                                 for (Map.Entry<String, Object> entry : locationList.entrySet()) {
                                     //Get user map
@@ -182,22 +164,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 public void onClick(View v) {
                     Intent intent = new Intent(context, EventDetails.class);
                     intent.putExtra("event_place", event.getPlace());
-//                intent.putExtra("event_start_date", event.getStartDate());
-//                intent.putExtra("event_return_date", event.getReturnDate());
-//                intent.putExtra("event_time", event.getTime());
-//                intent.putExtra("event_description", event.getDescription());
-//                intent.putExtra("event_publish_date", event.getPublishDate());
-//                intent.putExtra("event_join_member_count", String.valueOf(event.getJoinMemberCount()));
-//                intent.putExtra("event_meeting_place", event.getMeetPlace());
-//                intent.putExtra("group_name", event.getGroupName());
-//                intent.putExtra("cost", event.getCost());
                     intent.putExtra("event_id", event.getId());
                     intent.putExtra("member_id", event.getEventPublisherId());
                     context.startActivity(intent);
 
                 }
             });
-        }
+
     }
 
     @Override
