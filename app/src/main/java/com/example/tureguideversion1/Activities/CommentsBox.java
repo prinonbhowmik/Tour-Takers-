@@ -268,7 +268,7 @@ public class CommentsBox extends AppCompatActivity {
 
     }
 
-    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             return false;
@@ -277,14 +277,27 @@ public class CommentsBox extends AppCompatActivity {
 
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-            if (direction == ItemTouchHelper.RIGHT) {
-                String CID = chatAdapter.getSwipePosition(viewHolder.getAdapterPosition());
-                Intent intent2 = new Intent(CommentsBox.this, ReplyBox.class);
-                intent2.putExtra("commentId", CID);
-                intent2.putExtra("eventId", currentEventId);
-                startActivityForResult(intent2, 2);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            switch (direction) {
+                case ItemTouchHelper.RIGHT:
+                    String CID = chatAdapter.getSwipePosition(viewHolder.getAdapterPosition());
+                    Intent intent2 = new Intent(CommentsBox.this, ReplyBox.class);
+                    intent2.putExtra("commentId", CID);
+                    intent2.putExtra("eventId", currentEventId);
+                    startActivityForResult(intent2, 2);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    break;
+                case ItemTouchHelper.LEFT:
+                    String cID = chatAdapter.getSwipePosition(viewHolder.getAdapterPosition());
+                    DatabaseReference deleteRef = databaseReference.child("eventComments").child(currentEventId).child(cID);
+                    deleteRef.setValue(null);
+                    DatabaseReference repRef = databaseReference.child("eventCommentsReply").child(currentEventId).child(cID);
+                    repRef.setValue(null);
+                    Toast.makeText(CommentsBox.this, "Comment Delete", Toast.LENGTH_SHORT).show();
+
+                    break;
             }
+
+
         }
 
 
@@ -295,6 +308,11 @@ public class CommentsBox extends AppCompatActivity {
                     .addSwipeRightLabel("Reply")
                     .setSwipeRightLabelTypeface(Typeface.DEFAULT_BOLD)
                     .addSwipeRightBackgroundColor(ContextCompat.getColor(CommentsBox.this, R.color.colorYellow))
+
+                    .addSwipeLeftActionIcon(R.drawable.swipe_delete)
+                    .addSwipeLeftLabel("Delete")
+                    .setSwipeLeftLabelTypeface(Typeface.DEFAULT_BOLD)
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(CommentsBox.this, R.color.red))
                     .create()
                     .decorate();
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);

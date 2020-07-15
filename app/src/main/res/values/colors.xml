@@ -33,6 +33,7 @@
     <color name="orange">#eaad43</color>
     <color name="accent">#FF4081</color>
     <color name="darkPopUp">#2f333f</color>
+    <color name="red">@android:color/holo_red_light</color>
 
     <color name="ashes">#CCCACA</color>
 
