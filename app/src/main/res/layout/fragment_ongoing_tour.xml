@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:theme="@style/EditText"
+    tools:context=".Fragments.TourFragment">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/tour_searchCV"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:backgroundTint="@android:color/white"
+        app:cardCornerRadius="5dp">
+
+        <RelativeLayout
+            android:id="@+id/rl1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/nav_icon"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:padding="15dp"
+                android:src="@drawable/ic_menu5" />
+
+            <TextView
+                android:id="@+id/tourTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:background="@null"
+                android:fontFamily="@font/amarante"
+                android:layout_toStartOf="@+id/tourSwitch"
+                android:layout_toEndOf="@+id/nav_icon"
+                android:gravity="center"
+                android:text="@string/tour"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+
+            <com.polyak.iconswitch.IconSwitch
+                android:id="@+id/tourSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                app:isw_active_tint_icon_left="#000000"
+                app:isw_active_tint_icon_right="#000000"
+                app:isw_icon_left="@drawable/travel_icon"
+                app:isw_icon_right="@drawable/ic_event_black_24dp" />
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/onGoingViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tour_searchCV"
+        android:layout_centerInParent="true"
+        android:foregroundGravity="center" />
+
+
+</RelativeLayout>

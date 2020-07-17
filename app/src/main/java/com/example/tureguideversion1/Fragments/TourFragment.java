@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -100,6 +101,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -366,56 +369,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     //Toasty.error(view.getContext(), "Pick location for meetup with guide!", Toasty.LENGTH_SHORT).show();
                     meetingPlaceWithGuide.setError(" Tap to pick location for meetup with guide!");
                 }else {
-                    Log.d(TAG, "onClick: "+s_date+r_date);
-                    makeTour.setProgress(50);
-                    DatabaseReference onlineRef = FirebaseDatabase.getInstance().getReference().child("guidesAreOnline").child(locationDistrict);
-                    onlineRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if(snapshot.exists()){
-                                for(DataSnapshot childSnapShot: snapshot.getChildren()){
-                                    HashMap<String, Object> onlineMap = (HashMap<String, Object>) childSnapShot.getValue();
-                                    DatabaseReference guideRef = FirebaseDatabase.getInstance().getReference().child("GuideProfile").child((String) onlineMap.get("ID"));
-                                    guideRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            if(snapshot.exists()) {
-                                                HashMap<String, Object> guideMap = (HashMap<String, Object>) snapshot.getValue();
-                                                Token token = snapshot.getValue(Token.class);
-                                                Data data = new Data((String) guideMap.get("Id"),auth.getUid(),s_date,r_date,"request");
-                                                Sender sender = new Sender(data, token.getToken());
-                                                apiService.sendNotification(sender)
-                                                        .enqueue(new Callback<com.example.tureguideversion1.Notifications.Response>() {
-                                                            @Override
-                                                            public void onResponse(Call<com.example.tureguideversion1.Notifications.Response> call, retrofit2.Response<com.example.tureguideversion1.Notifications.Response> response) {
-                                                                if (response.code() == 200) {
-                                                                    if (response.body().success != 1) {
-                                                                        Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            @Override
-                                                            public void onFailure(Call<com.example.tureguideversion1.Notifications.Response> call, Throwable t) {}
-                                                        });
-                                                //send(s_date,r_date,(String) guideMap.get("Id"),auth.getUid(),token.getToken());
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
+                    requestingGuide(locationDistrict,s_date,r_date);
                 }
             }
         });
@@ -594,6 +548,63 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         jsObjRequest.setRetryPolicy(policy);
         requestQueue.add(jsObjRequest);
+    }
+
+    private void requestingGuide(String district, String startDate, String returnDate){
+        makeTour.setProgress(50);
+        DatabaseReference onlineRef = FirebaseDatabase.getInstance().getReference().child("guidesAreOnline").child(district);
+        onlineRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    for(DataSnapshot childSnapShot: snapshot.getChildren()){
+                        HashMap<String, Object> onlineMap = (HashMap<String, Object>) childSnapShot.getValue();
+                        DatabaseReference guideRef = FirebaseDatabase.getInstance().getReference().child("GuideProfile").child((String) onlineMap.get("ID"));
+                        guideRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if(snapshot.exists()) {
+                                    HashMap<String, Object> guideMap = (HashMap<String, Object>) snapshot.getValue();
+                                    Token token = snapshot.getValue(Token.class);
+                                    Data data = new Data((String) guideMap.get("Id"),auth.getUid(),startDate,returnDate,"request",district);
+                                    Sender sender = new Sender(data, token.getToken());
+                                    apiService.sendNotification(sender)
+                                            .enqueue(new Callback<com.example.tureguideversion1.Notifications.Response>() {
+                                                @Override
+                                                public void onResponse(Call<com.example.tureguideversion1.Notifications.Response> call, retrofit2.Response<com.example.tureguideversion1.Notifications.Response> response) {
+                                                    if (response.code() == 200) {
+                                                        //Log.d(TAG, "onResponse: "+response.body().success);
+                                                        if (response.body().success != 1) {
+                                                            Toasty.error(getContext(),"Guide requesting failed. Please try again later.",Toasty.LENGTH_SHORT).show();
+                                                            makeTour.setProgress(100);
+                                                        }
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<com.example.tureguideversion1.Notifications.Response> call, Throwable t) {}
+                                            });
+                                    //send(s_date,r_date,(String) guideMap.get("Id"),auth.getUid(),token.getToken());
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                }else {
+                    Toasty.info(getContext(),"Guides are not online right now. Please try again later.",Toasty.LENGTH_SHORT).show();
+                    makeTour.setProgress(100);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void initDistrictSpinner() {
@@ -823,7 +834,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     }
 
     private void getEndDate() {
-        Toasty.info(getContext(), "Currently we are support tour within 8 days!", Toasty.LENGTH_SHORT).show();
+        //Toasty.info(getContext(), "Currently we are support tour within 8 days!", Toasty.LENGTH_SHORT).show();
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -1038,17 +1049,18 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
     @Override
     public void onSliderClick(BaseSliderView slider) {
-        MainActivity main = new MainActivity();
-        if (main.checkConnection()) {
-            //Toast.makeText(getActivity(), slider.getBundle().getString("extra") + "", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(view.getContext(), LocationImage.class)
-                    .putExtra("slide", slider.getBundle().getString("extra"))
-                    .putExtra("location", locationForViewPage);
-            startActivityForResult(i, 1);
-            //startActivity(new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")));
-        } else {
-            startActivity(new Intent(getContext(), NoInternetConnection.class));
-        }
+        new InternetCheck(internet -> {
+            if(internet){
+                //Toast.makeText(getActivity(), slider.getBundle().getString("extra") + "", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(view.getContext(), LocationImage.class)
+                        .putExtra("slide", slider.getBundle().getString("extra"))
+                        .putExtra("location", locationForViewPage);
+                startActivityForResult(i, 1);
+                //startActivity(new Intent(getContext(), LocationImage.class).putExtra("slide",slider.getBundle().getString("extra")));
+            }else {
+                startActivity(new Intent(getContext(), NoInternetConnection.class));
+            }
+        });
     }
 
     @Override
@@ -1240,5 +1252,23 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         hashMap.put("eventID", eventID);
         userActivityRef.child(id).setValue(hashMap);
     }
+
+    static class InternetCheck extends AsyncTask<Void,Void,Boolean> {
+
+        private Consumer mConsumer;
+        public  interface Consumer { void accept(Boolean internet); }
+
+        public  InternetCheck(Consumer consumer) { mConsumer = consumer; execute(); }
+
+        @Override protected Boolean doInBackground(Void... voids) { try {
+            Socket sock = new Socket();
+            sock.connect(new InetSocketAddress("8.8.8.8", 53), 1500);
+            sock.close();
+            return true;
+        } catch (IOException e) { return false; } }
+
+        @Override protected void onPostExecute(Boolean internet) { mConsumer.accept(internet); }
+    }
+
 
 }

@@ -54,7 +54,7 @@ public class LoaderFragment extends Fragment {
                         }
                     } else {
                         FragmentTransaction event = getParentFragmentManager().beginTransaction();
-                        event.replace(R.id.fragment_container, new TourFragment());
+                        event.replace(R.id.fragment_container, new OnGoingTour());
                         event.commit();
                     }
                 }catch (IllegalStateException e){

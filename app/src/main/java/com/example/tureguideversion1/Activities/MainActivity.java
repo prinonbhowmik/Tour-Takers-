@@ -16,8 +16,10 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -70,6 +72,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Snackbar snackbar;
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
-    private DatabaseReference reference,prevRef;
+    private DatabaseReference reference, prevRef;
     private StorageReference storageReference;
     private FirebaseAuth auth;
     private String userId, name, email, image, currentFragment;
@@ -106,132 +110,133 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         init();
         registerReceiver(connectivityReceiver, intentFilter);
-        if (checkConnection()) {
-            if (getIntent().getAction() != null) {
-                if (getIntent().getAction().matches("event")) {
-                    currentFragment = "event";
-                    Bundle bundle = new Bundle();
-                    bundle.putString("shortcut", "event");
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.fragment_container, LoaderFragment.class, bundle);
-                    transaction.commit();
-                    navigationView.getMenu().getItem(2).setChecked(true);
-                } else if (getIntent().getAction().matches("weather")) {
-                    currentFragment = "weather";
-                    Bundle bundle = new Bundle();
-                    bundle.putString("shortcut", "weather");
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.fragment_container, LoaderFragment.class, bundle);
-                    transaction.commit();
-                    navigationView.getMenu().getItem(4).setChecked(true);
-                }
-            } else {
-                if (savedInstanceState == null) {
-                    currentFragment = "tour";
-                    FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
-                    tour.replace(R.id.fragment_container, new LoaderFragment());
-                    tour.commit();
-                    navigationView.getMenu().getItem(0).setChecked(true);
-                }
-            }
-            userId = auth.getUid();
-            if (userId != null) {
-                DatabaseReference showref = reference.child(userId);
-
-                showref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        Profile profile = dataSnapshot.getValue(Profile.class);
-
-                        try {
-                            name = profile.getName();
-                            email = profile.getEmail();
-                            image = profile.getImage();
-
-                            UserName.setText(name);
-                            userEmail.setText(email);
-                            if (!image.isEmpty() || !image.matches("")) {
-                                try {
-                                    Glide.with(MainActivity.this)
-                                            .load(image)
-                                            .fitCenter()
-                                            .into(circularImageView);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
-                                }
-                            } else {
-                                String sex = profile.getSex();
-                                if (sex.matches("male")) {
-                                    try {
-                                        Glide.with(MainActivity.this)
-                                                .load(getImageFromDrawable("man"))
-                                                .centerInside()
-                                                .into(circularImageView);
-                                    } catch (IllegalArgumentException e) {
-                                        e.printStackTrace();
-                                    }
-                                } else if (sex.matches("female")) {
-                                    try {
-                                        Glide.with(MainActivity.this)
-                                                .load(getImageFromDrawable("woman"))
-                                                .centerInside()
-                                                .into(circularImageView);
-                                    } catch (IllegalArgumentException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                        } catch (NullPointerException e) {
-                            e.printStackTrace();
-                            Toasty.error(getApplicationContext(), "Data has changed!", Toasty.LENGTH_LONG).show();
-                            FirebaseAuth.getInstance().signOut();
-                            startActivity(new Intent(MainActivity.this, SignIn.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        }
-                        //Toast.makeText(getApplicationContext(),image,Toast.LENGTH_LONG).show();
-
+        new InternetCheck(internet -> {
+            if (internet) {
+                if (getIntent().getAction() != null) {
+                    if (getIntent().getAction().matches("event")) {
+                        currentFragment = "event";
+                        Bundle bundle = new Bundle();
+                        bundle.putString("shortcut", "event");
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment_container, LoaderFragment.class, bundle);
+                        transaction.commit();
+                        navigationView.getMenu().getItem(2).setChecked(true);
+                    } else if (getIntent().getAction().matches("weather")) {
+                        currentFragment = "weather";
+                        Bundle bundle = new Bundle();
+                        bundle.putString("shortcut", "weather");
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment_container, LoaderFragment.class, bundle);
+                        transaction.commit();
+                        navigationView.getMenu().getItem(4).setChecked(true);
                     }
+                } else {
+                    if (savedInstanceState == null) {
+                        currentFragment = "tour";
+                        FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+                        tour.replace(R.id.fragment_container, new LoaderFragment());
+                        tour.commit();
+                        navigationView.getMenu().getItem(0).setChecked(true);
+                    }
+                }
+                userId = auth.getUid();
+                if (userId != null) {
+                    DatabaseReference showref = reference.child(userId);
 
+                    showref.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            Profile profile = dataSnapshot.getValue(Profile.class);
+
+                            try {
+                                name = profile.getName();
+                                email = profile.getEmail();
+                                image = profile.getImage();
+
+                                UserName.setText(name);
+                                userEmail.setText(email);
+                                if (!image.isEmpty() || !image.matches("")) {
+                                    try {
+                                        Glide.with(MainActivity.this)
+                                                .load(image)
+                                                .fitCenter()
+                                                .into(circularImageView);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        //Toast.makeText(getApplicationContext(), "Can't load profile image!", Toast.LENGTH_LONG).show();
+                                    }
+                                } else {
+                                    String sex = profile.getSex();
+                                    if (sex.matches("male")) {
+                                        try {
+                                            Glide.with(MainActivity.this)
+                                                    .load(getImageFromDrawable("man"))
+                                                    .centerInside()
+                                                    .into(circularImageView);
+                                        } catch (IllegalArgumentException e) {
+                                            e.printStackTrace();
+                                        }
+                                    } else if (sex.matches("female")) {
+                                        try {
+                                            Glide.with(MainActivity.this)
+                                                    .load(getImageFromDrawable("woman"))
+                                                    .centerInside()
+                                                    .into(circularImageView);
+                                        } catch (IllegalArgumentException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                                Toasty.error(getApplicationContext(), "Data has changed!", Toasty.LENGTH_LONG).show();
+                                FirebaseAuth.getInstance().signOut();
+                                startActivity(new Intent(MainActivity.this, SignIn.class));
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                            }
+                            //Toast.makeText(getApplicationContext(),image,Toast.LENGTH_LONG).show();
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                circularImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    public void onClick(View view) {
+                        new InternetCheck(internet1 -> {
+                            if(internet1){
+                                // Check if we're running on Android 5.0 or higher
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    Pair[] pairs = new Pair[2];
+                                    pairs[0] = new Pair<View, String>(circularImageView, "imageTransition");
+                                    pairs[1] = new Pair<View, String>(ratingLaout, "ratingTransition");
+                                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
+                                    startActivity(new Intent(MainActivity.this, UserProfile.class), options.toBundle());
+                                } else {
+                                    // Swap without transition
+                                    startActivity(new Intent(MainActivity.this, UserProfile.class));
+                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                                }
+                            }else {
+                                startActivity(new Intent(MainActivity.this, NoInternetConnection.class));
+                            }
+                        });
                     }
                 });
+                //eventCommentsNotification();
+                setNewTokens();
+                //preventMultiDeviceLogin();
+            } else {
+                startActivity(new Intent(MainActivity.this, NoInternetConnection.class));
+                finish();
             }
-
-            circularImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (checkConnection()) {
-                        // Check if we're running on Android 5.0 or higher
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            Pair[] pairs = new Pair[2];
-                            pairs[0] = new Pair<View, String>(circularImageView, "imageTransition");
-                            pairs[1] = new Pair<View, String>(ratingLaout, "ratingTransition");
-                            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
-                            startActivity(new Intent(MainActivity.this, UserProfile.class), options.toBundle());
-                        } else {
-                            // Swap without transition
-                            startActivity(new Intent(MainActivity.this, UserProfile.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        }
-                    } else {
-                        startActivity(new Intent(MainActivity.this, NoInternetConnection.class));
-                    }
-
-                }
-            });
-            //eventCommentsNotification();
-            setNewTokens();
-            //preventMultiDeviceLogin();
-
-
-        } else {
-            startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
-            finish();
-        }
+        });
 //        new CountDownTimer(8000, 1000) {
 //
 //            public void onTick(long millisUntilFinished) {
@@ -299,49 +304,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItem.getItemId()) {
 
             case R.id.tour:
-                if (checkConnection()) {
-                    currentFragment = "tour";
-                    FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
-                    tour.replace(R.id.fragment_container, new TourFragment());
-                    tour.commit();
-                    drawerLayout.closeDrawers();
-                    navigationView.getMenu().getItem(0).setChecked(true);
-                    navigationView.getMenu().getItem(1).setChecked(false);
-                    navigationView.getMenu().getItem(2).setChecked(false);
-                } else {
-                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
-                }
+                new InternetCheck(internet -> {
+                    if (internet) {
+                        currentFragment = "tour";
+                        FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+                        tour.replace(R.id.fragment_container, new TourFragment());
+                        tour.commit();
+                        drawerLayout.closeDrawers();
+                        navigationView.getMenu().getItem(0).setChecked(true);
+                        navigationView.getMenu().getItem(1).setChecked(false);
+                        navigationView.getMenu().getItem(2).setChecked(false);
+                    } else {
+                        startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                    }
+                });
                 break;
 
             case R.id.event:
-                if (checkConnection()) {
-                    currentFragment = "event";
-                    FragmentTransaction event = getSupportFragmentManager().beginTransaction();
-                    event.replace(R.id.fragment_container, new EventFragment());
-                    event.commit();
-                    drawerLayout.closeDrawers();
-                    navigationView.getMenu().getItem(1).setChecked(true);
-                    navigationView.getMenu().getItem(0).setChecked(false);
-                    navigationView.getMenu().getItem(2).setChecked(false);
+                new InternetCheck(internet -> {
+                    if (internet) {
+                        currentFragment = "event";
+                        FragmentTransaction event = getSupportFragmentManager().beginTransaction();
+                        event.replace(R.id.fragment_container, new EventFragment());
+                        event.commit();
+                        drawerLayout.closeDrawers();
+                        navigationView.getMenu().getItem(1).setChecked(true);
+                        navigationView.getMenu().getItem(0).setChecked(false);
+                        navigationView.getMenu().getItem(2).setChecked(false);
 
-                } else {
-                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
-                }
+                    } else {
+                        startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                    }
+                });
                 break;
 
             case R.id.weather:
-                if (checkConnection()) {
-                    currentFragment = "weather";
-                    FragmentTransaction weather = getSupportFragmentManager().beginTransaction();
-                    weather.replace(R.id.fragment_container, new WeatherFragment());
-                    weather.commit();
-                    drawerLayout.closeDrawers();
-                    navigationView.getMenu().getItem(2).setChecked(true);
-                    navigationView.getMenu().getItem(1).setChecked(false);
-                    navigationView.getMenu().getItem(0).setChecked(false);
-                } else {
-                    startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
-                }
+                new InternetCheck(internet -> {
+                    if (internet) {
+                        currentFragment = "weather";
+                        FragmentTransaction weather = getSupportFragmentManager().beginTransaction();
+                        weather.replace(R.id.fragment_container, new WeatherFragment());
+                        weather.commit();
+                        drawerLayout.closeDrawers();
+                        navigationView.getMenu().getItem(2).setChecked(true);
+                        navigationView.getMenu().getItem(1).setChecked(false);
+                        navigationView.getMenu().getItem(0).setChecked(false);
+                    } else {
+                        startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
+                    }
+                });
                 break;
 
             case R.id.logout:
@@ -360,10 +371,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-    public boolean checkConnection() {
-        boolean isConnected = ConnectivityReceiver.isConnected();
-        return isConnected;
-    }
+//    public boolean checkConnection() {
+//        boolean isConnected = ConnectivityReceiver.isConnected();
+//        return isConnected;
+//    }
 
     private void bettaryOptimization() {
         if (checkBatteryOptimized()) {
@@ -694,8 +705,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onStop() {
+        try {
+            if (connectivityReceiver != null)
+                unregisterReceiver(connectivityReceiver);
+
+        } catch (Exception e) {
+        }
         toast.cancel();
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        try {
+            if (connectivityReceiver != null)
+                unregisterReceiver(connectivityReceiver);
+
+        } catch (Exception e) {
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -721,5 +749,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int drawableResourceId = this.getResources().getIdentifier(imageName, "drawable", this.getPackageName());
 
         return drawableResourceId;
+    }
+
+    static class InternetCheck extends AsyncTask<Void, Void, Boolean> {
+
+        private Consumer mConsumer;
+
+        public interface Consumer {
+            void accept(Boolean internet);
+        }
+
+        public InternetCheck(Consumer consumer) {
+            mConsumer = consumer;
+            execute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                Socket sock = new Socket();
+                sock.connect(new InetSocketAddress("8.8.8.8", 53), 1500);
+                sock.close();
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean internet) {
+            mConsumer.accept(internet);
+        }
     }
 }

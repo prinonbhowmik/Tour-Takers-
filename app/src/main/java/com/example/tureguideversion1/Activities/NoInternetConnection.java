@@ -53,8 +53,6 @@ public class NoInternetConnection extends AppCompatActivity implements Connectiv
         Connection.getInstance().setConnectivityListener(this);
     }
 
-
-
     @Override
     protected void onPause() {
         super.onPause();

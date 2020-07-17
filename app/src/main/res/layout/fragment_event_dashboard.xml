@@ -152,12 +152,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/amarante"
-                android:text="Event Date       :"
+                android:text="Start Date       :"
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />
 
             <TextView
-                android:id="@+id/event_dateTV"
+                android:id="@+id/start_dateTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"

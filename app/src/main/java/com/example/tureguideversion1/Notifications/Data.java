@@ -14,13 +14,15 @@ public class Data {
     private String startDate;
     private String returnDate;
     private String type;
+    private String location;
 
-    public Data(String sented, String userID, String startDate, String returnDate, String type) {
+    public Data(String sented, String userID, String startDate, String returnDate, String type, String location) {
         this.sented = sented;
         this.userID = userID;
         this.startDate = startDate;
         this.returnDate = returnDate;
         this.type = type;
+        this.location = location;
     }
 
     public Data(String eventID, int icon, String body, String title, String sented, String userID, String fromActivity, String commentID, String userImage, String userSex) {

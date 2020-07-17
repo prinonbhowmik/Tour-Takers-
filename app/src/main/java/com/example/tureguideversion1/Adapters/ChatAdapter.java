@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -94,7 +95,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView showMessage, senderName, commentTimeTV;
         private CircleImageView profileImageView;
         private RelativeLayout mainCommentLayout, crl1;
@@ -255,14 +256,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     args.putString("e_id", E_id);
                     CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
                     bottom_sheet.setArguments(args);
-                    //bottom_sheet.show();
+                    bottom_sheet.show(((FragmentActivity)mContext).getSupportFragmentManager(), bottom_sheet.getTag());
                 }
             });
 
         }
     }
 
-    public static class ViewHolderWithReply extends RecyclerView.ViewHolder {
+    public class ViewHolderWithReply extends RecyclerView.ViewHolder {
         private TextView showMessage, senderName, commentTimeTV, replyerName, replyerComment, commentCounted;
         private CircleImageView profileImageView, replyerImage;
         private RelativeLayout mainCommentLayout, crl2;
