@@ -1,6 +1,5 @@
 package com.example.tureguideversion1.Adapters;
 
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -229,34 +227,37 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 //                }
 //            }
 
-            crl1.setOnLongClickListener(new View.OnLongClickListener() {
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    ClipboardManager cm = (ClipboardManager) itemView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                    cm.setText(showMessage.getText());
-                    return true;
-                }
-            });
-            crl1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
                     AppCompatActivity appCompatActivity = new AppCompatActivity();
                     FragmentManager fragmentManager = appCompatActivity.getSupportFragmentManager();
                     String sender_id = chat.getSenderID();
                     String C_id = chat.getID();
                     String E_id = chat.getEventID();
+                    String message = chat.getMessage();
                     String userID = FirebaseAuth.getInstance().getUid();
                     if (userID.equals(sender_id)) {
-                        Toast.makeText(itemView.getContext(), "ID Match", Toast.LENGTH_SHORT).show();
+                        Bundle args = new Bundle();
+                        args.putString("c_id", C_id);
+                        args.putString("e_id", E_id);
+                        args.putString("check", "true");
+                        args.putString("message", message);
+                        CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
+                        bottom_sheet.setArguments(args);
+                        bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
                     } else {
-                        Toast.makeText(itemView.getContext(), "ID not Match", Toast.LENGTH_SHORT).show();
+                        Bundle args = new Bundle();
+                        args.putString("c_id", C_id);
+                        args.putString("e_id", E_id);
+                        args.putString("check", "false");
+                        args.putString("message", message);
+                        CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
+                        bottom_sheet.setArguments(args);
+                        bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
                     }
-                    Bundle args = new Bundle();
-                    args.putString("c_id", C_id);
-                    args.putString("e_id", E_id);
-                    CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
-                    bottom_sheet.setArguments(args);
-                    bottom_sheet.show(((FragmentActivity)mContext).getSupportFragmentManager(), bottom_sheet.getTag());
+                    return true;
                 }
             });
 
@@ -477,11 +478,35 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 //                }
 //            }
 
-            crl2.setOnLongClickListener(new View.OnLongClickListener() {
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    ClipboardManager cm = (ClipboardManager) itemView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                    cm.setText(showMessage.getText());
+                    AppCompatActivity appCompatActivity = new AppCompatActivity();
+                    FragmentManager fragmentManager = appCompatActivity.getSupportFragmentManager();
+                    String sender_id = chat.getSenderID();
+                    String C_id = chat.getID();
+                    String E_id = chat.getEventID();
+                    String message = chat.getMessage();
+                    String userID = FirebaseAuth.getInstance().getUid();
+                    if (userID.equals(sender_id)) {
+                        Bundle args = new Bundle();
+                        args.putString("c_id", C_id);
+                        args.putString("e_id", E_id);
+                        args.putString("check", "true");
+                        args.putString("message", message);
+                        CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
+                        bottom_sheet.setArguments(args);
+                        bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
+                    } else {
+                        Bundle args = new Bundle();
+                        args.putString("c_id", C_id);
+                        args.putString("e_id", E_id);
+                        args.putString("check", "false");
+                        args.putString("message", message);
+                        CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
+                        bottom_sheet.setArguments(args);
+                        bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
+                    }
                     return true;
                 }
             });

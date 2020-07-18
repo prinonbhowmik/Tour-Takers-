@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="55dp"
-    android:layout_marginEnd="5dp">
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:id="@+id/secondRelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
+        android:layout_marginStart="55dp"
         android:layout_marginBottom="5dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/reply_profileImage"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginTop="5dp"
-            android:src="@drawable/man" />
+            android:layout_marginTop="5dp" />
 
         <RelativeLayout
             android:id="@+id/crl2"
@@ -34,7 +32,6 @@
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
-                android:text="MIH"
                 android:textStyle="bold" />
 
             <TextView
@@ -43,7 +40,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/senderName2"
                 android:textColor="@android:color/black"
-                android:text="this is testing comments reply. hope everythings work well"
                 android:textSize="16sp" />
         </RelativeLayout>
 
@@ -54,7 +50,6 @@
             android:layout_below="@+id/crl2"
             android:textColor="@color/color1"
             android:layout_marginStart="50dp"
-            android:text="now"
             android:visibility="visible" />
     </RelativeLayout>
 

@@ -1,7 +1,7 @@
 package com.example.tureguideversion1.Adapters;
 
-import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +9,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tureguideversion1.Activities.CommentSettingsBottomSheet;
+import com.example.tureguideversion1.Activities.ReplySettingsBottomSheet;
 import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Reply;
 import com.example.tureguideversion1.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -136,12 +142,35 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
             holder.commentTimeTV2.setVisibility(View.GONE);
         }*/
 
-        holder.crl2.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                ClipboardManager cm = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                cm.setText(holder.showMessage2.getText());
-                // Toast.makeText(mContext, "Copied to clipboard", Toast.LENGTH_SHORT).show();
+                AppCompatActivity appCompatActivity = new AppCompatActivity();
+                FragmentManager fragmentManager = appCompatActivity.getSupportFragmentManager();
+                String sender_id = reply.getSenderID();
+                String C_id = reply.getID();
+                String E_id = reply.getEventID();
+                String message = reply.getMessage();
+                String userID = FirebaseAuth.getInstance().getUid();
+                if (userID.equals(sender_id)) {
+                    Bundle args = new Bundle();
+                    args.putString("c_id", C_id);
+                    args.putString("e_id", E_id);
+                    args.putString("check", "true");
+                    args.putString("message", message);
+                    ReplySettingsBottomSheet bottom_sheet = new ReplySettingsBottomSheet();
+                    bottom_sheet.setArguments(args);
+                    bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
+                } else {
+                    Bundle args = new Bundle();
+                    args.putString("c_id", C_id);
+                    args.putString("e_id", E_id);
+                    args.putString("check", "false");
+                    args.putString("message", message);
+                    CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
+                    bottom_sheet.setArguments(args);
+                    bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
+                }
                 return true;
             }
         });
