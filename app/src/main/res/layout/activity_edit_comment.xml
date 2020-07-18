@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:focusableInTouchMode="true"
     tools:context=".Activities.EditCommentActivity">
 
 
@@ -83,52 +82,42 @@
         android:layout_marginBottom="10dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/comment_profileImage1"
+            android:id="@+id/commentProfileImage"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/man" />
 
         <RelativeLayout
             android:id="@+id/crl1"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_toEndOf="@+id/comment_profileImage1"
+            android:layout_marginEnd="20dp"
+            android:layout_toEndOf="@+id/commentProfileImage"
             android:background="@drawable/chat_background_left"
             android:padding="8dp">
 
             <TextView
-                android:id="@+id/senderName1"
+                android:id="@+id/senderName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
-                android:text="MIH"
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/showMessage1"
-                android:layout_width="wrap_content"
+                android:id="@+id/messageET"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/senderName1"
+                android:layout_below="@+id/senderName"
                 android:textColor="@android:color/black"
-                android:text="You can edit here youe message"
                 android:textSize="18sp"
                 android:background="@null"
                 android:scrollbars="vertical"
                 android:maxLines="10" />
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/commentTimeTV1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/crl1"
-            android:layout_marginStart="50dp"
-            android:text="Now"
-            android:inputType="textMultiLine"
-            android:textColor="@color/color1"
-            android:visibility="visible" />
+
     </RelativeLayout>
 
 
@@ -138,13 +127,15 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/topRelativeLayout"
         android:padding="5dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="5dp">
 
         <Button
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"
+            android:background="@color/color4"
+            android:layout_marginEnd="10dp"
             android:layout_toStartOf="@+id/update" />
 
         <Button
@@ -153,7 +144,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
-            android:focusable="false"
+            android:enabled="false"
+            android:background="@color/colorYellow"
             android:text="Update" />
 
     </RelativeLayout>

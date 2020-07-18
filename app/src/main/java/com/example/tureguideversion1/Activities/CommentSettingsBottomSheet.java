@@ -67,7 +67,7 @@ public class CommentSettingsBottomSheet extends BottomSheetDialogFragment {
         editLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), EditCommentActivity.class));
+                startActivity(new Intent(getActivity(), EditCommentActivity.class).putExtra("eventId", e_id).putExtra("commentId", c_id));
                 CommentSettingsBottomSheet.this.dismiss();
             }
         });
