@@ -148,13 +148,14 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
                 AppCompatActivity appCompatActivity = new AppCompatActivity();
                 FragmentManager fragmentManager = appCompatActivity.getSupportFragmentManager();
                 String sender_id = reply.getSenderID();
-                String C_id = reply.getID();
+                String R_id = reply.getID();
                 String E_id = reply.getEventID();
                 String message = reply.getMessage();
+
                 String userID = FirebaseAuth.getInstance().getUid();
                 if (userID.equals(sender_id)) {
                     Bundle args = new Bundle();
-                    args.putString("c_id", C_id);
+                    args.putString("r_id", R_id);
                     args.putString("e_id", E_id);
                     args.putString("check", "true");
                     args.putString("message", message);
@@ -163,7 +164,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
                     bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
                 } else {
                     Bundle args = new Bundle();
-                    args.putString("c_id", C_id);
+                    args.putString("r_id", R_id);
                     args.putString("e_id", E_id);
                     args.putString("check", "false");
                     args.putString("message", message);
