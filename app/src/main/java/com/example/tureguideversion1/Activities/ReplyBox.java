@@ -158,6 +158,7 @@ public class ReplyBox extends AppCompatActivity {
         hashMap.put("ID", id);
         hashMap.put("replyTime", commentTime);
         hashMap.put("eventID", eventId);
+        hashMap.put("commentID", commentId);
         ref.child(id).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

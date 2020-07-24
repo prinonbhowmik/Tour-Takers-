@@ -13,14 +13,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.example.tureguideversion1.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ReplySettingsBottomSheet extends BottomSheetDialogFragment {
     private FirebaseAuth auth;
@@ -28,7 +32,7 @@ public class ReplySettingsBottomSheet extends BottomSheetDialogFragment {
     private ImageView editIV, deleteIV, copyIv;
     private TextView editTV, deleteTV, copyTV;
     private LinearLayout copyLayout, editLayout, deleteLayout;
-    private String r_id, e_id, message;
+    private String r_id, e_id, c_id, message;
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,6 +43,7 @@ public class ReplySettingsBottomSheet extends BottomSheetDialogFragment {
         String check = mArgs.getString("check");
         r_id = mArgs.getString("r_id");
         e_id = mArgs.getString("e_id");
+        c_id = mArgs.getString("c_id");
         message = mArgs.getString("message");
         if (check.equals("true")) {
             copyLayout.setVisibility(View.VISIBLE);
@@ -69,7 +74,8 @@ public class ReplySettingsBottomSheet extends BottomSheetDialogFragment {
         editLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), EditCommentActivity.class).putExtra("eventId", e_id).putExtra("commentId", r_id));
+                startActivity(new Intent(getActivity(), EditReplyActivity.class).putExtra("eventId", e_id).putExtra("commentId", c_id)
+                        .putExtra("replyId", r_id));
                 ReplySettingsBottomSheet.this.dismiss();
             }
         });
@@ -97,10 +103,35 @@ public class ReplySettingsBottomSheet extends BottomSheetDialogFragment {
         dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                DatabaseReference repRef = databaseReference.child("eventCommentsReply").child(e_id).child(r_id);
+                /*DatabaseReference repRef = databaseReference.child("eventCommentsReply").child(e_id).child(c_id).child(r_id);
                 repRef.setValue(null);
                 Toast.makeText(getContext(), "Delete", Toast.LENGTH_SHORT).show();
-                ReplySettingsBottomSheet.this.dismiss();
+                ReplySettingsBottomSheet.this.dismiss();*/
+                DatabaseReference ref = databaseReference.child("eventCommentsReply").child(e_id).child(c_id);
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        long count = snapshot.getChildrenCount();
+                        if (count == 1) {
+                            ref.child(r_id).setValue(null);
+                            Toast.makeText(getContext(), "Delete", Toast.LENGTH_SHORT).show();
+                            ReplySettingsBottomSheet.this.dismiss();
+                            DatabaseReference cRef = databaseReference.child("eventComments").child(e_id).child(c_id);
+                            cRef.child("hasReply").setValue("no");
+                        }
+                        if (count > 1) {
+                            ref.child(r_id).setValue(null);
+                            Toast.makeText(getContext(), "Delete", Toast.LENGTH_SHORT).show();
+                            ReplySettingsBottomSheet.this.dismiss();
+                        }
+                    }
+
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
         dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {

@@ -151,12 +151,13 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
                 String R_id = reply.getID();
                 String E_id = reply.getEventID();
                 String message = reply.getMessage();
-
+                String C_id = reply.getCommentID();
                 String userID = FirebaseAuth.getInstance().getUid();
                 if (userID.equals(sender_id)) {
                     Bundle args = new Bundle();
                     args.putString("r_id", R_id);
                     args.putString("e_id", E_id);
+                    args.putString("c_id", C_id);
                     args.putString("check", "true");
                     args.putString("message", message);
                     ReplySettingsBottomSheet bottom_sheet = new ReplySettingsBottomSheet();

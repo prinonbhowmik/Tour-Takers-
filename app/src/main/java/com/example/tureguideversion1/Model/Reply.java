@@ -10,11 +10,13 @@ public class Reply {
     private String ID;
     private String eventID;
     private String replyTime;
+    private String commentID;
 
     public Reply() {
     }
 
-    public Reply(String message, String senderName, String senderImage, String senderSex, String senderID, String ID, String eventID, String replyTime) {
+    public Reply(String message, String senderName, String senderImage, String senderSex,
+                 String senderID, String ID, String eventID, String replyTime, String commentID) {
         this.message = message;
         this.senderName = senderName;
         this.senderImage = senderImage;
@@ -23,6 +25,7 @@ public class Reply {
         this.ID = ID;
         this.eventID = eventID;
         this.replyTime = replyTime;
+        this.commentID = commentID;
     }
 
     public String getMessage() {
@@ -55,5 +58,9 @@ public class Reply {
 
     public String getReplyTime() {
         return replyTime;
+    }
+
+    public String getCommentID() {
+        return commentID;
     }
 }
