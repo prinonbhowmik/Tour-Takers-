@@ -138,7 +138,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private ArrayList<String> location;
     private String locationForViewPage, districtForLocationImage, districtFromLocationSelection, format,
             userID, publishDate, s_date, r_date, time, place, description, meetPlace, meetingWithGuide, group_name, cost, locationDistrict;
-    private Button locationSelection, createEvent;
+    private Button locationSelection;
     private int slide;
     View view;
     private IconSwitch iconSwitch;
@@ -147,7 +147,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private LinearLayout eventLayout, dailyForcastLayout;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
-    private static String eventId;
+    private static String eventId, tourID;
     private int joinMemberCount, scrollPosition;
     private navDrawerCheck check;
     private ScrollView tScrollView;
@@ -162,7 +162,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private double latForGuidePlace;
     private double lonForGuidePlace;
     private String subLocalityForMeetingPlace;
-    private ActionProcessButton makeTour;
+    private ActionProcessButton makeTour, makeEventBTN;
     private TextInputLayout meetingPlace, meetingPlaceWithGuide, startDate, returnDate, timeLayout;
     private APIService apiService;
 
@@ -348,11 +348,18 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         makeTour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                DatabaseReference eventRef = databaseReference.child("tour");
+                tourID = eventRef.push().getKey();
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh:mm a");
+                publishDate = simpleDateFormat.format(calendar.getTime());
                 s_date = startDateET.getText().toString();
                 r_date = endDateET.getText().toString();
                 meetingWithGuide = meetingPlaceWithGuide_ET.getText().toString();
-
-                if(TextUtils.isEmpty(locationDistrict)){
+                if (locationDistrict != null) {
+                    place = locationDistrict.substring(0, 1).toUpperCase() + locationDistrict.substring(1);
+                }
+                if(TextUtils.isEmpty(place)){
                     Toasty.error(view.getContext(), "Select District!", Toasty.LENGTH_SHORT).show();
                     locationEt.setErrorText("Select District!");
                     locationEt.setErrorTextColor(Color.RED);
@@ -369,23 +376,76 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     //Toasty.error(view.getContext(), "Pick location for meetup with guide!", Toasty.LENGTH_SHORT).show();
                     meetingPlaceWithGuide.setError(" Tap to pick location for meetup with guide!");
                 }else {
-                    requestingGuide(locationDistrict,s_date,r_date);
+                    if (!place.matches(districtFromLocationSelection)) {
+                        place = districtFromLocationSelection;
+                        addTourInDB(tourID,s_date,r_date,place,publishDate,auth.getUid(),"5000",
+                                meetingWithGuide,latForGuidePlace,lonForGuidePlace);
+                        requestingGuide(place,s_date,r_date,"tour",tourID);
+                        DatabaseReference tourRef = FirebaseDatabase.getInstance().getReference().child("tour").child(tourID);
+                        tourRef.child("guideID").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if(snapshot.exists()){
+                                    Toasty.success(view.getContext(), "Your Tour Successfully Created", Toasty.LENGTH_SHORT).show();
+                                    addTourtLoacationList();
+                                    setUserActivity(tourID,"tours");
+                                    tourRef.removeEventListener(this);
+                                    makeTour.setProgress(100);
+                                    FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                                    event.replace(R.id.fragment_container, new OnGoingTour());
+                                    event.commit();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    } else if (place.matches(districtFromLocationSelection)) {
+                        addTourInDB(tourID,s_date,r_date,place,publishDate,auth.getUid(),"5000",
+                                meetingWithGuide,latForGuidePlace,lonForGuidePlace);
+                        requestingGuide(place,s_date,r_date,"tour",tourID);
+                        DatabaseReference tourRef = FirebaseDatabase.getInstance().getReference().child("tour").child(tourID);
+                        tourRef.child("guideID").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if(snapshot.exists()){
+                                    Toasty.success(view.getContext(), "Your Tour Successfully Created", Toasty.LENGTH_SHORT).show();
+                                        addTourtLoacationList();
+                                        setUserActivity(tourID,"tours");
+                                    tourRef.removeEventListener(this);
+                                    makeTour.setProgress(100);
+                                    FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                                    event.replace(R.id.fragment_container, new OnGoingTour());
+                                    event.commit();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    } else {
+                        Toasty.error(view.getContext(), "Location mismatching!", Toasty.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
 
-        createEvent.setOnClickListener(new View.OnClickListener() {
+        makeEventBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (checkConnection()) {
                     DatabaseReference eventRef = databaseReference.child("event");
                     eventId = eventRef.push().getKey();
-
                     Calendar calendar = Calendar.getInstance();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh:mm a");
                     publishDate = simpleDateFormat.format(calendar.getTime());
                     s_date = startDateET.getText().toString();
                     r_date = endDateET.getText().toString();
+                    meetingWithGuide = meetingPlaceWithGuide_ET.getText().toString();
                     time = eventTime.getText().toString();
                     if (locationDistrict != null) {
                         place = locationDistrict.substring(0, 1).toUpperCase() + locationDistrict.substring(1);
@@ -407,6 +467,9 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         Toasty.error(view.getContext(), "Pick Start Date!", Toasty.LENGTH_SHORT).show();
                     } else if (TextUtils.isEmpty(r_date)) {
                         Toasty.error(view.getContext(), "Pick Return Date!", Toasty.LENGTH_SHORT).show();
+                    } else if (TextUtils.isEmpty(meetingWithGuide)) {
+                        meetingPlaceWithGuide.setError(" Tap to pick location for meetup with guide!");
+                        Toasty.error(view.getContext(), "Pick Return Date!", Toasty.LENGTH_SHORT).show();
                     } else if (TextUtils.isEmpty(group_name)) {
                         Toasty.error(view.getContext(), "Enter Group Name!", Toasty.LENGTH_SHORT).show();
                         groupName_ET.requestFocus();
@@ -418,7 +481,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         eventTime.requestFocus();
                     } else if (TextUtils.isEmpty(meetPlace)) {
                         Toasty.error(view.getContext(), "Enter Meeting Places!", Toasty.LENGTH_SHORT).show();
-                        meetingPlace_ET.requestFocus();
+                        meetingPlace_ET.setError(" Tap to pick location for meetup with Members!");
                     } else if (TextUtils.isEmpty(description)) {
                         Toasty.error(view.getContext(), "Enter Description about tour!", Toasty.LENGTH_SHORT).show();
                         eventDescription_ET.requestFocus();
@@ -428,10 +491,72 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         if (!place.matches(districtFromLocationSelection)) {
                             place = districtFromLocationSelection;
                             addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
-                                    userID, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace);
+                                    userID, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace,
+                                    meetingWithGuide, latForGuidePlace, lonForGuidePlace);
+                            requestingGuide(place,s_date,r_date,"event",eventId);
+                            DatabaseReference tourRef = FirebaseDatabase.getInstance().getReference().child("event").child(eventId);
+                            tourRef.child("guideID").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if(snapshot.exists()){
+                                        Toasty.success(view.getContext(), "Your Event Successfully Created", Toasty.LENGTH_SHORT).show();
+                                        addJoinMember();
+                                        addEventLoacationList();
+                                        setUserActivity(eventId,"events");
+                                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                            @Override
+                                            public void onSuccess(InstanceIdResult instanceIdResult) {
+                                                setToken(instanceIdResult.getToken(),eventId);
+                                                enableNotification(eventId);
+                                            }
+                                        });
+                                        tourRef.removeEventListener(this);
+                                        makeTour.setProgress(100);
+                                        FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                                        event.replace(R.id.fragment_container, new OnGoingTour());
+                                        event.commit();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                         } else if (place.matches(districtFromLocationSelection)) {
                             addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
-                                    userID, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace);
+                                    userID, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace,
+                                    meetingWithGuide, latForGuidePlace, lonForGuidePlace);
+                            requestingGuide(place,s_date,r_date,"event",eventId);
+                            DatabaseReference tourRef = FirebaseDatabase.getInstance().getReference().child("event").child(eventId);
+                            tourRef.child("guideID").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if(snapshot.exists()){
+                                        Toasty.success(view.getContext(), "Your Event Successfully Created", Toasty.LENGTH_SHORT).show();
+                                        addJoinMember();
+                                        addEventLoacationList();
+                                        setUserActivity(eventId,"events");
+                                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                            @Override
+                                            public void onSuccess(InstanceIdResult instanceIdResult) {
+                                                setToken(instanceIdResult.getToken(),eventId);
+                                                enableNotification(eventId);
+                                            }
+                                        });
+                                        tourRef.removeEventListener(this);
+                                        makeTour.setProgress(100);
+                                        FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                                        event.replace(R.id.fragment_container, new OnGoingTour());
+                                        event.commit();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                         } else {
                             Toasty.error(view.getContext(), "Location mismatching!", Toasty.LENGTH_SHORT).show();
                         }
@@ -550,8 +675,12 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         requestQueue.add(jsObjRequest);
     }
 
-    private void requestingGuide(String district, String startDate, String returnDate){
-        makeTour.setProgress(50);
+    private void requestingGuide(String district, String startDate, String returnDate, String typeFor, String typeID){
+        if(typeFor.matches("tour")) {
+            makeTour.setProgress(50);
+        }else if(typeFor.matches("event")) {
+            makeEventBTN.setProgress(50);
+        }
         DatabaseReference onlineRef = FirebaseDatabase.getInstance().getReference().child("guidesAreOnline").child(district);
         onlineRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -566,7 +695,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                 if(snapshot.exists()) {
                                     HashMap<String, Object> guideMap = (HashMap<String, Object>) snapshot.getValue();
                                     Token token = snapshot.getValue(Token.class);
-                                    Data data = new Data((String) guideMap.get("Id"),auth.getUid(),startDate,returnDate,"request",district);
+                                    Data data = new Data((String) guideMap.get("Id"),auth.getUid(),startDate,returnDate,"request",typeFor,typeID,district);
                                     Sender sender = new Sender(data, token.getToken());
                                     apiService.sendNotification(sender)
                                             .enqueue(new Callback<com.example.tureguideversion1.Notifications.Response>() {
@@ -576,7 +705,11 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                                         //Log.d(TAG, "onResponse: "+response.body().success);
                                                         if (response.body().success != 1) {
                                                             Toasty.error(getContext(),"Guide requesting failed. Please try again later.",Toasty.LENGTH_SHORT).show();
-                                                            makeTour.setProgress(100);
+                                                            if(typeFor.matches("tour")) {
+                                                                makeTour.setProgress(50);
+                                                            }else if(typeFor.matches("tour")) {
+                                                                makeEventBTN.setProgress(50);
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -584,7 +717,6 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                                 @Override
                                                 public void onFailure(Call<com.example.tureguideversion1.Notifications.Response> call, Throwable t) {}
                                             });
-                                    //send(s_date,r_date,(String) guideMap.get("Id"),auth.getUid(),token.getToken());
                                 }
                             }
 
@@ -878,39 +1010,26 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         datePickerDialog.show();
     }
 
+    private void addTourInDB(String id, String startDate, String returnDate, String place, String publishDate,
+                             String eventPublisherId, String cost, String guideMeetPlace, double latForGuideMeetingPlace,
+                             double lonForGuideMeetingPlace){
+        final DatabaseReference tourRef = databaseReference.child("tour");
+
+        final Event event = new Event(id, startDate, returnDate, place, publishDate, eventPublisherId, cost,
+                guideMeetPlace, latForGuideMeetingPlace,lonForGuideMeetingPlace);
+
+        tourRef.child(tourID).setValue(event);
+    }
+
     private void addEventInDB(String id, String startDate, String returnDate, String time, String place, String meetPlace, String description,
-                              String publishDate, int joinMemberCount, String eventPublisherId, String group_name, String cost, double latForMeetingPlace, double lonForMeetingPlace, String subLocalityForMeetingPlace) {
+                              String publishDate, int joinMemberCount, String eventPublisherId, String group_name, String cost, double latForMeetingPlace,
+                              double lonForMeetingPlace, String subLocalityForMeetingPlace, String meetupWithGuide, double latForGuideMeetingPlace, double lonForGuideMeetingPlace) {
         final DatabaseReference eventRef = databaseReference.child("event");
 
         final Event event = new Event(id, startDate, returnDate, time, place, meetPlace, description, publishDate, joinMemberCount,
-                eventPublisherId, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace);
+                eventPublisherId, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace, meetupWithGuide, latForGuideMeetingPlace,lonForGuideMeetingPlace);
 
-        eventRef.child(eventId).setValue(event).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Toasty.success(getContext(), "Your Event Successfully Added", Toasty.LENGTH_SHORT).show();
-                    addJoinMember();
-                    addEventLoacationList();
-                    setUserActivity(eventId);
-                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                        @Override
-                        public void onSuccess(InstanceIdResult instanceIdResult) {
-                            setToken(instanceIdResult.getToken(),eventId);
-                            enableNotification(eventId);
-                        }
-                    });
-                    FragmentTransaction event = getParentFragmentManager().beginTransaction();
-                    event.replace(R.id.fragment_container, new EventFragment());
-                    event.commit();
-
-                    check.checked(1);
-                    //navigationView.getMenu().getItem(2).setChecked(true);
-                } else {
-                    Toasty.error(getContext(), "Unsuccessful", Toasty.LENGTH_SHORT).show();
-                }
-            }
-        });
+        eventRef.child(eventId).setValue(event);
     }
 
     private void setToken(String token, String eventID) {
@@ -935,7 +1054,13 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         memberRef.child("id").setValue(userID);
     }
 
+    private void addTourtLoacationList() {
+        for (int i = 0; i < selectedLocation.size(); i++) {
+            DatabaseReference memberRef = databaseReference.child("tourLocationList").child(tourID).child(selectedLocation.get(i));
+            memberRef.child("locationName").setValue(selectedLocation.get(i));
+        }
 
+    }
 
     private void addEventLoacationList() {
         for (int i = 0; i < selectedLocation.size(); i++) {
@@ -968,7 +1093,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         eventTime = view.findViewById(R.id.eventTime_ET);
         auth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        createEvent = view.findViewById(R.id.createEvent);
+        makeEventBTN = view.findViewById(R.id.makeEventBTN);
         groupName_ET = view.findViewById(R.id.groupName_ET);
         eventCost_ET = view.findViewById(R.id.eventCost_ET);
         meetingPlaceWithGuide_ET = view.findViewById(R.id.meetingPlaceWithGuide_ET);
@@ -1242,15 +1367,26 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         }
     }
 
-    private void setUserActivity(String eventID) {
-        DatabaseReference userActivityRef = databaseReference
-                .child("userActivities")
-                .child(auth.getUid())
-                .child("events");
-        String id = userActivityRef.push().getKey();
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("eventID", eventID);
-        userActivityRef.child(id).setValue(hashMap);
+    private void setUserActivity(String ID, String type) {
+        if(type.matches("tours")){
+            DatabaseReference userActivityRef = databaseReference
+                    .child("userActivities")
+                    .child(auth.getUid())
+                    .child(type);
+            String id = userActivityRef.push().getKey();
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("tourID", ID);
+            userActivityRef.child(id).setValue(hashMap);
+        }else if(type.matches("events")) {
+            DatabaseReference userActivityRef = databaseReference
+                    .child("userActivities")
+                    .child(auth.getUid())
+                    .child(type);
+            String id = userActivityRef.push().getKey();
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("eventID", ID);
+            userActivityRef.child(id).setValue(hashMap);
+        }
     }
 
     static class InternetCheck extends AsyncTask<Void,Void,Boolean> {

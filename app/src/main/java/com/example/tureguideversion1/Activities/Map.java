@@ -723,7 +723,7 @@ public class Map extends AppCompatActivity implements
                         mClusterManager.clearItems();
                         for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                             HashMap<String, Object> onlineMap = (HashMap<String, Object>) childSnapshot.getValue();
-                            Log.d(TAG, "onDataChange: " + onlineMap.get("ID"));
+                            //Log.d(TAG, "onDataChange: " + onlineMap.get("ID"));
                             DatabaseReference guideRef = FirebaseDatabase.getInstance().getReference().child("GuideProfile").child((String) onlineMap.get("ID"));
                             guideRef.addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -782,7 +782,7 @@ public class Map extends AppCompatActivity implements
     public void onPolylineClick(Polyline polyline) {
         int index = 0;
         for (PolylineData polylineData : polylineData) {
-            Log.d(null, "onPolylineClick: toString: " + polylineData.toString());
+            //Log.d(null, "onPolylineClick: toString: " + polylineData.toString());
             if (polyline.getId().equals(polylineData.getPolyline().getId())) {
                 polylineData.getPolyline().setColor(ContextCompat.getColor(getApplicationContext(), R.color.blue1));
                 polylineData.getPolyline().setZIndex(1);

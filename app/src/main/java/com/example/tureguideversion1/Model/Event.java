@@ -17,12 +17,35 @@ public class Event {
     private double latForMeetingPlace;
     private double lonForMeetingPlace;
     private String subLocalityForMeetingPlace;
+    private String guideID;
+    private String guideMeetPlace;
+    private double latForGuideMeetingPlace;
+    private double lonForGuideMeetingPlace;
+    private String status;
 
 
     public Event() {
     }
 
-    public Event(String id, String startDate, String returnDate, String time, String place, String meetPlace, String description, String publishDate, int joinMemberCount, String eventPublisherId, String groupName, String cost, double latForMeetingPlace, double lonForMeetingPlace, String subLocalityForMeetingPlace) {
+    public Event(String id, String startDate, String returnDate, String place, String publishDate,
+                 String eventPublisherId, String cost, String guideMeetPlace, double latForGuideMeetingPlace,
+                 double lonForGuideMeetingPlace) {
+        this.id = id;
+        this.startDate = startDate;
+        this.returnDate = returnDate;
+        this.place = place;
+        this.publishDate = publishDate;
+        this.eventPublisherId = eventPublisherId;
+        this.cost = cost;
+        this.guideMeetPlace = guideMeetPlace;
+        this.latForGuideMeetingPlace = latForGuideMeetingPlace;
+        this.lonForGuideMeetingPlace = lonForGuideMeetingPlace;
+    }
+
+    public Event(String id, String startDate, String returnDate, String time, String place, String meetPlace,
+                 String description, String publishDate, int joinMemberCount, String eventPublisherId,
+                 String groupName, String cost, double latForMeetingPlace, double lonForMeetingPlace,
+                 String subLocalityForMeetingPlace, String guideMeetPlace, double latForGuideMeetingPlace, double lonForGuideMeetingPlace) {
         this.id = id;
         this.startDate = startDate;
         this.returnDate = returnDate;
@@ -38,6 +61,29 @@ public class Event {
         this.latForMeetingPlace = latForMeetingPlace;
         this.lonForMeetingPlace = lonForMeetingPlace;
         this.subLocalityForMeetingPlace = subLocalityForMeetingPlace;
+        this.guideMeetPlace = guideMeetPlace;
+        this.latForGuideMeetingPlace = latForGuideMeetingPlace;
+        this.lonForGuideMeetingPlace = lonForGuideMeetingPlace;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getGuideMeetPlace() {
+        return guideMeetPlace;
+    }
+
+    public double getLatForGuideMeetingPlace() {
+        return latForGuideMeetingPlace;
+    }
+
+    public double getLonForGuideMeetingPlace() {
+        return lonForGuideMeetingPlace;
+    }
+
+    public String getGuideID() {
+        return guideID;
     }
 
     public String getId() {

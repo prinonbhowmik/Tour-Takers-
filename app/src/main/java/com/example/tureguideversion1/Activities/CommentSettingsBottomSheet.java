@@ -22,6 +22,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import es.dmoral.toasty.Toasty;
+
 public class CommentSettingsBottomSheet extends BottomSheetDialogFragment {
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
@@ -60,6 +62,7 @@ public class CommentSettingsBottomSheet extends BottomSheetDialogFragment {
             public void onClick(View v) {
                 ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                 cm.setText(message);
+                Toasty.info(getContext(),"Copied",Toasty.LENGTH_SHORT).show();
                 CommentSettingsBottomSheet.this.dismiss();
             }
         });

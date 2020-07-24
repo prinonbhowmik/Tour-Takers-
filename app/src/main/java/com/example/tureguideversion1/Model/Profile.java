@@ -1,7 +1,7 @@
 package com.example.tureguideversion1.Model;
 
 public class Profile {
-
+    String Id;
     String name;
     String email;
     String password;
@@ -9,12 +9,15 @@ public class Profile {
     String phone;
     String image;
     String sex;
+    String rating;
+    String token;
 
     public Profile() {
     }
 
 
-    public Profile(String name, String email, String password, String address, String phone, String image, String sex) {
+    public Profile(String id, String name, String email, String password, String address, String phone, String image, String sex, String rating, String token) {
+        Id = id;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -22,8 +25,21 @@ public class Profile {
         this.phone = phone;
         this.image = image;
         this.sex = sex;
+        this.rating = rating;
+        this.token = token;
     }
 
+    public String getId() {
+        return Id;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public String getToken() {
+        return token;
+    }
 
     public String getSex() {
         return sex;

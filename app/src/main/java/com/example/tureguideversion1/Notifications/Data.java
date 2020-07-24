@@ -15,13 +15,17 @@ public class Data {
     private String returnDate;
     private String type;
     private String location;
+    private String typeID;
+    private String typeFor;
 
-    public Data(String sented, String userID, String startDate, String returnDate, String type, String location) {
+    public Data(String sented, String userID, String startDate, String returnDate, String type, String typeFor, String typeID, String location) {
         this.sented = sented;
         this.userID = userID;
         this.startDate = startDate;
         this.returnDate = returnDate;
         this.type = type;
+        this.typeFor = typeFor;
+        this.typeID = typeID;
         this.location = location;
     }
 
@@ -51,6 +55,70 @@ public class Data {
     }
 
     public Data() {
+    }
+
+    public String getTypeFor() {
+        return typeFor;
+    }
+
+    public void setTypeFor(String typeFor) {
+        this.typeFor = typeFor;
+    }
+
+    public String getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(String userImage) {
+        this.userImage = userImage;
+    }
+
+    public String getUserSex() {
+        return userSex;
+    }
+
+    public void setUserSex(String userSex) {
+        this.userSex = userSex;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(String returnDate) {
+        this.returnDate = returnDate;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getTypeID() {
+        return typeID;
+    }
+
+    public void setTypeID(String typeID) {
+        this.typeID = typeID;
     }
 
     public String getEventID() {

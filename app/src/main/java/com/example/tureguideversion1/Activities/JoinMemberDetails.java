@@ -102,7 +102,7 @@ public class JoinMemberDetails extends AppCompatActivity {
     public void onBackPressed() {
 //        Intent intent=new Intent(JoinMemberDetails.this,EventDetails.class);
 //        startActivity(intent);
-        //overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

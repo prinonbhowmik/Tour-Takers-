@@ -47,6 +47,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bumptech.glide.Glide;
 import com.example.tureguideversion1.Fragments.EventFragment;
 import com.example.tureguideversion1.Fragments.LoaderFragment;
+import com.example.tureguideversion1.Fragments.OnGoingTour;
 import com.example.tureguideversion1.Fragments.TourFragment;
 import com.example.tureguideversion1.Fragments.WeatherFragment;
 import com.example.tureguideversion1.Internet.Connection;
@@ -103,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayout ratingLaout;
     private Boolean tokenUpdated = false;
     private ValueEventListener prevlistener;
+    private boolean hasTour;
+    private boolean hasEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment_container, LoaderFragment.class, bundle);
                         transaction.commit();
-                        navigationView.getMenu().getItem(2).setChecked(true);
+                        navigationView.getMenu().getItem(1).setChecked(true);
                     } else if (getIntent().getAction().matches("weather")) {
                         currentFragment = "weather";
                         Bundle bundle = new Bundle();
@@ -128,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment_container, LoaderFragment.class, bundle);
                         transaction.commit();
-                        navigationView.getMenu().getItem(4).setChecked(true);
+                        navigationView.getMenu().getItem(2).setChecked(true);
                     }
                 } else {
                     if (savedInstanceState == null) {
@@ -140,6 +143,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
                 userId = auth.getUid();
+
+                getUserActivity(new userActivityCallback() {
+                    @Override
+                    public void onTourCallback(boolean tour) {
+                        hasTour = tour;
+                    }
+
+                    @Override
+                    public void onEventCallback(boolean event) {
+                        hasEvent = event;
+                    }
+                });
+
                 if (userId != null) {
                     DatabaseReference showref = reference.child(userId);
 
@@ -306,14 +322,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.tour:
                 new InternetCheck(internet -> {
                     if (internet) {
-                        currentFragment = "tour";
-                        FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
-                        tour.replace(R.id.fragment_container, new TourFragment());
-                        tour.commit();
-                        drawerLayout.closeDrawers();
-                        navigationView.getMenu().getItem(0).setChecked(true);
-                        navigationView.getMenu().getItem(1).setChecked(false);
-                        navigationView.getMenu().getItem(2).setChecked(false);
+                        if(hasTour || hasEvent){
+                            currentFragment = "tour";
+                            FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+                            tour.replace(R.id.fragment_container, new OnGoingTour());
+                            tour.commit();
+                            drawerLayout.closeDrawers();
+                            navigationView.getMenu().getItem(0).setChecked(true);
+                            navigationView.getMenu().getItem(1).setChecked(false);
+                            navigationView.getMenu().getItem(2).setChecked(false);
+                        }else {
+                            currentFragment = "tour";
+                            FragmentTransaction tour = getSupportFragmentManager().beginTransaction();
+                            tour.replace(R.id.fragment_container, new TourFragment());
+                            tour.commit();
+                            drawerLayout.closeDrawers();
+                            navigationView.getMenu().getItem(0).setChecked(true);
+                            navigationView.getMenu().getItem(1).setChecked(false);
+                            navigationView.getMenu().getItem(2).setChecked(false);
+                        }
                     } else {
                         startActivity(new Intent(getApplicationContext(), NoInternetConnection.class));
                     }
@@ -614,6 +641,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
+    }
+
+    public interface userActivityCallback {
+        void onTourCallback(boolean tour);
+        void onEventCallback(boolean event);
+    }
+
+    private void getUserActivity(userActivityCallback activityCallback){
+        DatabaseReference activityEventRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("events");
+        activityEventRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    activityCallback.onEventCallback(true);
+                }else {
+                    activityCallback.onEventCallback(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        DatabaseReference activityTourRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("tours");
+        activityTourRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    activityCallback.onTourCallback(true);
+                }else {
+                    activityCallback.onTourCallback(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void snackbar(String text) {

@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -986,15 +987,24 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     }
 
     public void ShowProfilePopup(View v) {
-        TextView close, namePopUp, phonePopUp, emailPopUp;
+        TextView namePopUp, phonePopUp, emailPopUp;
         ImageView pic;
-        Button btnFollow;
+        LinearLayout buttonLayout;
+        CircleImageView close;
         profileDialog.setContentView(R.layout.profile_popup);
         close = profileDialog.findViewById(R.id.close);
         namePopUp = profileDialog.findViewById(R.id.namePopUp);
         phonePopUp = profileDialog.findViewById(R.id.phonePopUp);
         emailPopUp = profileDialog.findViewById(R.id.emailPopUp);
         pic = profileDialog.findViewById(R.id.pic);
+        buttonLayout = profileDialog.findViewById(R.id.buttonLayout);
+        buttonLayout.setVisibility(View.GONE);
+
+        GlideApp.with(profileDialog.getContext())
+                .load(getImageFromDrawable("ic_close"))
+                .centerCrop()
+                .into(close);
+
         namePopUp.setText(member_name);
         phonePopUp.setText(member_phone);
         emailPopUp.setText(member_email);
@@ -1023,6 +1033,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
             }
         });
         profileDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        profileDialog.setCanceledOnTouchOutside(false);
         profileDialog.show();
     }
 

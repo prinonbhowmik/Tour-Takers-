@@ -59,6 +59,18 @@
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/emptyAmin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/createTourBTN"
+        android:layout_below="@id/tour_searchCV"
+        android:layout_centerInParent="true"
+        android:padding="110dp"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="sleepy_cat.json"
+        app:lottie_loop="true" />
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/onGoingViewPager"
         android:layout_width="match_parent"
@@ -66,6 +78,19 @@
         android:layout_below="@id/tour_searchCV"
         android:layout_centerInParent="true"
         android:foregroundGravity="center" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/createTourBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/ic_add_white_24dp"
+        app:backgroundTint="#face2f" />
 
 
 </RelativeLayout>

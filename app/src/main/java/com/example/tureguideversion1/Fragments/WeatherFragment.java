@@ -373,26 +373,26 @@ public class WeatherFragment extends Fragment {
                         }
 
 
-//                        if(weatherResponse.currentWeather.weather.get(0).description.matches("scattered clouds") ||
-//                                weatherResponse.currentWeather.weather.get(0).description.matches("broken clouds") ||
-//                                weatherResponse.currentWeather.weather.get(0).description.matches("overcast clouds")
-//                        || weatherResponse.currentWeather.weather.get(0).description.matches("few clouds")){
-//                            weatherLayout.setBackgroundResource(R.drawable.weathercloudyday);
-//                        }
-//                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light rain") ||
-//                                weatherResponse.currentWeather.weather.get(0).description.matches("moderate rain") ||
-//                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy intensity rain") ||
-//                                weatherResponse.currentWeather.weather.get(0).description.matches("very heavy rain") ||
-//                                weatherResponse.currentWeather.weather.get(0).description.matches("extreme rain")){
-//                            weatherLayout.setBackgroundResource(R.drawable.weatherrain);
-//                        }
-//                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light thunderstorm") ||
-//                                weatherResponse.currentWeather.weather.get(0).description.matches("thunderstorm") ||
-//                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy thunderstorm") ||
-//                                weatherResponse.currentWeather.weather.get(0).description.matches("ragged thunderstorm"))
-//                        {
-//                            weatherLayout.setBackgroundResource(R.drawable.weatherstorm);
-//                        }
+                        if(weatherResponse.currentWeather.weather.get(0).description.matches("scattered clouds") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("broken clouds") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("overcast clouds")
+                        || weatherResponse.currentWeather.weather.get(0).description.matches("few clouds")){
+                            weatherLayout.setBackgroundResource(R.drawable.weathercloudyday);
+                        }
+                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light rain") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("moderate rain") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy intensity rain") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("very heavy rain") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("extreme rain")){
+                            weatherLayout.setBackgroundResource(R.drawable.weatherrain);
+                        }
+                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light thunderstorm") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("thunderstorm") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy thunderstorm") ||
+                                weatherResponse.currentWeather.weather.get(0).description.matches("ragged thunderstorm"))
+                        {
+                            weatherLayout.setBackgroundResource(R.drawable.weatherstorm);
+                        }
 
 
                         statusTxt.setText(weatherResponse.currentWeather.weather.get(0).description);

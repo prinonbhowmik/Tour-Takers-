@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="350dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -14,24 +15,22 @@
         android:background="@color/darkPopUp"
         android:orientation="vertical">
 
-        <TextView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/close"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="end"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/cerclebackground"
-            android:fontFamily="sans-serif"
             android:gravity="center"
-            android:text="X"
-            android:textColor="@color/places_autocomplete_prediction_primary_text_highlight"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:padding="2dp"
+            app:civ_border_color="@android:color/darker_gray"
+            app:civ_border_width="2dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             android:orientation="vertical">
@@ -53,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/amarante"
-                android:gravity="center_horizontal"
+                android:gravity="center_horizontal|center_vertical"
                 android:textColor="@color/defaultTextColor"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -65,7 +64,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/amarante"
-                android:gravity="center_horizontal"
+                android:gravity="center_horizontal|center_vertical"
                 android:textColor="@color/defaultTextColor" />
 
             <TextView
@@ -75,8 +74,9 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/amarante"
-                android:gravity="center_horizontal"
+                android:gravity="center_horizontal|center_vertical"
                 android:textColor="@color/defaultTextColor" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -159,6 +159,46 @@
                     android:textColor="@color/defaultTextColor"
                     android:textSize="18sp" />
             </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/buttonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            tools:visibility="visible">
+
+            <Button
+                android:id="@+id/callBTN"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple"
+                android:drawableTop="@drawable/ic_phone"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Call"
+                android:textSize="10sp" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="1dp"
+                android:layout_height="51dp"
+                android:background="@color/card_shadow_1" />
+
+            <Button
+                android:id="@+id/textBTN"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple"
+                android:drawableTop="@drawable/ic_chat"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Text"
+                android:textSize="10sp" />
+
         </LinearLayout>
 
     </LinearLayout>
