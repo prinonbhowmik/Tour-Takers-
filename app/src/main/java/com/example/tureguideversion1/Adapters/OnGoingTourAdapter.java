@@ -26,6 +26,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
@@ -35,6 +36,7 @@ import com.example.tureguideversion1.Activities.CommentsBox;
 import com.example.tureguideversion1.Activities.JoinMemberDetails;
 import com.example.tureguideversion1.Activities.LocationImage;
 import com.example.tureguideversion1.Activities.NoInternetConnection;
+import com.example.tureguideversion1.Fragments.OnGoingTour;
 import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.EventLocationList;
@@ -50,19 +52,26 @@ import com.glide.slider.library.animations.DescriptionAnimation;
 import com.glide.slider.library.slidertypes.BaseSliderView;
 import com.glide.slider.library.slidertypes.TextSliderView;
 import com.glide.slider.library.transformers.BaseTransformer;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
@@ -123,7 +132,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
         };
         TextView event_placeTV, event_publish_dateTV, start_dateTV, return_dateTV, event_timeTV, meeting_placeTV, group_nameTV, event_descriptionTV,
                 event_costTV, guide_nameTV, txt5, attending_memberTV, viewTV, commentCountTV, viewComment, tour_costTV, tour_guide_nameTV,
-                meeting_place_guideTV, tourStatus;
+                meeting_place_guideTV, tourStatus, txt20;
         RecyclerView locationRecycleView;
         SliderLayout imageSlider;
         CircleImageView guide_imageIV, tour_guide_imageIV;
@@ -162,11 +171,18 @@ public class OnGoingTourAdapter extends PagerAdapter {
         cencelEventBTN = itemView.findViewById(R.id.cencelEventBTN);
         meeting_place_guideTV = itemView.findViewById(R.id.meeting_place_guideTV);
         tourStatus = itemView.findViewById(R.id.tourStatus);
+        txt20 = itemView.findViewById(R.id.txt20);
 
         ObjectAnimator anim = (ObjectAnimator) AnimatorInflater.loadAnimator(itemView.getContext(), R.animator.flipping);
-        anim.setTarget(guide_imageIV);
-        anim.setDuration(2000);
-        anim.setRepeatCount(ValueAnimator.INFINITE);
+        if(forView.matches("event")) {
+            anim.setTarget(guide_imageIV);
+            anim.setDuration(2000);
+            anim.setRepeatCount(ValueAnimator.INFINITE);
+        }else if(forView.matches("tour")) {
+            anim.setTarget(tour_guide_imageIV);
+            anim.setDuration(2000);
+            anim.setRepeatCount(ValueAnimator.INFINITE);
+        }
 
         if (forView.matches("event")) {
             forTourLayout.setVisibility(View.GONE);
@@ -345,6 +361,32 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                             requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID());
                                             txt5.setText("Finding guide...");
                                             anim.start();
+                                            Handler handler = new Handler();
+                                            Runnable runnable = new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                                                            .child(forView)
+                                                            .child(event.getId())
+                                                            .child("guideID");
+                                                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                            if(!snapshot.exists()){
+                                                                Toasty.info(context,"All guides are busy right now. Please try again later...!",Toasty.LENGTH_SHORT).show();
+                                                                txt5.setText("Tap to request a guide...");
+                                                                anim.end();
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                                        }
+                                                    });
+                                                }
+                                            };
+                                            handler.postDelayed(runnable, 90000);
                                         }
                                     });
                                     Toasty.info(context, "Your guide cancelled this tour! You can request again from this page...", Toasty.LENGTH_LONG).show();
@@ -368,10 +410,84 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                             requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID());
                                             txt5.setText("Finding guide...");
                                             anim.start();
+                                            Handler handler = new Handler();
+                                            Runnable runnable = new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                                                            .child(forView)
+                                                            .child(event.getId())
+                                                            .child("guideID");
+                                                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                            if(!snapshot.exists()){
+                                                                Toasty.info(context,"All guides are busy right now. Please try again later...!",Toasty.LENGTH_SHORT).show();
+                                                                txt5.setText("Tap to request a guide...");
+                                                                anim.end();
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                                        }
+                                                    });
+                                                }
+                                            };
+                                            handler.postDelayed(runnable, 90000);
                                         }
                                     });
                                 }
                             }
+                        }else {
+                            tourStatus.setText("◦•●◉✿ Pending ✿◉●•◦");
+                            tourStatus.setTextColor(itemView.getResources().getColor(R.color.colorAccent));
+                            guide_nameTV.setText("Not assaigned");
+                            txt5.setText("Tap to request a guide...");
+                            try {
+                                GlideApp.with(itemView.getContext())
+                                        .load(getImageFromDrawable("man"))
+                                        .fitCenter()
+                                        .into(guide_imageIV);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            relative6.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID());
+                                    txt5.setText("Finding guide...");
+                                    anim.start();
+                                    Handler handler = new Handler();
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                                                    .child(forView)
+                                                    .child(event.getId())
+                                                    .child("guideID");
+                                            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    if(!snapshot.exists()){
+                                                        Toasty.info(context,"All guides are busy right now. Please try again later...!",Toasty.LENGTH_SHORT).show();
+                                                        txt5.setText("Tap to request a guide...");
+                                                        anim.end();
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                                }
+                                            });
+                                        }
+                                    };
+                                    handler.postDelayed(runnable, 90000);
+                                }
+                            });
                         }
                     }
 
@@ -582,6 +698,9 @@ public class OnGoingTourAdapter extends PagerAdapter {
                             tourStatus.setText(snapshot.getValue().toString());
                             tourStatus.setTextColor(itemView.getResources().getColor(R.color.colorBlack));
                             if (event.getGuideID() != null) {
+                                if (anim.isRunning()) {
+                                    anim.end();
+                                }
                                 DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("GuideProfile").child(event.getGuideID());
                                 userRef.addValueEventListener(new ValueEventListener() {
                                     @Override
@@ -632,7 +751,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                             tourStatus.setText(snapshot.getValue().toString());
                             tourStatus.setTextColor(itemView.getResources().getColor(R.color.colorAccent));
                             tour_guide_nameTV.setText("Not assaigned");
-                            txt5.setText("Tap to request a guide...");
+                            txt20.setText("Tap to request a guide...");
                             try {
                                 GlideApp.with(itemView.getContext())
                                         .load(getImageFromDrawable("man"))
@@ -641,7 +760,88 @@ public class OnGoingTourAdapter extends PagerAdapter {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            relative20.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID());
+                                    txt20.setText("Finding guide...");
+                                    anim.start();
+                                    Handler handler = new Handler();
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                                                    .child(forView)
+                                                    .child(event.getId())
+                                                    .child("guideID");
+                                            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    if(!snapshot.exists()){
+                                                        Toasty.info(context,"All guides are busy right now. Please try again later...!",Toasty.LENGTH_SHORT).show();
+                                                        txt20.setText("Tap to request a guide...");
+                                                        anim.end();
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                                }
+                                            });
+                                        }
+                                    };
+                                    handler.postDelayed(runnable, 90000);
+                                }
+                            });
                         }
+                    }else {
+                        tourStatus.setText("◦•●◉✿ Pending ✿◉●•◦");
+                        tourStatus.setTextColor(itemView.getResources().getColor(R.color.colorAccent));
+                        tour_guide_nameTV.setText("Not assaigned");
+                        txt20.setText("Tap to request a guide...");
+                        try {
+                            GlideApp.with(itemView.getContext())
+                                    .load(getImageFromDrawable("man"))
+                                    .fitCenter()
+                                    .into(tour_guide_imageIV);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        relative20.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID());
+                                txt20.setText("Finding guide...");
+                                anim.start();
+                                Handler handler = new Handler();
+                                Runnable runnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                                                .child(forView)
+                                                .child(event.getId())
+                                                .child("guideID");
+                                        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                if(!snapshot.exists()){
+                                                    Toasty.info(context,"All guides are busy right now. Please try again later...!",Toasty.LENGTH_SHORT).show();
+                                                    txt20.setText("Tap to request a guide...");
+                                                    anim.end();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                            }
+                                        });
+                                    }
+                                };
+                                handler.postDelayed(runnable, 90000);
+                            }
+                        });
                     }
                 }
 
@@ -673,6 +873,8 @@ public class OnGoingTourAdapter extends PagerAdapter {
                     DatabaseReference cRef = FirebaseDatabase.getInstance().getReference().child("eventComments").child(ID);
                     DatabaseReference commentsTokenRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(ID);
                     DatabaseReference replyRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsReply").child(ID);
+                    DatabaseReference notiRef = FirebaseDatabase.getInstance().getReference().child("notificationStatus").child("eventCommentNotifiaction").child(ID);
+                    notiRef.removeValue();
                     eRef.removeValue();
                     mRef.removeValue();
                     lRef.removeValue();

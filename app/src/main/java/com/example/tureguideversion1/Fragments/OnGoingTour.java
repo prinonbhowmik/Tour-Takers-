@@ -54,9 +54,7 @@ public class OnGoingTour extends Fragment implements OnGoingTourAdapter.OnPositi
     private Animation anim;
     private TextView tourTitle;
     private LottieAnimationView emptyAmin;
-    private List<String> tourListfromActivity;
-    private List<String> eventListfromActivity;
-    private int pagePosition;
+    private Bundle bundle;
 
     @Nullable
     @Override
@@ -77,6 +75,7 @@ public class OnGoingTour extends Fragment implements OnGoingTourAdapter.OnPositi
         adapter = new OnGoingTourAdapter(eventList, getContext(), null, OnGoingTour.this);
         viewPager = (ViewPager) view.findViewById(R.id.onGoingViewPager);
         viewPager.setAdapter(adapter);
+        bundle = getArguments();
 
         firstLoads();
 
@@ -145,51 +144,60 @@ public class OnGoingTour extends Fragment implements OnGoingTourAdapter.OnPositi
     }
 
     private void firstLoads() {
-        DatabaseReference activityRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("tours");
-        activityRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                eventList = new ArrayList<>();
-                adapter = new OnGoingTourAdapter(eventList, getContext(), "tour", OnGoingTour.this);
-                viewPager = (ViewPager) view.findViewById(R.id.onGoingViewPager);
-                viewPager.setAdapter(adapter);
-                if (snapshot.exists()) {
-                    emptyAmin.setVisibility(View.GONE);
-                    ArrayList<String> list = new ArrayList<>();
-                    for (DataSnapshot childSnap : snapshot.getChildren()) {
-                        HashMap<String, Object> map = (HashMap<String, Object>) childSnap.getValue();
-                        if (!list.contains(map.get("tourID"))) {
-                            list.add((String) map.get("tourID"));
+        if (bundle != null) {
+            if(bundle.getString("forView").matches("tour")){
+                onGoingTourLoad(0);
+            }else if(bundle.getString("forView").matches("event")){
+                onGoingEventLoad(0);
+            }
+        } else {
+            DatabaseReference activityRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("tours");
+            activityRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    eventList = new ArrayList<>();
+                    adapter = new OnGoingTourAdapter(eventList, getContext(), "tour", OnGoingTour.this);
+                    viewPager = (ViewPager) view.findViewById(R.id.onGoingViewPager);
+                    viewPager.setAdapter(adapter);
+                    if (snapshot.exists()) {
+                        emptyAmin.setVisibility(View.GONE);
+                        ArrayList<String> list = new ArrayList<>();
+                        for (DataSnapshot childSnap : snapshot.getChildren()) {
+                            HashMap<String, Object> map = (HashMap<String, Object>) childSnap.getValue();
+                            if (!list.contains(map.get("tourID"))) {
+                                list.add((String) map.get("tourID"));
+                            }
                         }
-                    }
-                    for (int i = 0; i < list.size(); i++) {
-                        DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("tour").child(list.get(i));
-                        eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    Event event = snapshot.getValue(Event.class);
-                                    eventList.add(event);
-                                    adapter.notifyDataSetChanged();
+                        for (int i = 0; i < list.size(); i++) {
+                            DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("tour").child(list.get(i));
+                            eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+                                        Event event = snapshot.getValue(Event.class);
+                                        eventList.add(event);
+                                        adapter.notifyDataSetChanged();
+                                        viewPager.setOffscreenPageLimit(list.size());
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
 
-                            }
-                        });
+                                }
+                            });
+                        }
+                    } else {
+                        iconSwitch.setChecked(IconSwitch.Checked.RIGHT);
                     }
-                } else {
-                    iconSwitch.setChecked(IconSwitch.Checked.RIGHT);
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     private void onGoingTourLoad(int position) {
@@ -210,6 +218,7 @@ public class OnGoingTour extends Fragment implements OnGoingTourAdapter.OnPositi
                     }
                     for (int i = 0; i < list.size(); i++) {
                         DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("tour").child(list.get(i));
+                        int finalI = i;
                         eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -217,7 +226,16 @@ public class OnGoingTour extends Fragment implements OnGoingTourAdapter.OnPositi
                                     Event event = snapshot.getValue(Event.class);
                                     eventList.add(event);
                                     adapter.notifyDataSetChanged();
-                                    viewPager.setCurrentItem(position);
+                                    if(bundle != null){
+                                        if((event.getStartDate().matches(bundle.getString("startDate"))) && (event.getReturnDate().matches(bundle.getString("returnDate")))){
+                                            viewPager.setOffscreenPageLimit(list.size());
+                                            viewPager.setCurrentItem(finalI,true);
+                                            bundle = null;
+                                        }
+                                    }else {
+                                        viewPager.setOffscreenPageLimit(list.size());
+                                        viewPager.setCurrentItem(position,true);
+                                    }
                                 }
                             }
 
@@ -257,6 +275,7 @@ public class OnGoingTour extends Fragment implements OnGoingTourAdapter.OnPositi
                     }
                     for (int i = 0; i < list.size(); i++) {
                         DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("event").child(list.get(i));
+                        int finalI = i;
                         eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -264,7 +283,16 @@ public class OnGoingTour extends Fragment implements OnGoingTourAdapter.OnPositi
                                     Event event = snapshot.getValue(Event.class);
                                     eventList.add(event);
                                     adapter.notifyDataSetChanged();
-                                    viewPager.setCurrentItem(position);
+                                    if(bundle != null){
+                                        if((event.getStartDate().matches(bundle.getString("startDate"))) && (event.getReturnDate().matches(bundle.getString("returnDate")))){
+                                            viewPager.setOffscreenPageLimit(list.size());
+                                            viewPager.setCurrentItem(finalI,true);
+                                            bundle = null;
+                                        }
+                                    }else {
+                                        viewPager.setOffscreenPageLimit(list.size());
+                                        viewPager.setCurrentItem(position,true);
+                                    }
                                 }
                             }
 

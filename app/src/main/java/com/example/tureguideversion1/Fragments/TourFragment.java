@@ -13,6 +13,7 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -33,6 +34,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -115,6 +117,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import es.dmoral.toasty.Toasty;
+import jp.wasabeef.blurry.Blurry;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -132,7 +135,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private SmartMaterialSpinner locationEt;
     private SliderLayout imageSlider;
     private ImageView logo, tour_nav_icon;
-    private LottieAnimationView loading;
+    private LottieAnimationView loading, findingAmin;
     private List<String> locationList;
     private List<String> selectedLocation, locationListForWeather;
     private ArrayList<String> location;
@@ -165,6 +168,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
     private ActionProcessButton makeTour, makeEventBTN;
     private TextInputLayout meetingPlace, meetingPlaceWithGuide, startDate, returnDate, timeLayout;
     private APIService apiService;
+    private RelativeLayout findingLayout;
 
     public TourFragment() {
         // Required empty public constructor
@@ -177,6 +181,12 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_tour, container, false);
         init(view);
+        findingLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         userID = auth.getUid();
         tDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -347,7 +357,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
         makeTour.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 DatabaseReference eventRef = databaseReference.child("tour");
                 tourID = eventRef.push().getKey();
                 Calendar calendar = Calendar.getInstance();
@@ -377,6 +387,16 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                     meetingPlaceWithGuide.setError(" Tap to pick location for meetup with guide!");
                 }else {
                     if (!place.matches(districtFromLocationSelection)) {
+                        if(findingLayout.getVisibility() == View.GONE){
+                            findingLayout.setVisibility(View.VISIBLE);
+                            findingAmin.setAnimation("finding.json");
+                            findingAmin.playAnimation();
+                            Blurry.with(getContext())
+                                    .radius(25)
+                                    .sampling(50)
+                                    .animate()
+                                    .onto((ViewGroup)view.findViewById(R.id.contentLayout));
+                        }
                         place = districtFromLocationSelection;
                         addTourInDB(tourID,s_date,r_date,place,publishDate,auth.getUid(),"5000",
                                 meetingWithGuide,latForGuidePlace,lonForGuidePlace);
@@ -386,13 +406,24 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if(snapshot.exists()){
+                                    if(findingLayout.getVisibility() == View.VISIBLE){
+                                        findingLayout.setVisibility(View.GONE);
+                                        findingAmin.clearAnimation();
+                                        Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                    }
                                     Toasty.success(view.getContext(), "Your Tour Successfully Created", Toasty.LENGTH_SHORT).show();
                                     addTourtLoacationList();
                                     setUserActivity(tourID,"tours");
                                     tourRef.removeEventListener(this);
                                     makeTour.setProgress(100);
+                                    OnGoingTour onGoingTour = new OnGoingTour();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("forView","tour");
+                                    bundle.putString("startDate",s_date);
+                                    bundle.putString("returnDate",r_date);
+                                    onGoingTour.setArguments(bundle);
                                     FragmentTransaction event = getParentFragmentManager().beginTransaction();
-                                    event.replace(R.id.fragment_container, new OnGoingTour());
+                                    event.replace(R.id.fragment_container, onGoingTour);
                                     event.commit();
                                 }
                             }
@@ -402,7 +433,77 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
                             }
                         });
+
+                        Handler handler = new Handler();
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                                        .child("tour")
+                                        .child(tourID)
+                                        .child("guideID");
+                                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if(!snapshot.exists()){
+                                            Date c = Calendar.getInstance().getTime();
+                                            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                                            String currentDate = df.format(c);
+                                            if(currentDate.matches(s_date)){
+                                                if(findingLayout.getVisibility() == View.VISIBLE){
+                                                    findingLayout.setVisibility(View.GONE);
+                                                    findingAmin.clearAnimation();
+                                                    Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                                }
+                                                Toasty.info(getContext(),"Currently all the gudes are busy. Please try again later...",Toasty.LENGTH_LONG).show();
+                                                DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference()
+                                                        .child("tour")
+                                                        .child(tourID);
+                                                eventRef.removeValue();
+                                                makeTour.setProgress(100);
+                                            }else {
+                                                if(findingLayout.getVisibility() == View.VISIBLE){
+                                                    findingLayout.setVisibility(View.GONE);
+                                                    findingAmin.clearAnimation();
+                                                    Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                                }
+                                                Toasty.info(getContext(),"Looks like all the guides are busy now. You can request again from here...",Toasty.LENGTH_LONG).show();
+                                                addTourtLoacationList();
+                                                setUserActivity(tourID,"tours");
+                                                makeTour.setProgress(100);
+                                                OnGoingTour onGoingTour = new OnGoingTour();
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString("forView","tour");
+                                                bundle.putString("startDate",s_date);
+                                                bundle.putString("returnDate",r_date);
+                                                onGoingTour.setArguments(bundle);
+                                                FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                                                event.replace(R.id.fragment_container, onGoingTour);
+                                                event.commit();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+                            }
+                        };
+                        handler.postDelayed(runnable, 90000);
+
                     } else if (place.matches(districtFromLocationSelection)) {
+                        if(findingLayout.getVisibility() == View.GONE){
+                            findingLayout.setVisibility(View.VISIBLE);
+                            findingAmin.setAnimation("finding.json");
+                            findingAmin.playAnimation();
+                            Blurry.with(getContext())
+                                    .radius(25)
+                                    .sampling(50)
+                                    .animate()
+                                    .onto((ViewGroup)view.findViewById(R.id.contentLayout));
+                        }
                         addTourInDB(tourID,s_date,r_date,place,publishDate,auth.getUid(),"5000",
                                 meetingWithGuide,latForGuidePlace,lonForGuidePlace);
                         requestingGuide(place,s_date,r_date,"tour",tourID);
@@ -411,13 +512,24 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if(snapshot.exists()){
+                                    if(findingLayout.getVisibility() == View.VISIBLE){
+                                        findingLayout.setVisibility(View.GONE);
+                                        findingAmin.clearAnimation();
+                                        Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                    }
                                     Toasty.success(view.getContext(), "Your Tour Successfully Created", Toasty.LENGTH_SHORT).show();
                                         addTourtLoacationList();
                                         setUserActivity(tourID,"tours");
                                     tourRef.removeEventListener(this);
                                     makeTour.setProgress(100);
+                                    OnGoingTour onGoingTour = new OnGoingTour();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("forView","tour");
+                                    bundle.putString("startDate",s_date);
+                                    bundle.putString("returnDate",r_date);
+                                    onGoingTour.setArguments(bundle);
                                     FragmentTransaction event = getParentFragmentManager().beginTransaction();
-                                    event.replace(R.id.fragment_container, new OnGoingTour());
+                                    event.replace(R.id.fragment_container, onGoingTour);
                                     event.commit();
                                 }
                             }
@@ -427,6 +539,66 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
                             }
                         });
+
+                        Handler handler = new Handler();
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                                        .child("tour")
+                                        .child(tourID)
+                                        .child("guideID");
+                                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if(!snapshot.exists()){
+                                            Date c = Calendar.getInstance().getTime();
+                                            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                                            String currentDate = df.format(c);
+                                            if(currentDate.matches(s_date)){
+                                                if(findingLayout.getVisibility() == View.VISIBLE){
+                                                    findingLayout.setVisibility(View.GONE);
+                                                    findingAmin.clearAnimation();
+                                                    Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                                }
+                                                Toasty.info(view.getContext(),"Currently all the gudes are busy. Please try again later...",Toasty.LENGTH_LONG).show();
+                                                DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference()
+                                                        .child("tour")
+                                                        .child(tourID);
+                                                eventRef.removeValue();
+                                                makeTour.setProgress(100);
+                                            }else {
+                                                if(findingLayout.getVisibility() == View.VISIBLE){
+                                                    findingLayout.setVisibility(View.GONE);
+                                                    findingAmin.clearAnimation();
+                                                    Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                                }
+                                                Toasty.info(getContext(),"Looks like all the guides are busy now. You can request again from here...",Toasty.LENGTH_LONG).show();
+                                                addTourtLoacationList();
+                                                setUserActivity(tourID,"tours");
+                                                makeTour.setProgress(100);
+                                                OnGoingTour onGoingTour = new OnGoingTour();
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString("forView","tour");
+                                                bundle.putString("startDate",s_date);
+                                                bundle.putString("returnDate",r_date);
+                                                onGoingTour.setArguments(bundle);
+                                                FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                                                event.replace(R.id.fragment_container, onGoingTour);
+                                                event.commit();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+                            }
+                        };
+                        handler.postDelayed(runnable, 90000);
+
                     } else {
                         Toasty.error(view.getContext(), "Location mismatching!", Toasty.LENGTH_SHORT).show();
                     }
@@ -436,7 +608,7 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
         makeEventBTN.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 if (checkConnection()) {
                     DatabaseReference eventRef = databaseReference.child("event");
                     eventId = eventRef.push().getKey();
@@ -489,6 +661,16 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                         Toasty.error(view.getContext(), "Can't get your meeting location point! Please pick location again.", Toasty.LENGTH_SHORT).show();
                     } else {
                         if (!place.matches(districtFromLocationSelection)) {
+                            if(findingLayout.getVisibility() == View.GONE){
+                                findingLayout.setVisibility(View.VISIBLE);
+                                findingAmin.setAnimation("finding.json");
+                                findingAmin.playAnimation();
+                                Blurry.with(getContext())
+                                        .radius(25)
+                                        .sampling(50)
+                                        .animate()
+                                        .onto((ViewGroup)view.findViewById(R.id.contentLayout));
+                            }
                             place = districtFromLocationSelection;
                             addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
                                     userID, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace,
@@ -499,6 +681,11 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if(snapshot.exists()){
+                                        if(findingLayout.getVisibility() == View.VISIBLE){
+                                            findingLayout.setVisibility(View.GONE);
+                                            findingAmin.clearAnimation();
+                                            Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                        }
                                         Toasty.success(view.getContext(), "Your Event Successfully Created", Toasty.LENGTH_SHORT).show();
                                         addJoinMember();
                                         addEventLoacationList();
@@ -512,8 +699,14 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                         });
                                         tourRef.removeEventListener(this);
                                         makeTour.setProgress(100);
+                                        OnGoingTour onGoingTour = new OnGoingTour();
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("forView","event");
+                                        bundle.putString("startDate",s_date);
+                                        bundle.putString("returnDate",r_date);
+                                        onGoingTour.setArguments(bundle);
                                         FragmentTransaction event = getParentFragmentManager().beginTransaction();
-                                        event.replace(R.id.fragment_container, new OnGoingTour());
+                                        event.replace(R.id.fragment_container, onGoingTour);
                                         event.commit();
                                     }
                                 }
@@ -523,7 +716,85 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
                                 }
                             });
+
+                            Handler handler = new Handler();
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                                            .child("event")
+                                            .child(eventId)
+                                            .child("guideID");
+                                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if(!snapshot.exists()){
+                                                Date c = Calendar.getInstance().getTime();
+                                                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                                                String currentDate = df.format(c);
+                                                if(currentDate.matches(s_date)){
+                                                    if(findingLayout.getVisibility() == View.VISIBLE){
+                                                        findingLayout.setVisibility(View.GONE);
+                                                        findingAmin.clearAnimation();
+                                                        Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                                    }
+                                                    Toasty.info(getContext(),"Currently all the gudes are busy. Please try again later...",Toasty.LENGTH_LONG).show();
+                                                    DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference()
+                                                            .child("event")
+                                                            .child(eventId);
+                                                    eventRef.removeValue();
+                                                    makeEventBTN.setProgress(100);
+                                                }else {
+                                                    if(findingLayout.getVisibility() == View.VISIBLE){
+                                                        findingLayout.setVisibility(View.GONE);
+                                                        findingAmin.clearAnimation();
+                                                        Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                                    }
+                                                    Toasty.info(getContext(),"Looks like all the guides are busy now. You can request again from here...",Toasty.LENGTH_LONG).show();
+                                                    addJoinMember();
+                                                    addEventLoacationList();
+                                                    setUserActivity(eventId,"events");
+                                                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                                        @Override
+                                                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                                                            setToken(instanceIdResult.getToken(),eventId);
+                                                            enableNotification(eventId);
+                                                        }
+                                                    });
+                                                    makeEventBTN.setProgress(100);
+                                                    OnGoingTour onGoingTour = new OnGoingTour();
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString("forView","event");
+                                                    bundle.putString("startDate",s_date);
+                                                    bundle.putString("returnDate",r_date);
+                                                    onGoingTour.setArguments(bundle);
+                                                    FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                                                    event.replace(R.id.fragment_container, onGoingTour);
+                                                    event.commit();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                            };
+                            handler.postDelayed(runnable, 90000);
+
                         } else if (place.matches(districtFromLocationSelection)) {
+                            if(findingLayout.getVisibility() == View.GONE){
+                                findingLayout.setVisibility(View.VISIBLE);
+                                findingAmin.setAnimation("finding.json");
+                                findingAmin.playAnimation();
+                                Blurry.with(getContext())
+                                        .radius(25)
+                                        .sampling(50)
+                                        .animate()
+                                        .onto((ViewGroup)view.findViewById(R.id.contentLayout));
+                            }
                             addEventInDB(eventId, s_date, r_date, time, place, meetPlace, description, publishDate, joinMemberCount,
                                     userID, group_name, cost, latForMeetingPlace, lonForMeetingPlace, subLocalityForMeetingPlace,
                                     meetingWithGuide, latForGuidePlace, lonForGuidePlace);
@@ -533,6 +804,11 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if(snapshot.exists()){
+                                        if(findingLayout.getVisibility() == View.VISIBLE){
+                                            findingLayout.setVisibility(View.GONE);
+                                            findingAmin.clearAnimation();
+                                            Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                        }
                                         Toasty.success(view.getContext(), "Your Event Successfully Created", Toasty.LENGTH_SHORT).show();
                                         addJoinMember();
                                         addEventLoacationList();
@@ -545,9 +821,15 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
                                             }
                                         });
                                         tourRef.removeEventListener(this);
-                                        makeTour.setProgress(100);
+                                        makeEventBTN.setProgress(100);
+                                        OnGoingTour onGoingTour = new OnGoingTour();
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("forView","event");
+                                        bundle.putString("startDate",s_date);
+                                        bundle.putString("returnDate",r_date);
+                                        onGoingTour.setArguments(bundle);
                                         FragmentTransaction event = getParentFragmentManager().beginTransaction();
-                                        event.replace(R.id.fragment_container, new OnGoingTour());
+                                        event.replace(R.id.fragment_container, onGoingTour);
                                         event.commit();
                                     }
                                 }
@@ -557,6 +839,74 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
 
                                 }
                             });
+
+                            Handler handler = new Handler();
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                                            .child("event")
+                                            .child(eventId)
+                                            .child("guideID");
+                                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if(!snapshot.exists()){
+                                                Date c = Calendar.getInstance().getTime();
+                                                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                                                String currentDate = df.format(c);
+                                                if(currentDate.matches(s_date)){
+                                                    if(findingLayout.getVisibility() == View.VISIBLE){
+                                                        findingLayout.setVisibility(View.GONE);
+                                                        findingAmin.clearAnimation();
+                                                        Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                                    }
+                                                    Toasty.info(getContext(),"Currently all the gudes are busy. Please try again later...",Toasty.LENGTH_LONG).show();
+                                                    DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference()
+                                                            .child("event")
+                                                            .child(eventId);
+                                                    eventRef.removeValue();
+                                                    makeEventBTN.setProgress(100);
+                                                }else {
+                                                    if(findingLayout.getVisibility() == View.VISIBLE){
+                                                        findingLayout.setVisibility(View.GONE);
+                                                        findingAmin.clearAnimation();
+                                                        Blurry.delete((ViewGroup)view.findViewById(R.id.contentLayout));
+                                                    }
+                                                    Toasty.info(getContext(),"Looks like all the guides are busy now. You can request again from here...",Toasty.LENGTH_LONG).show();
+                                                    addJoinMember();
+                                                    addEventLoacationList();
+                                                    setUserActivity(eventId,"events");
+                                                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                                        @Override
+                                                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                                                            setToken(instanceIdResult.getToken(),eventId);
+                                                            enableNotification(eventId);
+                                                        }
+                                                    });
+                                                    makeEventBTN.setProgress(100);
+                                                    OnGoingTour onGoingTour = new OnGoingTour();
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString("forView","event");
+                                                    bundle.putString("startDate",s_date);
+                                                    bundle.putString("returnDate",r_date);
+                                                    onGoingTour.setArguments(bundle);
+                                                    FragmentTransaction event = getParentFragmentManager().beginTransaction();
+                                                    event.replace(R.id.fragment_container, onGoingTour);
+                                                    event.commit();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                            };
+                            handler.postDelayed(runnable, 90000);
+
                         } else {
                             Toasty.error(view.getContext(), "Location mismatching!", Toasty.LENGTH_SHORT).show();
                         }
@@ -1116,6 +1466,8 @@ public class TourFragment extends Fragment implements BaseSliderView.OnSliderCli
         meetingPlace = view.findViewById(R.id.meetingPlace);
         meetingPlaceWithGuide = view.findViewById(R.id.meetingPlaceWithGuide);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+        findingLayout = view.findViewById(R.id.findingLayout);
+        findingAmin = view.findViewById(R.id.findingAmin);
     }
 
     private void getDate() {

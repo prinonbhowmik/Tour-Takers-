@@ -8,429 +8,280 @@
     android:theme="@style/EditText"
     tools:context=".Fragments.TourFragment">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/tour_searchCV"
+    <RelativeLayout
+        android:id="@+id/contentLayout"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:backgroundTint="@android:color/white"
-        app:cardCornerRadius="5dp">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/rl1"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/tour_searchCV"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/nav_icon"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:src="@drawable/ic_menu5" />
-
-            <TextView
-                android:id="@+id/tourTitle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:background="@null"
-                android:fontFamily="@font/amarante"
-                android:layout_toStartOf="@+id/tourSwitch"
-                android:layout_toEndOf="@+id/nav_icon"
-                android:gravity="center"
-                android:text="@string/tour"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="21sp"
-                android:textStyle="bold" />
-
-            <com.polyak.iconswitch.IconSwitch
-                android:id="@+id/tourSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                app:isw_active_tint_icon_left="#000000"
-                app:isw_active_tint_icon_right="#000000"
-                app:isw_icon_left="@drawable/travel_icon"
-                app:isw_icon_right="@drawable/ic_event_black_24dp" />
-
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
-
-    <ScrollView
-        android:id="@+id/tScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tour_searchCV"
-        android:layout_alignParentBottom="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="45dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@android:color/white"
+            app:cardCornerRadius="5dp">
 
             <RelativeLayout
-                android:id="@+id/sliderLayout"
+                android:id="@+id/rl1"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="20dp">
+                android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/logoT"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/logo2" />
-
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/loading"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_centerHorizontal="true"
-                    app:lottie_autoPlay="true"
-                    app:lottie_fileName="material-wave-loading.json"
-                    app:lottie_loop="true" />
-
-                <com.glide.slider.library.SliderLayout
-                    android:id="@+id/slider"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-            </RelativeLayout>
-
-            <com.chivorn.smartmaterialspinner.SmartMaterialSpinner
-                android:id="@+id/location_Et"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="35dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="35dp"
-                android:soundEffectsEnabled="true"
-                android:spinnerMode="dropdown"
-                android:splitMotionEvents="true"
-                app:smsp_alignLabel="true"
-                app:smsp_enableDismissSearch="false"
-                app:smsp_errorText="Tap to select District"
-                app:smsp_errorTextColor="#face2f"
-                app:smsp_errorTextSize="15sp"
-                app:smsp_floatingLabelColor="#face2f"
-                app:smsp_floatingLabelText="District"
-                app:smsp_hint="District"
-                app:smsp_hintColor="#face2f"
-                app:smsp_hintSize="20sp"
-                app:smsp_isSearchable="true"
-                app:smsp_itemColor="#000000"
-                app:smsp_itemListColor="#000000"
-                app:smsp_itemListHintBackgroundColor="#808080"
-                app:smsp_itemListHintColor="#FFFFFF"
-                app:smsp_itemSize="25dp"
-                app:smsp_searchHeaderBackgroundColor="#face2f"
-                app:smsp_searchHeaderText="Select District"
-                app:smsp_searchHeaderTextColor="#000000"
-                app:smsp_searchHint="Search here..."
-                app:smsp_searchHintColor="@color/common_google_signin_btn_text_dark_disabled"
-                app:smsp_searchTextColor="#000000"
-                app:smsp_selectedItemListColor="@color/colorGreen"
-                app:smsp_underlineSize="0dp" />
-
-            <Button
-                android:id="@+id/locationSelection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/custom_btn"
-                android:text="@string/select_tourism_places"
-                android:textAlignment="center"
-                android:textAllCaps="false"
-                android:textColor="@color/colorYellow"
-                android:visibility="gone" />
-
-            <LinearLayout
-                android:id="@+id/dateLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/date1_TIL"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                    android:layout_width="0dp"
+                    android:id="@+id/nav_icon"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/amarante"
-                    android:hint="@string/start_date"
-                    android:textColorHint="@color/colorYellow"
-                    app:boxBackgroundMode="outline"
-                    app:boxStrokeColor="@color/colorYellow">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/startDate_Et"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:focusable="false"
-                        android:fontFamily="@font/amarante"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:paddingStart="15dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="15dp"
-                        android:paddingBottom="8dp"
-                        android:textColor="#000"
-                        android:textSize="21sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <ImageView
-                    android:id="@+id/direction"
-                    android:layout_width="30dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/direction" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/date2_TIL"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/amarante"
-                    android:hint="@string/return_date"
-                    android:textColorHint="@color/colorYellow"
-                    app:boxBackgroundMode="outline"
-                    app:boxStrokeColor="@color/colorYellow">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/endDate_Et"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:focusable="false"
-                        android:fontFamily="@font/amarante"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:paddingStart="15dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="15dp"
-                        android:paddingBottom="8dp"
-                        android:textColor="#000"
-                        android:textSize="21sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/dailyForcastLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:weightSum="1"
-                android:visibility="gone">
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:src="@drawable/ic_menu5" />
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/tourTitle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:layout_toStartOf="@+id/tourSwitch"
+                    android:layout_toEndOf="@+id/nav_icon"
+                    android:background="@null"
                     android:fontFamily="@font/amarante"
-                    android:gravity="center_horizontal"
-                    android:text="Weather within your tour period:"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/weatherLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="@font/amarante"
-                    android:gravity="center_horizontal"
-                    android:textColor="#000000"
-                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:text="@string/tour"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="21sp"
                     android:textStyle="bold" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/dailyForcastRecycleView"
+                <com.polyak.iconswitch.IconSwitch
+                    android:id="@+id/tourSwitch"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:orientation="horizontal"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-
-            </LinearLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/meetingPlaceWithGuide"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="20dp"
-                android:fontFamily="@font/amarante"
-                android:hint="Meetup with Guide"
-                android:textColorHint="@color/colorYellow"
-                app:boxStrokeColor="@color/colorYellow"
-                app:boxBackgroundMode="outline">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/meetingPlaceWithGuide_ET"
-                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:focusable="false"
-                    android:fontFamily="@font/amarante"
-                    android:inputType="textMultiLine"
-                    android:paddingStart="15dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="8dp"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="21sp" />
+                    android:layout_alignParentEnd="true"
+                    app:isw_active_tint_icon_left="#000000"
+                    app:isw_active_tint_icon_right="#000000"
+                    app:isw_icon_left="@drawable/travel_icon"
+                    app:isw_icon_right="@drawable/ic_event_black_24dp" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
 
-            <com.dd.processbutton.iml.ActionProcessButton
-                android:id="@+id/makeTourBTN"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="50dp"
-                android:text="Make Tour"
-                android:textColor="@color/colorYellow"
-                app:pb_colorComplete="@color/colorPrimaryDark"
-                app:pb_colorError="@color/red_error"
-                app:pb_colorNormal="@color/colorPrimaryDark"
-                app:pb_colorPressed="@color/colorPrimaryDark"
-                app:pb_colorProgress="@color/purple_progress"
-                app:pb_cornerRadius="5dp"
-                app:pb_textComplete="Make Tour"
-                app:pb_textError="Error"
-                app:pb_textProgress="Finding Guide..." />
+        <ScrollView
+            android:id="@+id/tScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tour_searchCV"
+            android:layout_alignParentBottom="true">
 
             <LinearLayout
-                android:id="@+id/eventLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:orientation="vertical">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/groupName"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                <RelativeLayout
+                    android:id="@+id/sliderLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="200dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="20dp">
+
+                    <ImageView
+                        android:id="@+id/logoT"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/logo2" />
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/loading"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true"
+                        app:lottie_autoPlay="true"
+                        app:lottie_fileName="material-wave-loading.json"
+                        app:lottie_loop="true" />
+
+                    <com.glide.slider.library.SliderLayout
+                        android:id="@+id/slider"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </RelativeLayout>
+
+                <com.chivorn.smartmaterialspinner.SmartMaterialSpinner
+                    android:id="@+id/location_Et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="35dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="35dp"
+                    android:soundEffectsEnabled="true"
+                    android:spinnerMode="dropdown"
+                    android:splitMotionEvents="true"
+                    app:smsp_alignLabel="true"
+                    app:smsp_enableDismissSearch="false"
+                    app:smsp_errorText="Tap to select District"
+                    app:smsp_errorTextColor="#face2f"
+                    app:smsp_errorTextSize="15sp"
+                    app:smsp_floatingLabelColor="#face2f"
+                    app:smsp_floatingLabelText="District"
+                    app:smsp_hint="District"
+                    app:smsp_hintColor="#face2f"
+                    app:smsp_hintSize="20sp"
+                    app:smsp_isSearchable="true"
+                    app:smsp_itemColor="#000000"
+                    app:smsp_itemListColor="#000000"
+                    app:smsp_itemListHintBackgroundColor="#808080"
+                    app:smsp_itemListHintColor="#FFFFFF"
+                    app:smsp_itemSize="25dp"
+                    app:smsp_searchHeaderBackgroundColor="#face2f"
+                    app:smsp_searchHeaderText="Select District"
+                    app:smsp_searchHeaderTextColor="#000000"
+                    app:smsp_searchHint="Search here..."
+                    app:smsp_searchHintColor="@color/common_google_signin_btn_text_dark_disabled"
+                    app:smsp_searchTextColor="#000000"
+                    app:smsp_selectedItemListColor="@color/colorGreen"
+                    app:smsp_underlineSize="0dp" />
+
+                <Button
+                    android:id="@+id/locationSelection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="20dp"
-                    android:fontFamily="@font/amarante"
-                    android:hint="@string/group_name"
-                    android:textColorHint="@color/colorYellow"
-                    app:boxBackgroundMode="outline"
-                    app:boxStrokeColor="@color/colorYellow">
+                    android:background="@drawable/custom_btn"
+                    android:text="@string/select_tourism_places"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorYellow"
+                    android:visibility="gone" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/groupName_ET"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:fontFamily="@font/amarante"
-                        android:imeOptions="actionNext"
-                        android:inputType="textEmailAddress"
-                        android:maxLines="1"
-                        android:paddingStart="15dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="15dp"
-                        android:paddingBottom="8dp"
-                        android:textColor="@color/colorBlack"
-                        android:textSize="21sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <RelativeLayout
+                <LinearLayout
+                    android:id="@+id/dateLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/eventCost"
+                        android:id="@+id/date1_TIL"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                        android:layout_width="155dp"
-                        android:layout_height="50dp"
-                        android:layout_alignParentStart="true"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
                         android:fontFamily="@font/amarante"
-                        android:hint="@string/total_cost"
+                        android:hint="@string/start_date"
                         android:textColorHint="@color/colorYellow"
                         app:boxBackgroundMode="outline"
                         app:boxStrokeColor="@color/colorYellow">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/eventCost_ET"
+                            android:id="@+id/startDate_Et"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:focusable="false"
                             android:fontFamily="@font/amarante"
-                            android:inputType="number"
+                            android:inputType="text"
                             android:maxLines="1"
                             android:paddingStart="15dp"
                             android:paddingTop="8dp"
                             android:paddingEnd="15dp"
                             android:paddingBottom="8dp"
-                            android:textColor="@color/colorBlack"
+                            android:textColor="#000"
                             android:textSize="21sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
+
+                    <ImageView
+                        android:id="@+id/direction"
+                        android:layout_width="30dp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/direction" />
+
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/eventTime"
+                        android:id="@+id/date2_TIL"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                        android:layout_width="155dp"
-                        android:layout_height="50dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginTop="5dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
                         android:layout_marginEnd="20dp"
+                        android:layout_weight="1"
                         android:fontFamily="@font/amarante"
-                        android:hint="@string/event_time"
+                        android:hint="@string/return_date"
                         android:textColorHint="@color/colorYellow"
                         app:boxBackgroundMode="outline"
                         app:boxStrokeColor="@color/colorYellow">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/eventTime_ET"
+                            android:id="@+id/endDate_Et"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:focusable="false"
                             android:fontFamily="@font/amarante"
+                            android:inputType="text"
+                            android:maxLines="1"
                             android:paddingStart="15dp"
                             android:paddingTop="8dp"
                             android:paddingEnd="15dp"
                             android:paddingBottom="8dp"
-                            android:textColor="@color/colorBlack"
+                            android:textColor="#000"
                             android:textSize="21sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
 
-                </RelativeLayout>
+                <LinearLayout
+                    android:id="@+id/dailyForcastLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:fontFamily="@font/amarante"
+                        android:gravity="center_horizontal"
+                        android:text="Weather within your tour period:"
+                        android:textColor="#000000"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/weatherLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="5dp"
+                        android:fontFamily="@font/amarante"
+                        android:gravity="center_horizontal"
+                        android:textColor="#000000"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/dailyForcastRecycleView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:orientation="horizontal"
+                        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+
+                </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/meetingPlace"
+                    android:id="@+id/meetingPlaceWithGuide"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -438,13 +289,13 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="20dp"
                     android:fontFamily="@font/amarante"
-                    android:hint="Meetup with Members"
+                    android:hint="Meetup with Guide"
                     android:textColorHint="@color/colorYellow"
                     app:boxBackgroundMode="outline"
                     app:boxStrokeColor="@color/colorYellow">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/meetingPlace_ET"
+                        android:id="@+id/meetingPlaceWithGuide_ET"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:focusable="false"
@@ -459,51 +310,15 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/eventDescription"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="20dp"
-                    android:fontFamily="@font/amarante"
-                    android:hint="@string/event_description"
-                    android:textColorHint="@color/colorYellow"
-                    app:boxBackgroundMode="outline"
-                    app:boxStrokeColor="@color/colorYellow">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/eventDescription_ET"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="5dp"
-                        android:autofillHints=""
-                        android:fontFamily="@font/amarante"
-                        android:gravity="top|start"
-                        android:hint="@string/write_about_the_tour"
-                        android:inputType="textMultiLine|textCapSentences"
-                        android:maxLength="2000"
-                        android:maxLines="10"
-                        android:paddingStart="15dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="20dp"
-                        android:paddingBottom="8dp"
-                        android:textColor="@color/colorBlack"
-                        android:textSize="21sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
                 <com.dd.processbutton.iml.ActionProcessButton
-                    android:id="@+id/makeEventBTN"
+                    android:id="@+id/makeTourBTN"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="50dp"
-                    android:text="Make Event"
+                    android:text="Make Tour"
                     android:textColor="@color/colorYellow"
                     app:pb_colorComplete="@color/colorPrimaryDark"
                     app:pb_colorError="@color/red_error"
@@ -511,16 +326,224 @@
                     app:pb_colorPressed="@color/colorPrimaryDark"
                     app:pb_colorProgress="@color/purple_progress"
                     app:pb_cornerRadius="5dp"
-                    app:pb_textComplete="Make Event"
+                    app:pb_textComplete="Make Tour"
                     app:pb_textError="Error"
                     app:pb_textProgress="Finding Guide..." />
 
+                <LinearLayout
+                    android:id="@+id/eventLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/groupName"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="20dp"
+                        android:fontFamily="@font/amarante"
+                        android:hint="@string/group_name"
+                        android:textColorHint="@color/colorYellow"
+                        app:boxBackgroundMode="outline"
+                        app:boxStrokeColor="@color/colorYellow">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/groupName_ET"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:fontFamily="@font/amarante"
+                            android:imeOptions="actionNext"
+                            android:inputType="textEmailAddress"
+                            android:maxLines="1"
+                            android:paddingStart="15dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="15dp"
+                            android:paddingBottom="8dp"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="21sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/eventCost"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                            android:layout_width="155dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="5dp"
+                            android:fontFamily="@font/amarante"
+                            android:hint="@string/total_cost"
+                            android:textColorHint="@color/colorYellow"
+                            app:boxBackgroundMode="outline"
+                            app:boxStrokeColor="@color/colorYellow">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/eventCost_ET"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:fontFamily="@font/amarante"
+                                android:inputType="number"
+                                android:maxLines="1"
+                                android:paddingStart="15dp"
+                                android:paddingTop="8dp"
+                                android:paddingEnd="15dp"
+                                android:paddingBottom="8dp"
+                                android:textColor="@color/colorBlack"
+                                android:textSize="21sp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/eventTime"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                            android:layout_width="155dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="20dp"
+                            android:fontFamily="@font/amarante"
+                            android:hint="@string/event_time"
+                            android:textColorHint="@color/colorYellow"
+                            app:boxBackgroundMode="outline"
+                            app:boxStrokeColor="@color/colorYellow">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/eventTime_ET"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:focusable="false"
+                                android:fontFamily="@font/amarante"
+                                android:paddingStart="15dp"
+                                android:paddingTop="8dp"
+                                android:paddingEnd="15dp"
+                                android:paddingBottom="8dp"
+                                android:textColor="@color/colorBlack"
+                                android:textSize="21sp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </RelativeLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/meetingPlace"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="20dp"
+                        android:fontFamily="@font/amarante"
+                        android:hint="Meetup with Members"
+                        android:textColorHint="@color/colorYellow"
+                        app:boxBackgroundMode="outline"
+                        app:boxStrokeColor="@color/colorYellow">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/meetingPlace_ET"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:focusable="false"
+                            android:fontFamily="@font/amarante"
+                            android:inputType="textMultiLine"
+                            android:paddingStart="15dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="10dp"
+                            android:paddingBottom="8dp"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="21sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/eventDescription"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="20dp"
+                        android:fontFamily="@font/amarante"
+                        android:hint="@string/event_description"
+                        android:textColorHint="@color/colorYellow"
+                        app:boxBackgroundMode="outline"
+                        app:boxStrokeColor="@color/colorYellow">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/eventDescription_ET"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="5dp"
+                            android:autofillHints=""
+                            android:fontFamily="@font/amarante"
+                            android:gravity="top|start"
+                            android:hint="@string/write_about_the_tour"
+                            android:inputType="textMultiLine|textCapSentences"
+                            android:maxLength="2000"
+                            android:maxLines="10"
+                            android:paddingStart="15dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="20dp"
+                            android:paddingBottom="8dp"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="21sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.dd.processbutton.iml.ActionProcessButton
+                        android:id="@+id/makeEventBTN"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="50dp"
+                        android:text="Make Event"
+                        android:textColor="@color/colorYellow"
+                        app:pb_colorComplete="@color/colorPrimaryDark"
+                        app:pb_colorError="@color/red_error"
+                        app:pb_colorNormal="@color/colorPrimaryDark"
+                        app:pb_colorPressed="@color/colorPrimaryDark"
+                        app:pb_colorProgress="@color/purple_progress"
+                        app:pb_cornerRadius="5dp"
+                        app:pb_textComplete="Make Event"
+                        app:pb_textError="Error"
+                        app:pb_textProgress="Finding Guide..." />
+
+                </LinearLayout>
+
             </LinearLayout>
+        </ScrollView>
 
-        </LinearLayout>
-    </ScrollView>
+    </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/findingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"
+        android:visibility="gone">
 
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/findingAmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="80dp"
+            app:lottie_loop="true"
+            app:lottie_speed="3"/>
+
+    </RelativeLayout>
 
 
 </RelativeLayout>

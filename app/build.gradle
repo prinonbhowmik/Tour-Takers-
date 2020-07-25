@@ -126,4 +126,7 @@ dependencies {
 
     //implementation 'com.mcxiaoke.volley:library:1.0.19'
 
+    //Blurry
+    implementation 'jp.wasabeef:blurry:2.1.1'
+
 }
