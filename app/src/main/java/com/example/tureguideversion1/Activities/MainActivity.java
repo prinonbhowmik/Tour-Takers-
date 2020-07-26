@@ -148,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 userId = auth.getUid();
 
+                garbageCollect();
+
                 getUserActivity(new userActivityCallback() {
                     @Override
                     public void onTourCallback(boolean tour) {
@@ -267,6 +269,91 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                bettaryOptimization();
 //            }
 //        }.start();
+    }
+
+    private void garbageCollect() {
+        ArrayList<String> eventList = new ArrayList<>();
+        ArrayList<String> tourList = new ArrayList<>();
+        DatabaseReference userEventActivityRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("events");
+        DatabaseReference userTourtActivityRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("tours");
+        userEventActivityRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    for(DataSnapshot childSnap: snapshot.getChildren()){
+                        HashMap<String, Object> map = (HashMap<String, Object>) childSnap.getValue();
+                        eventList.add((String) map.get("eventID"));
+                    }
+                    DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("event");
+                    eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+                                for(DataSnapshot child: snapshot.getChildren()){
+                                    HashMap<String, Object> map2 = (HashMap<String, Object>) child.getValue();
+                                    if(map2.get("eventPublisherId").toString().matches(auth.getUid())){
+                                        if(!eventList.contains(child.getKey())){
+                                            DatabaseReference removeEventRef = FirebaseDatabase.getInstance().getReference()
+                                                    .child("event").child(child.getKey());
+                                            removeEventRef.removeValue();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        userTourtActivityRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    for(DataSnapshot childSnap: snapshot.getChildren()){
+                        HashMap<String, Object> map = (HashMap<String, Object>) childSnap.getValue();
+                        tourList.add((String) map.get("tourID"));
+                    }
+                    DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("tour");
+                    eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+                                for(DataSnapshot child: snapshot.getChildren()){
+                                    HashMap<String, Object> map2 = (HashMap<String, Object>) child.getValue();
+                                    if(map2.get("eventPublisherId").toString().matches(auth.getUid())){
+                                        if(!tourList.contains(child.getKey())){
+                                            DatabaseReference removeTourtRef = FirebaseDatabase.getInstance().getReference()
+                                                    .child("tour").child(child.getKey());
+                                            removeTourtRef.removeValue();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void eventCommentsNotification() {
