@@ -468,19 +468,24 @@ public class CommentsBox extends AppCompatActivity {
     }
 
     private void readMessage() {
-        mChat = new ArrayList<>();
         DatabaseReference ref = databaseReference.child("eventComments").child(currentEventId);
         Query locations = ref.orderByKey();
         locations.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mChat = new ArrayList<>();
+                chatAdapter = new ChatAdapter(CommentsBox.this, mChat);
+                chatRecyclerView.setAdapter(chatAdapter);
+                chatRecyclerView.setHasFixedSize(true);
+                chatRecyclerView.setItemViewCacheSize(20);
+                chatRecyclerView.setDrawingCacheEnabled(true);
+                chatRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+                chatAdapter.notifyDataSetChanged();
                 if (dataSnapshot.exists()) {
                     mChat.clear();
                     for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                         Chat chat = childSnapshot.getValue(Chat.class);
                         mChat.add(chat);
-                        chatAdapter = new ChatAdapter(CommentsBox.this, mChat);
-                        chatRecyclerView.setAdapter(chatAdapter);
                         chatAdapter.notifyDataSetChanged();
                     }
                     if (p != 1) {

@@ -143,7 +143,7 @@ public class LocationImage extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0, 130, 0);
-        //Toast.makeText(getApplicationContext(),slide,Toast.LENGTH_LONG).show();
+        viewPager.setOffscreenPageLimit(models.size());
         viewPager.setCurrentItem(this.location.indexOf(slide),true);
 
         colors = new Integer[]{

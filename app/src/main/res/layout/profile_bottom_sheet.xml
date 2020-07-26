@@ -51,7 +51,8 @@
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:textColor="#000"
-            android:textSize="21sp" />
+            android:textSize="21sp"
+            android:textColorHint="@color/gray"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

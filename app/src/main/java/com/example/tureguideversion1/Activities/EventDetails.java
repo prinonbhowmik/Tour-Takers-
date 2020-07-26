@@ -80,7 +80,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
     private int attend_member_count;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
-    private String userId, event_Id;
+    private String userId, event_Id, guideID;
     private String member_name, member_image, member_phone, member_email, member_gender;
     private String update_des;
     private long count, commentCounter;
@@ -478,12 +478,14 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 DatabaseReference cRef = databaseReference.child("eventComments").child(event_Id);
                 DatabaseReference commentsTokenRef = databaseReference.child("eventCommentsTokens").child(event_Id);
                 DatabaseReference replyRef = databaseReference.child("eventCommentsReply").child(event_Id);
-                eRef.setValue(null);
-                mRef.setValue(null);
-                lRef.setValue(null);
-                cRef.setValue(null);
+                DatabaseReference notiRef = FirebaseDatabase.getInstance().getReference().child("notificationStatus").child("eventCommentNotifiaction").child(event_Id);
+                notiRef.removeValue();
+                eRef.removeValue();
+                mRef.removeValue();
+                lRef.removeValue();
+                cRef.removeValue();
                 commentsTokenRef.removeValue();
-                replyRef.setValue(null);
+                replyRef.removeValue();
                 ArrayList<String> userIDs = new ArrayList<>();
                 DatabaseReference removeActivity = FirebaseDatabase.getInstance().getReference().child("userActivities");
                 removeActivity.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -804,7 +806,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                     attend_member_count = event.getJoinMemberCount();
                     latForMeetingPlace = event.getLatForMeetingPlace();
                     lonForMeetingPlace = event.getLonForMeetingPlace();
-
+                    guideID = event.getGuideID();
                     event_place.setText(place);
                     publish_date.setText(p_date);
                     event_date.setText(s_date);

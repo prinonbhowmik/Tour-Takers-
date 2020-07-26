@@ -127,7 +127,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/replyRecycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@id/inputLayout2"
         android:layout_below="@id/topRelativeLayout" />
 

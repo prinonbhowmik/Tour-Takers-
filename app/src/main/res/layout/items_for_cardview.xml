@@ -14,7 +14,8 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="25dp"
         app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="20dp">
+        app:cardCornerRadius="20dp"
+        app:cardUseCompatPadding="false">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -49,9 +50,9 @@
                 android:layout_height="30dp"
                 android:layout_below="@id/imageLayout"
                 android:layout_marginTop="10dp"
+                android:fontFamily="@font/amarante"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
-                android:fontFamily="@font/amarante"
                 android:text="Brochure"
                 android:textAlignment="center"
                 android:textColor="#262626"
@@ -63,12 +64,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/title"
-                android:padding="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:drawablePadding="10dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/amarante"
+                android:padding="10dp"
                 android:scrollbars="vertical"
                 android:text="Description"
                 android:textAlignment="gravity"

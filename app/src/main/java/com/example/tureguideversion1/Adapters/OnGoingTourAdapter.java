@@ -358,7 +358,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                     relative6.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID());
+                                            requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID(), anim);
                                             txt5.setText("Finding guide...");
                                             anim.start();
                                             Handler handler = new Handler();
@@ -407,7 +407,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                     relative6.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID());
+                                            requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID(), anim);
                                             txt5.setText("Finding guide...");
                                             anim.start();
                                             Handler handler = new Handler();
@@ -457,7 +457,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                             relative6.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID());
+                                    requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID(), anim);
                                     txt5.setText("Finding guide...");
                                     anim.start();
                                     Handler handler = new Handler();
@@ -763,7 +763,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                             relative20.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID());
+                                    requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID(),anim);
                                     txt20.setText("Finding guide...");
                                     anim.start();
                                     Handler handler = new Handler();
@@ -811,7 +811,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                         relative20.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID());
+                                requestingGuide(event.getPlace(), event.getStartDate(), event.getReturnDate(), forView, event.getId(), txt5, position, event.getGuideID(), anim);
                                 txt20.setText("Finding guide...");
                                 anim.start();
                                 Handler handler = new Handler();
@@ -1086,7 +1086,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
     }
 
     private void requestingGuide(String district, String startDate, String returnDate, String typeFor,
-                                 String typeID, TextView textView, int position, String guideID) {
+                                 String typeID, TextView textView, int position, String guideID, ObjectAnimator anim) {
 
         DatabaseReference onlineRef = FirebaseDatabase.getInstance().getReference().child("guidesAreOnline").child(district);
         onlineRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -1135,6 +1135,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                 } else {
                     Toasty.info(context, "Guides are not online right now. Please try again later.", Toasty.LENGTH_SHORT).show();
                     textView.setText("Tap to request a guide...");
+                    anim.end();
                 }
             }
 

@@ -1,8 +1,10 @@
 package com.example.tureguideversion1;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +18,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.collection.LLRBNode;
 
 
 public class Profile_bottom_sheet extends BottomSheetDialogFragment {
+    public static final String TAG = "Profile_bottom_sheet";
 
     @Nullable
     @Override
@@ -34,7 +38,6 @@ public class Profile_bottom_sheet extends BottomSheetDialogFragment {
         String userID = mArgs.getString("id");
         final String nameForHint = mArgs.getString("nameForHint");
         final String phoneForHint = mArgs.getString("phoneForHint");
-
         if(updateKeyPhone != null) {
             input.setKeyListener(new DigitsKeyListener());
             String cap1 = updateKeyPhone.substring(0, 1).toUpperCase() + updateKeyPhone.substring(1);

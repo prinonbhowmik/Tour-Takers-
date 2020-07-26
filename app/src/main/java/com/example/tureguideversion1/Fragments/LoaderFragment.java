@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import io.opencensus.stats.Aggregation;
 
 public class LoaderFragment extends Fragment {
     public static final String TAG = "LoaderFragment";
@@ -73,24 +76,28 @@ public class LoaderFragment extends Fragment {
     }
 
     private void getUserActivity(){
-        DatabaseReference activityEventRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("events");
+        loadinAmin.setRepeatCount(Animation.INFINITE);
+        DatabaseReference activityEventRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("tours");
         activityEventRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
+                    loadinAmin.clearAnimation();
                     FragmentTransaction event = getParentFragmentManager().beginTransaction();
                     event.replace(R.id.fragment_container, new OnGoingTour());
                     event.commit();
                 }else {
-                    DatabaseReference activityTourRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("tours");
+                    DatabaseReference activityTourRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("events");
                     activityTourRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if(snapshot.exists()){
+                                loadinAmin.clearAnimation();
                                 FragmentTransaction event = getParentFragmentManager().beginTransaction();
                                 event.replace(R.id.fragment_container, new OnGoingTour());
                                 event.commit();
                             }else {
+                                loadinAmin.clearAnimation();
                                 FragmentTransaction event = getParentFragmentManager().beginTransaction();
                                 event.replace(R.id.fragment_container, new TourFragment());
                                 event.commit();

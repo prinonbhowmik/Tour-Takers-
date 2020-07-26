@@ -366,6 +366,10 @@ public class EventFragment extends Fragment implements PopupMenu.OnMenuItemClick
         eventList = new ArrayList<>();
         eventRecyclerview = view.findViewById(R.id.event_recyclerview);
         eventRecyclerview.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        eventRecyclerview.setHasFixedSize(true);
+        eventRecyclerview.setItemViewCacheSize(20);
+        eventRecyclerview.setDrawingCacheEnabled(true);
+        eventRecyclerview.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         eventAdapter = new EventAdapter(eventList, getContext());
         eventRecyclerview.setAdapter(eventAdapter);
         auth = FirebaseAuth.getInstance();

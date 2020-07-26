@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,16 +28,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class ReplySettingsBottomSheet extends BottomSheetDialogFragment {
+    public static final String TAG = "ReplySettingsBottomSheet";
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
     private ImageView editIV, deleteIV, copyIv;
     private TextView editTV, deleteTV, copyTV;
     private LinearLayout copyLayout, editLayout, deleteLayout;
     private String r_id, e_id, c_id, message;
+    View view;
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_comment_settings_bottom_sheet, container, false);
+        view = inflater.inflate(R.layout.activity_comment_settings_bottom_sheet, container, false);
         init(view);
 
         Bundle mArgs = getArguments();
@@ -108,20 +111,20 @@ public class ReplySettingsBottomSheet extends BottomSheetDialogFragment {
                 Toast.makeText(getContext(), "Delete", Toast.LENGTH_SHORT).show();
                 ReplySettingsBottomSheet.this.dismiss();*/
                 DatabaseReference ref = databaseReference.child("eventCommentsReply").child(e_id).child(c_id);
-                ref.addValueEventListener(new ValueEventListener() {
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         long count = snapshot.getChildrenCount();
+                        //Log.d(TAG, "onDataChange: "+count);
                         if (count == 1) {
-                            ref.child(r_id).setValue(null);
-                            Toast.makeText(getContext(), "Delete", Toast.LENGTH_SHORT).show();
-                            ReplySettingsBottomSheet.this.dismiss();
+                            ref.child(r_id).removeValue();
                             DatabaseReference cRef = databaseReference.child("eventComments").child(e_id).child(c_id);
                             cRef.child("hasReply").setValue("no");
-                        }
-                        if (count > 1) {
-                            ref.child(r_id).setValue(null);
-                            Toast.makeText(getContext(), "Delete", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(view.getContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                            ReplySettingsBottomSheet.this.dismiss();
+                        }else if (count > 1) {
+                            ref.child(r_id).removeValue();
+                            Toast.makeText(view.getContext(), "Deleted", Toast.LENGTH_SHORT).show();
                             ReplySettingsBottomSheet.this.dismiss();
                         }
                     }

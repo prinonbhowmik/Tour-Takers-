@@ -437,21 +437,33 @@ public class ReplyBox extends AppCompatActivity {
                     showMessage1.setText(message);
                     if (imageUrl != null) {
                         if (!imageUrl.isEmpty()) {
-                            GlideApp.with(ReplyBox.this)
-                                    .load(imageUrl)
-                                    .fitCenter()
-                                    .into(comment_profileImage1);
+                            try {
+                                GlideApp.with(ReplyBox.this)
+                                        .load(imageUrl)
+                                        .fitCenter()
+                                        .into(comment_profileImage1);
+                            } catch (Exception ex) {
+                                //ex.printStackTrace();
+                            }
                         } else {
                             if (sex.matches("male")) {
+                                try {
                                 GlideApp.with(ReplyBox.this)
                                         .load(R.drawable.man)
                                         .centerInside()
                                         .into(comment_profileImage1);
+                            } catch (Exception ex) {
+                                //ex.printStackTrace();
+                            }
                             } else if (sex.matches("female")) {
+                                try {
                                 GlideApp.with(ReplyBox.this)
                                         .load(R.drawable.woman)
                                         .centerInside()
                                         .into(comment_profileImage1);
+                            } catch (Exception ex) {
+                                //ex.printStackTrace();
+                            }
                             }
                         }
                     }
@@ -497,20 +509,25 @@ public class ReplyBox extends AppCompatActivity {
     }
 
     private void readReplyMessage() {
-        mReply = new ArrayList<>();
         DatabaseReference ref = databaseReference.child("eventCommentsReply").child(eventId).child(commentId);
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mReply = new ArrayList<>();
+                replyAdapter = new ReplyAdapter(ReplyBox.this, mReply);
+                replyRecyclerView.setAdapter(replyAdapter);
+                replyRecyclerView.setLayoutManager(new LinearLayoutManager(ReplyBox.this));
+                replyRecyclerView.setHasFixedSize(true);
+                replyRecyclerView.setItemViewCacheSize(20);
+                replyRecyclerView.setDrawingCacheEnabled(true);
+                replyRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+                replyAdapter.notifyDataSetChanged();
+                Log.d(TAG, "onDataChange: passed");
                 if (dataSnapshot.exists()) {
                     mReply.clear();
                     for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                         Reply reply = childSnapshot.getValue(Reply.class);
                         mReply.add(reply);
-
-                        replyAdapter = new ReplyAdapter(ReplyBox.this, mReply);
-                        replyRecyclerView.setAdapter(replyAdapter);
-                        replyRecyclerView.setLayoutManager(new LinearLayoutManager(ReplyBox.this));
                         replyAdapter.notifyDataSetChanged();
                     }
                     //for sound effect
