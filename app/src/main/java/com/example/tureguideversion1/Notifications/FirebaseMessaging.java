@@ -24,8 +24,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.example.tureguideversion1.Activities.AdminChatBox;
 import com.example.tureguideversion1.Activities.CommentsBox;
 import com.example.tureguideversion1.Activities.EventDetails;
+import com.example.tureguideversion1.Activities.GuideChatBox;
 import com.example.tureguideversion1.Activities.MainActivity;
 import com.example.tureguideversion1.Activities.ReplyBox;
 import com.example.tureguideversion1.R;
@@ -236,6 +238,46 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                         }
 
                         oreoNotification.getManager().notify(i, builder.build());
+                    }else if (from.matches("guideChat")) {
+                        Intent intent = new Intent(getApplicationContext(), GuideChatBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        bundle.putString("chatPartnerID", userID);
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                        OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
+                        Notification.Builder builder = oreoNotification.getOreoNotification(title + ": " + eventPlace, body, pendingIntent,
+                                defaultSound, icon, finalBitmap);
+
+                        int i = 0;
+                        if (j > 0) {
+                            i = j;
+                        }
+
+                        oreoNotification.getManager().notify(i, builder.build());
+                    }else if (from.matches("adminChat")) {
+                        Intent intent = new Intent(getApplicationContext(), AdminChatBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        bundle.putString("chatPartnerID", userID);
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                        OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
+                        Notification.Builder builder = oreoNotification.getOreoNotification(title + ": " + eventPlace, body, pendingIntent,
+                                defaultSound, icon, finalBitmap);
+
+                        int i = 0;
+                        if (j > 0) {
+                            i = j;
+                        }
+
+                        oreoNotification.getManager().notify(i, builder.build());
                     }
 
                 } else {
@@ -423,6 +465,56 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                                 .setSmallIcon(Integer.parseInt(icon))
                                 .setLargeIcon(finalBitmap)
                                 .setContentTitle(title)
+                                .setContentText(body)
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setAutoCancel(true)
+                                .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
+                                .setContentIntent(pendingIntent);
+                        NotificationManager noti = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        int i = 0;
+                        if (j > 0) {
+                            i = j;
+                        }
+
+                        noti.notify(i, builder.build());
+                    } else if (from.matches("guideChat")) {
+                        Intent intent = new Intent(getApplicationContext(), GuideChatBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        bundle.putString("chatPartnerID", userID);
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
+                                .setSmallIcon(Integer.parseInt(icon))
+                                .setLargeIcon(finalBitmap)
+                                .setContentTitle(title + ": " + eventPlace)
+                                .setContentText(body)
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setAutoCancel(true)
+                                .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
+                                .setContentIntent(pendingIntent);
+                        NotificationManager noti = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        int i = 0;
+                        if (j > 0) {
+                            i = j;
+                        }
+
+                        noti.notify(i, builder.build());
+                    } else if (from.matches("adminChat")) {
+                        Intent intent = new Intent(getApplicationContext(), AdminChatBox.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventID);
+                        bundle.putString("chatPartnerID", userID);
+                        intent.putExtras(bundle);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
+                                .setSmallIcon(Integer.parseInt(icon))
+                                .setLargeIcon(finalBitmap)
+                                .setContentTitle(title + ": " + eventPlace)
                                 .setContentText(body)
                                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                                 .setAutoCancel(true)

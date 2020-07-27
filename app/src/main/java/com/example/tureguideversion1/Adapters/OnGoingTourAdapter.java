@@ -32,7 +32,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.request.RequestOptions;
+import com.example.tureguideversion1.Activities.AdminChatBox;
 import com.example.tureguideversion1.Activities.CommentsBox;
+import com.example.tureguideversion1.Activities.GuideChatBox;
 import com.example.tureguideversion1.Activities.JoinMemberDetails;
 import com.example.tureguideversion1.Activities.LocationImage;
 import com.example.tureguideversion1.Activities.NoInternetConnection;
@@ -328,7 +330,10 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                                                 (String) map.get("phone"),
                                                                 (String) map.get("email"),
                                                                 (String) map.get("image"),
-                                                                (String) map.get("sex"));
+                                                                (String) map.get("sex"),
+                                                                event.getId(),
+                                                                event.getGuideID(),
+                                                                "guide");
                                                     }
                                                 });
                                             }
@@ -533,7 +538,10 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                         (String) map.get("phone"),
                                         (String) map.get("email"),
                                         (String) map.get("image"),
-                                        (String) map.get("sex"));
+                                        (String) map.get("sex"),
+                                        event.getId(),
+                                        event.getEventPublisherId(),
+                                        "admin");
                             }
                         });
                     }
@@ -735,7 +743,10 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                                             (String) map.get("phone"),
                                                             (String) map.get("email"),
                                                             (String) map.get("image"),
-                                                            (String) map.get("sex"));
+                                                            (String) map.get("sex"),
+                                                            event.getId(),
+                                                            event.getGuideID(),
+                                                            "guide");
                                                 }
                                             });
                                         }
@@ -1147,7 +1158,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public void ShowProfilePopup(String member_name, String member_phone, String member_email, String member_image, String member_gender) {
+    public void ShowProfilePopup(String member_name, String member_phone, String member_email, String member_image, String member_gender, String eventID, String memberID, String forChat) {
         TextView namePopUp, phonePopUp, emailPopUp;
         ImageView pic;
         Button callBTN, textBTN;
@@ -1180,6 +1191,32 @@ public class OnGoingTourAdapter extends PagerAdapter {
                         Intent callIntent = new Intent(Intent.ACTION_DIAL);
                         callIntent.setData(Uri.parse("tel:" + member_phone));
                         context.startActivity(callIntent);
+                    }
+                };
+                handler.postDelayed(runnable, 200);
+            }
+        });
+
+        textBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Handler handler = new Handler();
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if(forChat.matches("guide")) {
+                            Log.d(TAG, "run: guide passed");
+                            Intent chatIntent = new Intent(context, GuideChatBox.class);
+                            chatIntent.putExtra("chatPartnerID", memberID);
+                            chatIntent.putExtra("eventId", eventID);
+                            context.startActivity(chatIntent);
+                        }else if(forChat.matches("admin")) {
+                            Log.d(TAG, "run: admin passed");
+                            Intent chatIntent = new Intent(context, AdminChatBox.class);
+                            chatIntent.putExtra("chatPartnerID", memberID);
+                            chatIntent.putExtra("eventId", eventID);
+                            context.startActivity(chatIntent);
+                        }
                     }
                 };
                 handler.postDelayed(runnable, 200);

@@ -23,6 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Activities.GuideChatBox" />
+        <activity android:name=".Activities.AdminChatBox" />
         <activity android:name=".Activities.EditCommentActivity" />
         <activity android:name=".Activities.EditReplyActivity" />
         <activity android:name=".Activities.ForgotPassword" />

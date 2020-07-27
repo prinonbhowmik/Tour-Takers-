@@ -52,8 +52,8 @@ import co.ceryle.radiorealbutton.RadioRealButtonGroup;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class GuideChatBox extends AppCompatActivity {
-    public static final String TAG = "GuideChatBox";
+public class AdminChatBox extends AppCompatActivity {
+    public static final String TAG = "AdminChatBox";
     private String senderID, currentEventId, senderName, senderImage, senderSex, chatPartnerID;
     private EditText commentET;
     private ImageButton sendMessage;
@@ -213,13 +213,13 @@ public class GuideChatBox extends AppCompatActivity {
     }
 
     private void readMessage() {
-        DatabaseReference ref = databaseReference.child("chatWithGuide").child(currentEventId);
+        DatabaseReference ref = databaseReference.child("chatWithAdmin").child(currentEventId);
         Query locations = ref.orderByKey();
-        locations.addValueEventListener(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mChat = new ArrayList<>();
-                chatAdapter = new GuideChatAdapter(GuideChatBox.this, mChat);
+                chatAdapter = new GuideChatAdapter(AdminChatBox.this, mChat);
                 chatRecyclerView.setAdapter(chatAdapter);
                 chatRecyclerView.setHasFixedSize(true);
                 chatRecyclerView.setItemViewCacheSize(20);
@@ -227,6 +227,7 @@ public class GuideChatBox extends AppCompatActivity {
                 chatRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
                 chatAdapter.notifyDataSetChanged();
                 if (dataSnapshot.exists()) {
+                    Log.d(TAG, "onDataChange: Exist");
                     mChat.clear();
                     for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                         GuidChat chat = childSnapshot.getValue(GuidChat.class);
@@ -241,6 +242,8 @@ public class GuideChatBox extends AppCompatActivity {
                             e = 0;
                         }
                     }
+                }else {
+                    Log.d(TAG, "onDataChange:Not Exist");
                 }
             }
 
@@ -269,7 +272,7 @@ public class GuideChatBox extends AppCompatActivity {
 
     void setSendMessage(String message, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
 
-        DatabaseReference ref = databaseReference.child("chatWithGuide").child(currentEventId);
+        DatabaseReference ref = databaseReference.child("chatWithAdmin").child(currentEventId);
         String id = ref.push().getKey();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("message", message);
@@ -295,13 +298,13 @@ public class GuideChatBox extends AppCompatActivity {
     }
 
     private void sendNotifiaction(String eventID, final String username, final String message, String receiverID) {
-            DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("GuideProfile").child(receiverID);
+            DatabaseReference tokenRef = FirebaseDatabase.getInstance().getReference().child("profile").child(receiverID);
             tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if(snapshot.exists()){
                         Token token = snapshot.getValue(Token.class);
-                        Data data = new Data(eventID, R.drawable.ic_stat_ic_notification, username + ": " + message, "Event", receiverID, auth.getUid(), "guideChat", senderImage, senderSex);
+                        Data data = new Data(eventID, R.drawable.ic_stat_ic_notification, username + ": " + message, "Event", receiverID, auth.getUid(), "adminChat", senderImage, senderSex);
                         Sender sender = new Sender(data, token.getToken());
                         apiService.sendNotification(sender)
                                 .enqueue(new Callback<Response>() {
@@ -367,7 +370,7 @@ public class GuideChatBox extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    java.util.Map map = (Map) dataSnapshot.getValue();
+                    Map map = (Map) dataSnapshot.getValue();
                     if (map.get("status").equals("enabled")) {
                         notificationIcon.setImageResource(R.drawable.ic_notification_enable);
                         radioGroup.setPosition(0);
