@@ -263,6 +263,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                         Bundle bundle = new Bundle();
                         bundle.putString("eventId", eventID);
                         bundle.putString("chatPartnerID", userID);
+                        bundle.putString("childID", userID);
                         intent.putExtras(bundle);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -281,49 +282,46 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                     }
 
                 } else {
-                    RemoteMessage.Notification notification = remoteMessage.getNotification();
-                    int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
-                    if (from.matches("CommentBox")) {
-                        Intent intent = new Intent(getApplicationContext(), CommentsBox.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("eventId", eventID);
-                        intent.putExtras(bundle);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
-                        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("tour").child(eventID);
+                    eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                HashMap<String, Object> hashMap = (HashMap<String, Object>) snapshot.getValue();
+                                Log.d(TAG, "onDataChange: "+hashMap);
+                                String eventPlace = (String) hashMap.get("place");
+                                RemoteMessage.Notification notification = remoteMessage.getNotification();
+                                int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
+                                Log.d(TAG, "onDataChange: "+from);
+                                if (from.matches("guideChat")) {
+                                    Intent intent = new Intent(getApplicationContext(), GuideChatBox.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("eventId", eventID);
+                                    bundle.putString("chatPartnerID", userID);
+                                    intent.putExtras(bundle);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                                    Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-                        OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
-                        Notification.Builder builder = oreoNotification.getOreoNotification(title, body, pendingIntent,
-                                defaultSound, icon, finalBitmap);
+                                    OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
+                                    Notification.Builder builder = oreoNotification.getOreoNotification(title + ": " + eventPlace, body, pendingIntent,
+                                            defaultSound, icon, finalBitmap);
 
-                        int i = 0;
-                        if (j > 0) {
-                            i = j;
+                                    int i = 0;
+                                    if (j > 0) {
+                                        i = j;
+                                    }
+
+                                    oreoNotification.getManager().notify(i, builder.build());
+                                }
+                            }
                         }
 
-                        oreoNotification.getManager().notify(i, builder.build());
-                    } else if (from.matches("ReplyBox")) {
-                        Log.d(TAG, "onDataChange: reply reached");
-                        Intent intent = new Intent(getApplicationContext(), ReplyBox.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("eventId", eventID);
-                        bundle.putString("commentId", remoteMessage.getData().get("commentID"));
-                        intent.putExtras(bundle);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
-                        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                        OreoNotification oreoNotification = new OreoNotification(getApplicationContext());
-                        Notification.Builder builder = oreoNotification.getOreoNotification(title, body, pendingIntent,
-                                defaultSound, icon, finalBitmap);
-
-                        int i = 0;
-                        if (j > 0) {
-                            i = j;
                         }
-
-                        oreoNotification.getManager().notify(i, builder.build());
-                    }
+                    });
 
                 }
 
@@ -383,13 +381,15 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         String from = remoteMessage.getData().get("fromActivity");
         String sex = remoteMessage.getData().get("userSex");
         Bitmap bitmap = null;
-        if (remoteMessage.getData().get("userImage").trim().length() != 0) {
-            bitmap = getCroppedBitmap(getBitmapFromURL(remoteMessage.getData().get("userImage")));
-        } else {
-            if (sex.equals("male")) {
-                bitmap = getCroppedBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.man));
-            } else if (sex.equals("female")) {
-                bitmap = getCroppedBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.woman));
+        if(remoteMessage.getData().get("userImage") != null) {
+            if (remoteMessage.getData().get("userImage").trim().length() != 0) {
+                bitmap = getCroppedBitmap(getBitmapFromURL(remoteMessage.getData().get("userImage")));
+            } else {
+                if (sex.equals("male")) {
+                    bitmap = getCroppedBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.man));
+                } else if (sex.equals("female")) {
+                    bitmap = getCroppedBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.woman));
+                }
             }
         }
         //Log.d(TAG, "sendNotification: userID = "+userID);
@@ -508,6 +508,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                         Bundle bundle = new Bundle();
                         bundle.putString("eventId", eventID);
                         bundle.putString("chatPartnerID", userID);
+                        bundle.putString("childID", userID);
                         intent.putExtras(bundle);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -530,56 +531,49 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                         noti.notify(i, builder.build());
                     }
                 } else {
-                    RemoteMessage.Notification notification = remoteMessage.getNotification();
-                    int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
-                    if (from.matches("CommentBox")) {
-                        Intent intent = new Intent(getApplicationContext(), CommentsBox.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("eventId", eventID);
-                        intent.putExtras(bundle);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
-                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
-                                .setSmallIcon(Integer.parseInt(icon))
-                                .setLargeIcon(finalBitmap)
-                                .setContentTitle(title)
-                                .setContentText(body)
-                                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                .setAutoCancel(true)
-                                .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
-                                .setContentIntent(pendingIntent);
-                        NotificationManager noti = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        int i = 0;
-                        if (j > 0) {
-                            i = j;
+                    DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("tour").child(eventID);
+                    eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                HashMap<String, Object> hashMap = (HashMap<String, Object>) snapshot.getValue();
+                                String eventPlace = (String) hashMap.get("place");
+                                RemoteMessage.Notification notification = remoteMessage.getNotification();
+                                int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
+                                if (from.matches("guideChat")) {
+                                    Intent intent = new Intent(getApplicationContext(), GuideChatBox.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("eventId", eventID);
+                                    bundle.putString("chatPartnerID", userID);
+                                    intent.putExtras(bundle);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
+                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
+                                            .setSmallIcon(Integer.parseInt(icon))
+                                            .setLargeIcon(finalBitmap)
+                                            .setContentTitle(title + ": " + eventPlace)
+                                            .setContentText(body)
+                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                            .setAutoCancel(true)
+                                            .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
+                                            .setContentIntent(pendingIntent);
+                                    NotificationManager noti = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                                    int i = 0;
+                                    if (j > 0) {
+                                        i = j;
+                                    }
+
+                                    noti.notify(i, builder.build());
+                                }
+                            }
                         }
 
-                        noti.notify(i, builder.build());
-                    } else if (from.matches("ReplyBox")) {
-                        Intent intent = new Intent(getApplicationContext(), ReplyBox.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("eventId", eventID);
-                        bundle.putString("commentId", remoteMessage.getData().get("commentID"));
-                        intent.putExtras(bundle);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
-                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
-                                .setSmallIcon(Integer.parseInt(icon))
-                                .setLargeIcon(finalBitmap)
-                                .setContentTitle(title)
-                                .setContentText(body)
-                                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                .setAutoCancel(true)
-                                .setSound(Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.swiftly))
-                                .setContentIntent(pendingIntent);
-                        NotificationManager noti = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        int i = 0;
-                        if (j > 0) {
-                            i = j;
-                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                        noti.notify(i, builder.build());
-                    }
+                        }
+                    });
                 }
             }
 

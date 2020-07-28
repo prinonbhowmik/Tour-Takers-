@@ -3,6 +3,7 @@ package com.example.tureguideversion1.Model;
 public class Reply {
 
     private String message;
+    private String imageMessage;
     private String senderName;
     private String senderImage;
     private String senderSex;
@@ -15,9 +16,10 @@ public class Reply {
     public Reply() {
     }
 
-    public Reply(String message, String senderName, String senderImage, String senderSex,
+    public Reply(String message, String imageMessage, String senderName, String senderImage, String senderSex,
                  String senderID, String ID, String eventID, String replyTime, String commentID) {
         this.message = message;
+        this.imageMessage = imageMessage;
         this.senderName = senderName;
         this.senderImage = senderImage;
         this.senderSex = senderSex;
@@ -26,6 +28,10 @@ public class Reply {
         this.eventID = eventID;
         this.replyTime = replyTime;
         this.commentID = commentID;
+    }
+
+    public String getImageMessage() {
+        return imageMessage;
     }
 
     public String getMessage() {

@@ -1210,12 +1210,14 @@ public class OnGoingTourAdapter extends PagerAdapter {
                             chatIntent.putExtra("chatPartnerID", memberID);
                             chatIntent.putExtra("eventId", eventID);
                             context.startActivity(chatIntent);
+                            ((FragmentActivity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }else if(forChat.matches("admin")) {
                             Log.d(TAG, "run: admin passed");
                             Intent chatIntent = new Intent(context, AdminChatBox.class);
                             chatIntent.putExtra("chatPartnerID", memberID);
                             chatIntent.putExtra("eventId", eventID);
                             context.startActivity(chatIntent);
+                            ((FragmentActivity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
                     }
                 };

@@ -2,6 +2,7 @@ package com.example.tureguideversion1.Model;
 
 public class Chat {
     private String message;
+    private String imageMessage;
     private String senderName;
     private String senderImage;
     private String senderSex;
@@ -14,8 +15,9 @@ public class Chat {
     public Chat() {
     }
 
-    public Chat(String message, String senderName, String senderImage, String senderSex, String senderID, String ID, String eventID, String commentTime, String hasReply) {
+    public Chat(String message, String imageMessage, String senderName, String senderImage, String senderSex, String senderID, String ID, String eventID, String commentTime, String hasReply) {
         this.message = message;
+        this.imageMessage = imageMessage;
         this.senderName = senderName;
         this.senderImage = senderImage;
         this.senderSex = senderSex;
@@ -24,6 +26,10 @@ public class Chat {
         this.eventID = eventID;
         this.commentTime = commentTime;
         this.hasReply = hasReply;
+    }
+
+    public String getImageMessage() {
+        return imageMessage;
     }
 
     public String getMessage() {
