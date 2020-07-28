@@ -37,4 +37,10 @@
     <color name="gray">	#808080</color>
     <color name="ashes">#CCCACA</color>
 
+
+    <color name="colorTextPrimary">#212121</color>
+    <color name="colorTextSecondary">#757575</color>
+    <color name="colorBackground">#ffffff</color>
+    <color name="colorOnBoardingIndicatorInactive">#72BCF7</color>
+
 </resources>

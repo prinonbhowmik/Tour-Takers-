@@ -22,6 +22,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Activities.WelcomeScreenActivity"></activity>
         <activity android:name=".Activities.GuideChatBox" />
         <activity android:name=".Activities.AdminChatBox" />
         <activity android:name=".Activities.EditCommentActivity" />
