@@ -111,6 +111,13 @@
                 android:layout_below="@+id/senderName1"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_below="@+id/senderName1" />
+
         </RelativeLayout>
 
         <TextView
@@ -140,7 +147,7 @@
         android:padding="5dp"
         android:weightSum="5">
 
-        <EditText
+        <com.example.tureguideversion1.MyEditText
             android:id="@+id/replyET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -14,12 +14,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.inputmethod.InputContentInfoCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tureguideversion1.Adapters.ReplyAdapter;
 import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Reply;
+import com.example.tureguideversion1.MyEditText;
 import com.example.tureguideversion1.Notifications.APIService;
 import com.example.tureguideversion1.Notifications.Client;
 import com.example.tureguideversion1.Notifications.Data;
@@ -54,14 +56,14 @@ import retrofit2.Callback;
 
 public class ReplyBox extends AppCompatActivity {
     public static final String TAG = "ReplyBox";
-    private ImageView backToComment;
+    private ImageView backToComment, image;
     private String commentId, eventId, eventId2, senderID, senderName, senderImage, senderSex;
     private TextView senderName1, showMessage1, commentTimeTV1;
     private CircleImageView comment_profileImage1;
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
     private ImageButton sendReply;
-    private EditText replyET;
+    private MyEditText replyET;
     private MediaPlayer sendSound, receiveSound;
     private RecyclerView replyRecyclerView;
     private List<Reply> mReply;
@@ -128,6 +130,20 @@ public class ReplyBox extends AppCompatActivity {
 //
 //            }
 //        });
+        replyET.setKeyBoardInputCallbackListener(new MyEditText.KeyBoardInputCallbackListener() {
+            @Override
+            public void onCommitContent(InputContentInfoCompat inputContentInfo, int flags, Bundle opts) {
+                String image = inputContentInfo.getLinkUri().toString();
+                notify = true;
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
+                String commentTime = simpleDateFormat.format(calendar.getTime());
+                if (image.trim().length() != 0) {
+                    SendReply("", image, senderID, senderName, senderImage, senderSex, commentTime);
+                }
+            }
+        });
+
         sendReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,19 +154,20 @@ public class ReplyBox extends AppCompatActivity {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
                 String commentTime = simpleDateFormat.format(calendar.getTime());
                 if (reply.trim().length() != 0) {
-                    SendReply(reply, senderID, senderName, senderImage, senderSex, commentTime);
+                    SendReply(reply, "",senderID, senderName, senderImage, senderSex, commentTime);
                 }
                 replyET.setText(null);
             }
         });
     }
 
-    private void SendReply(String reply, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
+    private void SendReply(String reply, String image, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
 
         DatabaseReference ref = databaseReference.child("eventCommentsReply").child(eventId).child(commentId);
         String id = ref.push().getKey();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("message", reply);
+        hashMap.put("imageMessage", image);
         hashMap.put("senderID", senderID);
         hashMap.put("senderName", senderName);
         hashMap.put("senderImage", senderImage);
@@ -411,7 +428,7 @@ public class ReplyBox extends AppCompatActivity {
         commentTimeTV1 = findViewById(R.id.commentTimeTV1);
         comment_profileImage1 = findViewById(R.id.comment_profileImage1);
         sendReply = findViewById(R.id.sendReply);
-        replyET = findViewById(R.id.replyET);
+        replyET = (MyEditText) findViewById(R.id.replyET);
         auth = FirebaseAuth.getInstance();
         senderID = auth.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -419,6 +436,7 @@ public class ReplyBox extends AppCompatActivity {
         receiveSound = MediaPlayer.create(this, R.raw.appointed);
         replyRecyclerView = findViewById(R.id.replyRecycler);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+        image = findViewById(R.id.image);
     }
 
     private void readCommentData() {
@@ -432,9 +450,26 @@ public class ReplyBox extends AppCompatActivity {
                     String time = dataSnapshot.child("commentTime").getValue().toString();
                     String imageUrl = dataSnapshot.child("senderImage").getValue().toString();
                     String sex = dataSnapshot.child("senderSex").getValue().toString();
-
                     senderName1.setText(name);
-                    showMessage1.setText(message);
+                    if(dataSnapshot.child("imageMessage").getValue() != null){
+                        if(dataSnapshot.child("imageMessage").getValue().toString().trim().length() != 0) {
+                            try {
+                                showMessage1.setVisibility(View.GONE);
+                                GlideApp.with(getApplicationContext())
+                                        .load(dataSnapshot.child("imageMessage").getValue().toString())
+                                        .fitCenter()
+                                        .into(image);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }else {
+                            image.setVisibility(View.GONE);
+                            showMessage1.setText(message);
+                        }
+                    }else {
+                        image.setVisibility(View.GONE);
+                        showMessage1.setText(message);
+                    }
                     if (imageUrl != null) {
                         if (!imageUrl.isEmpty()) {
                             try {

@@ -2,9 +2,11 @@ package com.example.tureguideversion1.Adapters;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -43,19 +45,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int CHAT_ITEM_WITH_REPLY = 1;
     private Context mContext;
     private List<Chat> mChat;
-    private DatabaseReference databaseReference;
-    String userid;
-    FirebaseUser fUser;
-    FirebaseAuth auth;
-    private int row_index = -1, pos, pos2 = -1;
-    private long replyDataCount = 0;
-    private int timeVisibility = 0;
 
     public ChatAdapter(Context context, List<Chat> mChat) {
         this.mContext = context;
         this.mChat = mChat;
-//        this.mProfile = mProfile;
-        //this.imageUrl = imageUrl;
         setHasStableIds(true);
     }
 
@@ -97,6 +90,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView showMessage, senderName, commentTimeTV;
         private CircleImageView profileImageView;
         private RelativeLayout mainCommentLayout, crl1;
+        private ImageView image;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -106,13 +100,31 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             commentTimeTV = itemView.findViewById(R.id.commentTimeTV);
             mainCommentLayout = itemView.findViewById(R.id.mainCommentLayout);
             crl1 = itemView.findViewById(R.id.crl);
+            image = itemView.findViewById(R.id.image);
         }
 
 
         void setData(Chat chat) {
 
-            showMessage.setText(chat.getMessage());
-
+            if(chat.getImageMessage() != null){
+                if(chat.getImageMessage().trim().length() != 0) {
+                    try {
+                        showMessage.setVisibility(View.GONE);
+                        GlideApp.with(itemView.getContext())
+                                .load(chat.getImageMessage())
+                                .fitCenter()
+                                .into(image);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    image.setVisibility(View.GONE);
+                    showMessage.setText(chat.getMessage());
+                }
+            }else {
+                image.setVisibility(View.GONE);
+                showMessage.setText(chat.getMessage());
+            }
             senderName.setText(chat.getSenderName());
 
             if (chat.getSenderImage() != null) {
@@ -269,6 +281,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private CircleImageView profileImageView, replyerImage;
         private RelativeLayout mainCommentLayout, crl2;
         private LinearLayout replyLayoutView;
+        private ImageView image, replyImage;
 
         public ViewHolderWithReply(@NonNull View itemView) {
             super(itemView);
@@ -283,11 +296,30 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             replyerImage = itemView.findViewById(R.id.replyerImage);
             replyLayoutView = itemView.findViewById(R.id.replyLayoutView);
             crl2 = itemView.findViewById(R.id.crl);
+            image = itemView.findViewById(R.id.image);
+            replyImage = itemView.findViewById(R.id.replyImage);
         }
 
         void setDataWithReply(Chat chat) {
-            showMessage.setText(chat.getMessage());
-
+            if(chat.getImageMessage() != null){
+                if(chat.getImageMessage().trim().length() != 0) {
+                    try {
+                        showMessage.setVisibility(View.GONE);
+                        GlideApp.with(itemView.getContext())
+                                .load(chat.getImageMessage())
+                                .fitCenter()
+                                .into(image);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    image.setVisibility(View.GONE);
+                    showMessage.setText(chat.getMessage());
+                }
+            }else {
+                image.setVisibility(View.GONE);
+                showMessage.setText(chat.getMessage());
+            }
             senderName.setText(chat.getSenderName());
 
             if (chat.getSenderImage() != null) {
@@ -406,7 +438,26 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             }
                             if ((replyerName != null) && (replyerComment != null)) {
                                 replyerName.setText(map.get("senderName").toString());
-                                replyerComment.setText(map.get("message").toString());
+                                if(map.get("imageMessage") != null){
+                                    if(map.get("imageMessage").toString().trim().length() != 0) {
+                                        try {
+                                            replyerComment.setVisibility(View.GONE);
+                                            GlideApp.with(itemView.getContext())
+                                                    .load(map.get("imageMessage").toString())
+                                                    .fitCenter()
+                                                    .into(replyImage);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }else {
+                                        replyImage.setVisibility(View.GONE);
+                                        replyerComment.setText(map.get("message").toString());
+                                    }
+                                }else {
+                                    replyImage.setVisibility(View.GONE);
+                                    replyerComment.setText(map.get("message").toString());
+                                }
+                                //replyerComment.setText(map.get("message").toString());
                             }
                         }
                     }

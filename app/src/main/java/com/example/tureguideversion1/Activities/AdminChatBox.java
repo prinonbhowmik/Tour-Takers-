@@ -54,7 +54,7 @@ import retrofit2.Callback;
 
 public class AdminChatBox extends AppCompatActivity {
     public static final String TAG = "AdminChatBox";
-    private String senderID, currentEventId, senderName, senderImage, senderSex, chatPartnerID;
+    private String senderID, currentEventId, senderName, senderImage, senderSex, chatPartnerID, childID;
     private EditText commentET;
     private ImageButton sendMessage;
     private FirebaseAuth auth;
@@ -77,9 +77,13 @@ public class AdminChatBox extends AppCompatActivity {
         setContentView(R.layout.activity_guide_chat_box);
         init();
         Intent intent = getIntent();
+        childID = intent.getStringExtra("childID");
         currentEventId = intent.getStringExtra("eventId");
         chatPartnerID = intent.getStringExtra("chatPartnerID");
-        readNotificationStatus();
+        if(childID == null){
+            childID = auth.getUid();
+        }
+        //readNotificationStatus();
         getUserInfo(new userInfoCallback() {
             @Override
             public void onImageCallback(String url) {
@@ -113,34 +117,34 @@ public class AdminChatBox extends AppCompatActivity {
             }
         });
 
-        notificationIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (radioLayout.getVisibility() == View.GONE) {
-                    radioLayout.setVisibility(View.VISIBLE);
-                    radioLayout.setAlpha(0.0f);
-
-                    // Start the animation
-                    radioLayout.animate()
-                            .translationY(0)
-                            .alpha(1.0f)
-                            .setDuration(200)
-                            .setListener(null);
-                } else if (radioLayout.getVisibility() == View.VISIBLE) {
-                    radioLayout.animate()
-                            .translationY(-150)
-                            .alpha(0.0f)
-                            .setDuration(200)
-                            .setListener(new AnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    super.onAnimationEnd(animation);
-                                    radioLayout.setVisibility(View.GONE);
-                                }
-                            });
-                }
-            }
-        });
+//        notificationIcon.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (radioLayout.getVisibility() == View.GONE) {
+//                    radioLayout.setVisibility(View.VISIBLE);
+//                    radioLayout.setAlpha(0.0f);
+//
+//                    // Start the animation
+//                    radioLayout.animate()
+//                            .translationY(0)
+//                            .alpha(1.0f)
+//                            .setDuration(200)
+//                            .setListener(null);
+//                } else if (radioLayout.getVisibility() == View.VISIBLE) {
+//                    radioLayout.animate()
+//                            .translationY(-150)
+//                            .alpha(0.0f)
+//                            .setDuration(200)
+//                            .setListener(new AnimatorListenerAdapter() {
+//                                @Override
+//                                public void onAnimationEnd(Animator animation) {
+//                                    super.onAnimationEnd(animation);
+//                                    radioLayout.setVisibility(View.GONE);
+//                                }
+//                            });
+//                }
+//            }
+//        });
 
         radioGroup.setOnClickedButtonListener(new RadioRealButtonGroup.OnClickedButtonListener() {
             @Override
@@ -213,7 +217,7 @@ public class AdminChatBox extends AppCompatActivity {
     }
 
     private void readMessage() {
-        DatabaseReference ref = databaseReference.child("chatWithAdmin").child(currentEventId);
+        DatabaseReference ref = databaseReference.child("chatWithAdmin").child(currentEventId).child(childID);
         Query locations = ref.orderByKey();
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -227,9 +231,10 @@ public class AdminChatBox extends AppCompatActivity {
                 chatRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
                 chatAdapter.notifyDataSetChanged();
                 if (dataSnapshot.exists()) {
-                    Log.d(TAG, "onDataChange: Exist");
                     mChat.clear();
                     for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                        HashMap<String,Object> map = (HashMap<String, Object>) childSnapshot.getValue();
+                        Log.d(TAG, "onDataChange: "+map.get("senderID"));
                         GuidChat chat = childSnapshot.getValue(GuidChat.class);
                         mChat.add(chat);
                         chatAdapter.notifyDataSetChanged();
@@ -242,8 +247,6 @@ public class AdminChatBox extends AppCompatActivity {
                             e = 0;
                         }
                     }
-                }else {
-                    Log.d(TAG, "onDataChange:Not Exist");
                 }
             }
 
@@ -272,7 +275,7 @@ public class AdminChatBox extends AppCompatActivity {
 
     void setSendMessage(String message, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
 
-        DatabaseReference ref = databaseReference.child("chatWithAdmin").child(currentEventId);
+        DatabaseReference ref = databaseReference.child("chatWithAdmin").child(currentEventId).child(childID);
         String id = ref.push().getKey();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("message", message);

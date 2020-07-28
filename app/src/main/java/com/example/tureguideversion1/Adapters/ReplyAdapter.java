@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -51,7 +52,26 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ReplyAdapter.ViewHolder holder, int position) {
         Reply reply = mReply.get(position);
         holder.senderName2.setText(reply.getSenderName());
-        holder.showMessage2.setText(reply.getMessage());
+
+        if(reply.getImageMessage() != null){
+            if(reply.getImageMessage().trim().length() != 0) {
+                try {
+                    holder.showMessage2.setVisibility(View.GONE);
+                    GlideApp.with(mContext)
+                            .load(reply.getImageMessage())
+                            .fitCenter()
+                            .into(holder.image);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }else {
+                holder.image.setVisibility(View.GONE);
+                holder.showMessage2.setText(reply.getMessage());
+            }
+        }else {
+            holder.image.setVisibility(View.GONE);
+            holder.showMessage2.setText(reply.getMessage());
+        }
 
         if (reply.getSenderImage() != null) {
             if (!reply.getSenderImage().isEmpty()) {
@@ -188,6 +208,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
         private TextView senderName2, showMessage2, commentTimeTV2;
         private CircleImageView reply_profileImage;
         private RelativeLayout crl2;
+        private ImageView image;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -197,6 +218,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
             reply_profileImage = itemView.findViewById(R.id.reply_profileImage);
             commentTimeTV2 = itemView.findViewById(R.id.commentTimeTV2);
             crl2 = itemView.findViewById(R.id.crl2);
+            image = itemView.findViewById(R.id.image);
         }
     }
 }

@@ -21,12 +21,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.inputmethod.InputContentInfoCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tureguideversion1.Adapters.ChatAdapter;
 import com.example.tureguideversion1.Model.Chat;
+import com.example.tureguideversion1.MyEditText;
 import com.example.tureguideversion1.Notifications.APIService;
 import com.example.tureguideversion1.Notifications.Client;
 import com.example.tureguideversion1.Notifications.Data;
@@ -61,7 +63,7 @@ import retrofit2.Callback;
 public class CommentsBox extends AppCompatActivity {
     public static final String TAG = "CommentsBox";
     private String senderID, currentEventId, senderName, senderImage, senderSex;
-    private EditText commentET;
+    private MyEditText commentET;
     private ImageButton sendMessage;
     FirebaseAuth auth;
     private DatabaseReference databaseReference;
@@ -126,6 +128,20 @@ public class CommentsBox extends AppCompatActivity {
 //
 //            }
 //        });
+        commentET.setKeyBoardInputCallbackListener(new MyEditText.KeyBoardInputCallbackListener() {
+            @Override
+            public void onCommitContent(InputContentInfoCompat inputContentInfo, int flags, Bundle opts) {
+                String image = inputContentInfo.getLinkUri().toString();
+                notify = true;
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
+                String commentTime = simpleDateFormat.format(calendar.getTime());
+                if (image.trim().length() != 0) {
+                    setSendMessage("", image, senderID, senderName, senderImage, senderSex, commentTime);
+                }
+            }
+        });
+
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,7 +152,7 @@ public class CommentsBox extends AppCompatActivity {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
                 String commentTime = simpleDateFormat.format(calendar.getTime());
                 if (mess.trim().length() != 0) {
-                    setSendMessage(mess, senderID, senderName, senderImage, senderSex, commentTime);
+                    setSendMessage(mess, "", senderID, senderName, senderImage, senderSex, commentTime);
                 }
                 commentET.setText(null);
             }
@@ -326,7 +342,7 @@ public class CommentsBox extends AppCompatActivity {
 
 
     private void init() {
-        commentET = findViewById(R.id.commentET);
+        commentET = (MyEditText) findViewById(R.id.commentET);
         sendMessage = findViewById(R.id.sendMessage);
         auth = FirebaseAuth.getInstance();
         senderID = auth.getUid();
@@ -399,12 +415,13 @@ public class CommentsBox extends AppCompatActivity {
         }
     }
 
-    void setSendMessage(String message, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
+    void setSendMessage(String message, String image, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
 
         DatabaseReference ref = databaseReference.child("eventComments").child(currentEventId);
         String id = ref.push().getKey();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("message", message);
+        hashMap.put("imageMessage", image);
         hashMap.put("senderID", senderID);
         hashMap.put("senderName", senderName);
         hashMap.put("senderImage", senderImage);
