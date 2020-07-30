@@ -672,15 +672,34 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
         if (publisher_id != null) {
 
             if (publisher_id.equals(userId)) {
-                deleteTV.setVisibility(View.VISIBLE);
-                txt7.setVisibility(View.VISIBLE);
-                meetingIV.setVisibility(View.VISIBLE);
-                descriptionIV.setVisibility(View.VISIBLE);
-                groupIV.setVisibility(View.VISIBLE);
-                costIV.setVisibility(View.VISIBLE);
-                relative16.setVisibility(View.VISIBLE);
-                lateForJoin.setVisibility(View.GONE);
-                eventRunning.setVisibility(View.GONE);
+                DatabaseReference guideRef = databaseReference.child("event").child(event_Id);
+                guideRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!snapshot.hasChild("guideID")) {
+                            deleteTV.setVisibility(View.VISIBLE);
+                            txt7.setVisibility(View.VISIBLE);
+                            meetingIV.setVisibility(View.VISIBLE);
+                            descriptionIV.setVisibility(View.VISIBLE);
+                            groupIV.setVisibility(View.VISIBLE);
+                            costIV.setVisibility(View.VISIBLE);
+                            relative16.setVisibility(View.VISIBLE);
+                            lateForJoin.setVisibility(View.GONE);
+                            eventRunning.setVisibility(View.GONE);
+                        } else {
+                            deleteTV.setVisibility(View.VISIBLE);
+                            txt7.setVisibility(View.VISIBLE);
+                            relative16.setVisibility(View.VISIBLE);
+                            lateForJoin.setVisibility(View.GONE);
+                            eventRunning.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }/*else if (publisher_id.equals(userId) && System.currentTimeMillis() > lDate.getTime()) {
                     txt7.setVisibility(View.VISIBLE);
                     eventRunning.setVisibility(View.VISIBLE);
