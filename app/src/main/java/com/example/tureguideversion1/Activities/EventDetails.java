@@ -163,7 +163,7 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                         }
                     });
                     DatabaseReference memberRef2 = databaseReference.child("eventJoinMember").child(event_Id);
-                    memberRef2.addValueEventListener(new ValueEventListener() {
+                    memberRef2.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             count = dataSnapshot.getChildrenCount();
@@ -479,6 +479,10 @@ public class EventDetails extends AppCompatActivity implements BaseSliderView.On
                 DatabaseReference commentsTokenRef = databaseReference.child("eventCommentsTokens").child(event_Id);
                 DatabaseReference replyRef = databaseReference.child("eventCommentsReply").child(event_Id);
                 DatabaseReference notiRef = FirebaseDatabase.getInstance().getReference().child("notificationStatus").child("eventCommentNotifiaction").child(event_Id);
+                DatabaseReference guideChat = FirebaseDatabase.getInstance().getReference().child("chatWithGuide").child(event_Id);
+                DatabaseReference adminChat = FirebaseDatabase.getInstance().getReference().child("chatWithAdmin").child(event_Id);
+                adminChat.removeValue();
+                guideChat.removeValue();
                 notiRef.removeValue();
                 eRef.removeValue();
                 mRef.removeValue();

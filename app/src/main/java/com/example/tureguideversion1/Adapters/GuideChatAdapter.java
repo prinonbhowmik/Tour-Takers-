@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -92,6 +93,7 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private TextView showMessage, chatTimeTV;
         private CircleImageView chat_profileImage;
         private RelativeLayout chatLayout;
+        private ImageView image;
 
         public ViewHolderLeft(@NonNull View itemView) {
             super(itemView);
@@ -99,11 +101,30 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             chat_profileImage = itemView.findViewById(R.id.chat_profileImage);
             chatTimeTV = itemView.findViewById(R.id.chatTimeTV);
             chatLayout = itemView.findViewById(R.id.chatLayout);
+            image = itemView.findViewById(R.id.image);
         }
 
 
         void setData(GuidChat chat, int position) {
-            showMessage.setText(chat.getMessage());
+            if(chat.getImageMessage() != null){
+                if(chat.getImageMessage().trim().length() != 0) {
+                    try {
+                        showMessage.setVisibility(View.GONE);
+                        GlideApp.with(itemView.getContext())
+                                .load(chat.getImageMessage())
+                                .fitCenter()
+                                .into(image);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    image.setVisibility(View.GONE);
+                    showMessage.setText(chat.getMessage());
+                }
+            }else {
+                image.setVisibility(View.GONE);
+                showMessage.setText(chat.getMessage());
+            }
             if(!ID.matches(chat.getSenderID())) {
                 chat_profileImage.setVisibility(View.VISIBLE);
                 if (chat.getSenderImage() != null) {
@@ -230,6 +251,7 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private TextView showMessage, chatTimeTV;
         private CircleImageView chat_profileImage;
         private RelativeLayout chatLayout;
+        private ImageView image;
 
         public ViewHolderRight(@NonNull View itemView) {
             super(itemView);
@@ -237,10 +259,29 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             chat_profileImage = itemView.findViewById(R.id.chat_profileImage);
             chatTimeTV = itemView.findViewById(R.id.chatTimeTV);
             chatLayout = itemView.findViewById(R.id.chatLayout);
+            image = itemView.findViewById(R.id.image);
         }
 
         void setData(GuidChat chat, int position) {
-            showMessage.setText(chat.getMessage());
+            if(chat.getImageMessage() != null){
+                if(chat.getImageMessage().trim().length() != 0) {
+                    try {
+                        showMessage.setVisibility(View.GONE);
+                        GlideApp.with(itemView.getContext())
+                                .load(chat.getImageMessage())
+                                .fitCenter()
+                                .into(image);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    image.setVisibility(View.GONE);
+                    showMessage.setText(chat.getMessage());
+                }
+            }else {
+                image.setVisibility(View.GONE);
+                showMessage.setText(chat.getMessage());
+            }
             if(!ID.matches(chat.getSenderID())) {
                 chat_profileImage.setVisibility(View.VISIBLE);
                 if (chat.getSenderImage() != null) {

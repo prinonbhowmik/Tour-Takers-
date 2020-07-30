@@ -50,7 +50,7 @@
                             android:src="@drawable/ic_close" />
 
                         <TextView
-                            android:id="@+id/event_searchET"
+                            android:id="@+id/chatPartnerName"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_toStartOf="@+id/notiBTMS"
@@ -148,7 +148,7 @@
         android:padding="5dp"
         android:weightSum="5">
 
-        <EditText
+        <com.example.tureguideversion1.MyEditText
             android:id="@+id/commentET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

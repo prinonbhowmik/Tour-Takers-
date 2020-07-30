@@ -91,16 +91,22 @@ public class OnGoingTourAdapter extends PagerAdapter {
     private FirebaseAuth auth;
     private APIService apiService;
     public OnPosition onPosition;
+    public OnEvent onEvent;
 
-    public OnGoingTourAdapter(List<Event> data, Context context, String forView, OnPosition onPosition) {
+    public OnGoingTourAdapter(List<Event> data, Context context, String forView, OnPosition onPosition, OnEvent onEvent) {
         this.data = data;
         this.context = context;
         this.forView = forView;
         this.onPosition = onPosition;
+        this.onEvent = onEvent;
     }
 
     public interface OnPosition {
         void position(int position, String forView);
+    }
+
+    public interface OnEvent {
+        void getEventID(int position, String ID, String admin);
     }
 
     @Override
@@ -187,6 +193,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
         }
 
         if (forView.matches("event")) {
+            onEvent.getEventID(position, event.getId(),event.getEventPublisherId());
             forTourLayout.setVisibility(View.GONE);
             cencelEventBTN.setText("Cancel Event");
             DatabaseReference locationListRef = FirebaseDatabase.getInstance().getReference().child("eventLocationList").child(event.getId());
@@ -885,6 +892,10 @@ public class OnGoingTourAdapter extends PagerAdapter {
                     DatabaseReference commentsTokenRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(ID);
                     DatabaseReference replyRef = FirebaseDatabase.getInstance().getReference().child("eventCommentsReply").child(ID);
                     DatabaseReference notiRef = FirebaseDatabase.getInstance().getReference().child("notificationStatus").child("eventCommentNotifiaction").child(ID);
+                    DatabaseReference guideChat = FirebaseDatabase.getInstance().getReference().child("chatWithGuide").child(ID);
+                    DatabaseReference adminChat = FirebaseDatabase.getInstance().getReference().child("chatWithAdmin").child(ID);
+                    adminChat.removeValue();
+                    guideChat.removeValue();
                     notiRef.removeValue();
                     eRef.removeValue();
                     mRef.removeValue();
@@ -892,22 +903,43 @@ public class OnGoingTourAdapter extends PagerAdapter {
                     cRef.removeValue();
                     commentsTokenRef.removeValue();
                     replyRef.removeValue();
-                    DatabaseReference removeActivity = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("events");
+                    ArrayList<String> userIDs = new ArrayList<>();
+                    DatabaseReference removeActivity = FirebaseDatabase.getInstance().getReference().child("userActivities");
                     removeActivity.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                                    //eventKeys.add(childSnapshot.getKey());
-                                    HashMap<String, Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
-                                    if (hashMap.get("eventID").toString().equals(ID)) {
-                                        eventKeys.add(childSnapshot.getKey());
-                                        //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
-                                    }
+                                    userIDs.add(childSnapshot.getKey());
+                                    //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
                                 }
-                                for (int i = 0; i < eventKeys.size(); i++) {
-                                    DatabaseReference remove = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("events").child(eventKeys.get(i));
-                                    remove.removeValue();
+                                for (int i = 0; i < userIDs.size(); i++) {
+                                    DatabaseReference eventsRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(userIDs.get(i)).child("events");
+                                    int finalI = i;
+                                    eventsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                                                    HashMap<String, Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
+                                                    if (hashMap.get("eventID").toString().equals(ID)) {
+                                                        DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference()
+                                                                .child("userActivities")
+                                                                .child(userIDs.get(finalI))
+                                                                .child("events")
+                                                                .child(childSnapshot.getKey());
+                                                        eventRef.removeValue();
+                                                        //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
                                 }
                             }
                         }
@@ -917,57 +949,53 @@ public class OnGoingTourAdapter extends PagerAdapter {
 
                         }
                     });
-                    if(guideID != null){
-                        DatabaseReference removeGuideActivity = FirebaseDatabase.getInstance().getReference().child("userActivities").child(guideID).child("events");
-                        removeGuideActivity.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()) {
-                                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                                        //eventKeys.add(childSnapshot.getKey());
-                                        HashMap<String, Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
-                                        if (hashMap.get("eventID").toString().equals(ID)) {
-                                            eventKeys.add(childSnapshot.getKey());
-                                            //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
-                                        }
-                                    }
-                                    for (int i = 0; i < eventKeys.size(); i++) {
-                                        DatabaseReference remove = FirebaseDatabase.getInstance().getReference().child("userActivities").child(guideID).child("events").child(eventKeys.get(i));
-                                        remove.removeValue();
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
                     Toasty.success(context, "Delete Success", Toasty.LENGTH_SHORT).show();
                     onPosition.position(position, forView);
                 }else if (type.matches("tour")) {
                     ArrayList<String> eventKeys = new ArrayList<>();
                     DatabaseReference eRef = FirebaseDatabase.getInstance().getReference().child("tour").child(ID);
                     DatabaseReference lRef = FirebaseDatabase.getInstance().getReference().child("tourLocationList").child(ID);
+                    DatabaseReference guideChat = FirebaseDatabase.getInstance().getReference().child("chatWithGuide").child(ID);
+                    guideChat.removeValue();
                     eRef.removeValue();
                     lRef.removeValue();
-                    DatabaseReference removeActivity = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("tours");
+                    ArrayList<String> userIDs = new ArrayList<>();
+                    DatabaseReference removeActivity = FirebaseDatabase.getInstance().getReference().child("userActivities");
                     removeActivity.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                                    //eventKeys.add(childSnapshot.getKey());
-                                    HashMap<String, Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
-                                    if (hashMap.get("tourID").toString().equals(ID)) {
-                                        eventKeys.add(childSnapshot.getKey());
-                                        //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
-                                    }
+                                    userIDs.add(childSnapshot.getKey());
+                                    //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
                                 }
-                                for (int i = 0; i < eventKeys.size(); i++) {
-                                    DatabaseReference remove = FirebaseDatabase.getInstance().getReference().child("userActivities").child(auth.getUid()).child("tours").child(eventKeys.get(i));
-                                    remove.removeValue();
+                                for (int i = 0; i < userIDs.size(); i++) {
+                                    DatabaseReference eventsRef = FirebaseDatabase.getInstance().getReference().child("userActivities").child(userIDs.get(i)).child("tours");
+                                    int finalI = i;
+                                    eventsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                                                    HashMap<String, Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
+                                                    if (hashMap.get("tourID").toString().equals(ID)) {
+                                                        DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference()
+                                                                .child("userActivities")
+                                                                .child(userIDs.get(finalI))
+                                                                .child("tours")
+                                                                .child(childSnapshot.getKey());
+                                                        eventRef.removeValue();
+                                                        //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
                                 }
                             }
                         }
@@ -977,33 +1005,6 @@ public class OnGoingTourAdapter extends PagerAdapter {
 
                         }
                     });
-                    if(guideID != null){
-                        DatabaseReference removeGuideActivity = FirebaseDatabase.getInstance().getReference().child("userActivities").child(guideID).child("tours");
-                        removeGuideActivity.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()) {
-                                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                                        //eventKeys.add(childSnapshot.getKey());
-                                        HashMap<String, Object> hashMap = (HashMap<String, Object>) childSnapshot.getValue();
-                                        if (hashMap.get("tourID").toString().equals(ID)) {
-                                            eventKeys.add(childSnapshot.getKey());
-                                            //Log.d(TAG, "onDataChange: "+childSnapshot.getKey());
-                                        }
-                                    }
-                                    for (int i = 0; i < eventKeys.size(); i++) {
-                                        DatabaseReference remove = FirebaseDatabase.getInstance().getReference().child("userActivities").child(guideID).child("tours").child(eventKeys.get(i));
-                                        remove.removeValue();
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
                     Toasty.success(context, "Delete Success", Toasty.LENGTH_SHORT).show();
                     onPosition.position(position, forView);
                 }
@@ -1205,14 +1206,12 @@ public class OnGoingTourAdapter extends PagerAdapter {
                     @Override
                     public void run() {
                         if(forChat.matches("guide")) {
-                            Log.d(TAG, "run: guide passed");
                             Intent chatIntent = new Intent(context, GuideChatBox.class);
                             chatIntent.putExtra("chatPartnerID", memberID);
                             chatIntent.putExtra("eventId", eventID);
                             context.startActivity(chatIntent);
                             ((FragmentActivity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }else if(forChat.matches("admin")) {
-                            Log.d(TAG, "run: admin passed");
                             Intent chatIntent = new Intent(context, AdminChatBox.class);
                             chatIntent.putExtra("chatPartnerID", memberID);
                             chatIntent.putExtra("eventId", eventID);

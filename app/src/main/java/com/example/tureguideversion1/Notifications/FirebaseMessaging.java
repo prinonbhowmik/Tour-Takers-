@@ -51,6 +51,7 @@ import java.util.HashMap;
 
 public class FirebaseMessaging extends FirebaseMessagingService {
     public static final String TAG = "FirebaseMessaging";
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
     public void onNewToken(@NonNull String s) {
@@ -176,6 +177,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                 if (dataSnapshot.exists()) {
                     HashMap<String, Object> hashMap = (HashMap<String, Object>) dataSnapshot.getValue();
                     String eventPlace = (String) hashMap.get("place");
+                    String adminID = (String) hashMap.get("eventPublisherId");
                     RemoteMessage.Notification notification = remoteMessage.getNotification();
                     int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
                     if (from.matches("CommentBox")) {
@@ -259,11 +261,17 @@ public class FirebaseMessaging extends FirebaseMessagingService {
 
                         oreoNotification.getManager().notify(i, builder.build());
                     }else if (from.matches("adminChat")) {
+                        String childID;
+                        if(adminID.matches(userID)){
+                            childID = auth.getUid();
+                        }else {
+                            childID = userID;
+                        }
                         Intent intent = new Intent(getApplicationContext(), AdminChatBox.class);
                         Bundle bundle = new Bundle();
                         bundle.putString("eventId", eventID);
                         bundle.putString("chatPartnerID", userID);
-                        bundle.putString("childID", userID);
+                        bundle.putString("childID", childID);
                         intent.putExtras(bundle);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -401,6 +409,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                 if (dataSnapshot.exists()) {
                     HashMap<String, Object> hashMap = (HashMap<String, Object>) dataSnapshot.getValue();
                     String eventPlace = (String) hashMap.get("place");
+                    String adminID = (String) hashMap.get("eventPublisherId");
                     RemoteMessage.Notification notification = remoteMessage.getNotification();
                     int j = Integer.parseInt(userID.replaceAll("[\\D]", ""));
                     if (from.matches("CommentBox")) {
@@ -504,11 +513,17 @@ public class FirebaseMessaging extends FirebaseMessagingService {
 
                         noti.notify(i, builder.build());
                     } else if (from.matches("adminChat")) {
+                        String childID;
+                        if(adminID.matches(userID)){
+                            childID = auth.getUid();
+                        }else {
+                            childID = userID;
+                        }
                         Intent intent = new Intent(getApplicationContext(), AdminChatBox.class);
                         Bundle bundle = new Bundle();
                         bundle.putString("eventId", eventID);
                         bundle.putString("chatPartnerID", userID);
-                        bundle.putString("childID", userID);
+                        bundle.putString("childID", childID);
                         intent.putExtras(bundle);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);

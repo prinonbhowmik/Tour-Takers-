@@ -13,10 +13,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.inputmethod.InputContentInfoCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +26,7 @@ import com.example.tureguideversion1.Adapters.ChatAdapter;
 import com.example.tureguideversion1.Adapters.GuideChatAdapter;
 import com.example.tureguideversion1.Model.Chat;
 import com.example.tureguideversion1.Model.GuidChat;
+import com.example.tureguideversion1.MyEditText;
 import com.example.tureguideversion1.Notifications.APIService;
 import com.example.tureguideversion1.Notifications.Client;
 import com.example.tureguideversion1.Notifications.Data;
@@ -55,7 +58,7 @@ import retrofit2.Callback;
 public class AdminChatBox extends AppCompatActivity {
     public static final String TAG = "AdminChatBox";
     private String senderID, currentEventId, senderName, senderImage, senderSex, chatPartnerID, childID;
-    private EditText commentET;
+    private MyEditText commentET;
     private ImageButton sendMessage;
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
@@ -70,6 +73,7 @@ public class AdminChatBox extends AppCompatActivity {
     private ImageView notificationIcon, closeIcon;
     private int e = 1, p = 0;
     private MediaPlayer sendSound, receiveSound;
+    private TextView chatPartnerName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +87,22 @@ public class AdminChatBox extends AppCompatActivity {
         if(childID == null){
             childID = auth.getUid();
         }
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("profile").child(chatPartnerID);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    HashMap<String,Object> map = (HashMap<String, Object>) snapshot.getValue();
+                    chatPartnerName.setText(map.get("name").toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         //readNotificationStatus();
         getUserInfo(new userInfoCallback() {
             @Override
@@ -101,6 +121,20 @@ public class AdminChatBox extends AppCompatActivity {
             }
         });
 
+        commentET.setKeyBoardInputCallbackListener(new MyEditText.KeyBoardInputCallbackListener() {
+            @Override
+            public void onCommitContent(InputContentInfoCompat inputContentInfo, int flags, Bundle opts) {
+                String image = inputContentInfo.getLinkUri().toString();
+                notify = true;
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
+                String chatTime = simpleDateFormat.format(calendar.getTime());
+                if (image.trim().length() != 0) {
+                    setSendMessage("", image, senderID, senderName, senderImage, senderSex, chatTime);
+                }
+            }
+        });
+
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,7 +145,7 @@ public class AdminChatBox extends AppCompatActivity {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
                 String chatTime = simpleDateFormat.format(calendar.getTime());
                 if (mess.trim().length() != 0) {
-                    setSendMessage(mess, senderID, senderName, senderImage, senderSex, chatTime);
+                    setSendMessage(mess, "",senderID, senderName, senderImage, senderSex, chatTime);
                 }
                 commentET.setText(null);
             }
@@ -234,7 +268,7 @@ public class AdminChatBox extends AppCompatActivity {
                     mChat.clear();
                     for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                         HashMap<String,Object> map = (HashMap<String, Object>) childSnapshot.getValue();
-                        Log.d(TAG, "onDataChange: "+map.get("senderID"));
+                        //Log.d(TAG, "onDataChange: "+map.get("senderID"));
                         GuidChat chat = childSnapshot.getValue(GuidChat.class);
                         mChat.add(chat);
                         chatAdapter.notifyDataSetChanged();
@@ -273,12 +307,13 @@ public class AdminChatBox extends AppCompatActivity {
         }
     }
 
-    void setSendMessage(String message, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
+    void setSendMessage(String message, String image, String senderID, String senderName, String senderImage, String senderSex, String commentTime) {
 
         DatabaseReference ref = databaseReference.child("chatWithAdmin").child(currentEventId).child(childID);
         String id = ref.push().getKey();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("message", message);
+        hashMap.put("imageMessage", image);
         hashMap.put("senderID", senderID);
         hashMap.put("senderName", senderName);
         hashMap.put("senderImage", senderImage);
@@ -294,7 +329,11 @@ public class AdminChatBox extends AppCompatActivity {
         });
 
         if (notify) {
-            sendNotifiaction(currentEventId, senderName, message, chatPartnerID);
+            if(image.trim().length() != 0){
+                sendNotifiaction(currentEventId, senderName, "send a sticker", chatPartnerID);
+            }else {
+                sendNotifiaction(currentEventId, senderName, message, chatPartnerID);
+            }
         }
         notify = false;
         e = 1;
@@ -419,6 +458,7 @@ public class AdminChatBox extends AppCompatActivity {
         radioBTN2 = (RadioRealButton) findViewById(R.id.radioBTN2);
         sendSound = MediaPlayer.create(this, R.raw.comment_send);
         receiveSound = MediaPlayer.create(this, R.raw.appointed);
+        chatPartnerName = findViewById(R.id.chatPartnerName);
     }
 
     private void currentUser(String userid) {

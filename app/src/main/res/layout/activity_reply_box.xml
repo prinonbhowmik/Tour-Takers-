@@ -104,6 +104,12 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_below="@+id/senderName1" />
+
             <TextView
                 android:id="@+id/showMessage1"
                 android:layout_width="wrap_content"
@@ -111,12 +117,6 @@
                 android:layout_below="@+id/senderName1"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
-
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_below="@+id/senderName1" />
 
         </RelativeLayout>
 

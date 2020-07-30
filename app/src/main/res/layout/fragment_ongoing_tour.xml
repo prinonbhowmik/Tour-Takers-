@@ -36,10 +36,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:background="@null"
-                android:fontFamily="@font/amarante"
                 android:layout_toStartOf="@+id/tourSwitch"
                 android:layout_toEndOf="@+id/nav_icon"
+                android:background="@null"
+                android:fontFamily="@font/amarante"
                 android:gravity="center"
                 android:text="@string/tour"
                 android:textColor="@android:color/darker_gray"
@@ -67,8 +67,6 @@
         android:layout_below="@id/tour_searchCV"
         android:layout_centerInParent="true"
         android:padding="110dp"
-        app:lottie_autoPlay="true"
-        app:lottie_fileName="sleepy_cat.json"
         app:lottie_loop="true" />
 
     <androidx.viewpager.widget.ViewPager
@@ -79,18 +77,103 @@
         android:layout_centerInParent="true"
         android:foregroundGravity="center" />
 
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/inboxRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/createTourBTN"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="48dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="invisible" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadinAmin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/createTourBTN"
+        android:layout_marginBottom="16dp"
+        android:layout_toStartOf="@id/createTourBTN"
+        android:layout_toEndOf="@id/inboxBTN"
+        android:visibility="gone"
+        app:lottie_loop="true" />
+
+    <TextView
+        android:id="@+id/emptyInboxTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/createTourBTN"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:layout_toStartOf="@id/createTourBTN"
+        android:layout_toEndOf="@id/inboxBTN"
+        android:gravity="center"
+        android:text="Empty Inbox..."
+        android:textAlignment="center"
+        android:textColor="@color/gray"
+        android:visibility="gone" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/inboxBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_mail"
+        android:visibility="gone"
+        app:backgroundTint="@color/colorAccent"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="16dp"
+        android:layout_toStartOf="@id/fab1"
+        android:src="@drawable/travel_icon"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorYellow"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="16dp"
+        android:layout_toStartOf="@id/createTourBTN"
+        android:src="@drawable/ic_event_black_24dp"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorYellow"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/createTourBTN"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="15dp"
-        android:clickable="true"
-        android:focusable="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:src="@drawable/ic_add_white_24dp"
-        app:backgroundTint="#face2f" />
+        app:backgroundTint="@color/colorAccent"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp" />
 
 
 </RelativeLayout>
