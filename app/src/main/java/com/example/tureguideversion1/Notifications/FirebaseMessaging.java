@@ -420,7 +420,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
-                                .setSmallIcon(Integer.parseInt(icon))
+                                .setSmallIcon(R.drawable.ic_stat_ic_notification)
                                 .setLargeIcon(finalBitmap)
                                 .setContentTitle(title + ": " + eventPlace)
                                 .setContentText(body)
@@ -445,7 +445,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
-                                .setSmallIcon(Integer.parseInt(icon))
+                                .setSmallIcon(R.drawable.ic_stat_ic_notification)
                                 .setLargeIcon(finalBitmap)
                                 .setContentTitle(title + ": " + eventPlace)
                                 .setContentText(body)
@@ -471,7 +471,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
-                                .setSmallIcon(Integer.parseInt(icon))
+                                .setSmallIcon(R.drawable.ic_stat_ic_notification)
                                 .setLargeIcon(finalBitmap)
                                 .setContentTitle(title)
                                 .setContentText(body)
@@ -496,7 +496,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
-                                .setSmallIcon(Integer.parseInt(icon))
+                                .setSmallIcon(R.drawable.ic_stat_ic_notification)
                                 .setLargeIcon(finalBitmap)
                                 .setContentTitle(title + ": " + eventPlace)
                                 .setContentText(body)
@@ -528,7 +528,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
-                                .setSmallIcon(Integer.parseInt(icon))
+                                .setSmallIcon(R.drawable.ic_stat_ic_notification)
                                 .setLargeIcon(finalBitmap)
                                 .setContentTitle(title + ": " + eventPlace)
                                 .setContentText(body)
@@ -564,7 +564,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), j, intent, PendingIntent.FLAG_ONE_SHOT);
                                     NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "Events")
-                                            .setSmallIcon(Integer.parseInt(icon))
+                                            .setSmallIcon(R.drawable.ic_stat_ic_notification)
                                             .setLargeIcon(finalBitmap)
                                             .setContentTitle(title + ": " + eventPlace)
                                             .setContentText(body)

@@ -11,11 +11,12 @@ public class Chat {
     private String eventID;
     private String commentTime;
     private String hasReply;
+    private String replyType;
 
     public Chat() {
     }
 
-    public Chat(String message, String imageMessage, String senderName, String senderImage, String senderSex, String senderID, String ID, String eventID, String commentTime, String hasReply) {
+    public Chat(String message, String imageMessage, String senderName, String senderImage, String senderSex, String senderID, String ID, String eventID, String commentTime, String hasReply, String replyType) {
         this.message = message;
         this.imageMessage = imageMessage;
         this.senderName = senderName;
@@ -26,6 +27,11 @@ public class Chat {
         this.eventID = eventID;
         this.commentTime = commentTime;
         this.hasReply = hasReply;
+        this.replyType = replyType;
+    }
+
+    public String getReplyType() {
+        return replyType;
     }
 
     public String getImageMessage() {

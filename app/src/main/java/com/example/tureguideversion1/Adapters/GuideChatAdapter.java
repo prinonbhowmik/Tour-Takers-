@@ -31,10 +31,12 @@ import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final String TAG = "GuideChatAdapter";
     public static final int LEFT = 0;
     public static final int RIGHT = 1;
+    public static final int LEFT_IMAGE = 2;
+    public static final int RIGHT_IMAGE = 3;
     private Context mContext;
     private List<GuidChat> mChat;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -53,10 +55,16 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (viewType == LEFT) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.guide_chat_item_left, parent, false);
             return new GuideChatAdapter.ViewHolderLeft(view);
-        } else if (viewType == RIGHT){
+        } else if (viewType == RIGHT) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.guide_chat_item_right, parent, false);
             return new GuideChatAdapter.ViewHolderRight(view);
-        }else {
+        } else if (viewType == LEFT_IMAGE) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.guide_chat_image_left, parent, false);
+            return new GuideChatAdapter.ViewHolderLeftImage(view);
+        } else if (viewType == RIGHT_IMAGE) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.guide_chat_image_right, parent, false);
+            return new GuideChatAdapter.ViewHolderRightImage(view);
+        } else {
             return null;
         }
     }
@@ -65,8 +73,12 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == LEFT) {
             ((GuideChatAdapter.ViewHolderLeft) holder).setData(mChat.get(position), position);
-        } else if (getItemViewType(position) == RIGHT){
+        } else if (getItemViewType(position) == RIGHT) {
             ((GuideChatAdapter.ViewHolderRight) holder).setData(mChat.get(position), position);
+        } else if (getItemViewType(position) == LEFT_IMAGE) {
+            ((GuideChatAdapter.ViewHolderLeftImage) holder).setData(mChat.get(position), position);
+        } else if (getItemViewType(position) == RIGHT_IMAGE) {
+            ((GuideChatAdapter.ViewHolderRightImage) holder).setData(mChat.get(position), position);
         }
     }
 
@@ -83,9 +95,17 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public int getItemViewType(int position) {
         if (mChat.get(position).getSenderID().equals(auth.getUid())) {
-            return RIGHT;
+            if (mChat.get(position).getMessage().matches("")) {
+                return RIGHT_IMAGE;
+            } else {
+                return RIGHT;
+            }
         } else {
-            return LEFT;
+            if (mChat.get(position).getMessage().matches("")) {
+                return LEFT_IMAGE;
+            } else {
+                return LEFT;
+            }
         }
     }
 
@@ -93,7 +113,6 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private TextView showMessage, chatTimeTV;
         private CircleImageView chat_profileImage;
         private RelativeLayout chatLayout;
-        private ImageView image;
 
         public ViewHolderLeft(@NonNull View itemView) {
             super(itemView);
@@ -101,31 +120,12 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             chat_profileImage = itemView.findViewById(R.id.chat_profileImage);
             chatTimeTV = itemView.findViewById(R.id.chatTimeTV);
             chatLayout = itemView.findViewById(R.id.chatLayout);
-            image = itemView.findViewById(R.id.image);
         }
 
 
         void setData(GuidChat chat, int position) {
-            if(chat.getImageMessage() != null){
-                if(chat.getImageMessage().trim().length() != 0) {
-                    try {
-                        showMessage.setVisibility(View.GONE);
-                        GlideApp.with(itemView.getContext())
-                                .load(chat.getImageMessage())
-                                .fitCenter()
-                                .into(image);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }else {
-                    image.setVisibility(View.GONE);
-                    showMessage.setText(chat.getMessage());
-                }
-            }else {
-                image.setVisibility(View.GONE);
-                showMessage.setText(chat.getMessage());
-            }
-            if(!ID.matches(chat.getSenderID())) {
+            showMessage.setText(chat.getMessage());
+            if (!ID.matches(chat.getSenderID())) {
                 chat_profileImage.setVisibility(View.VISIBLE);
                 if (chat.getSenderImage() != null) {
                     if (!chat.getSenderImage().isEmpty()) {
@@ -147,7 +147,7 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         }
                     }
                 }
-            }else {
+            } else {
                 chat_profileImage.setVisibility(View.INVISIBLE);
             }
             ID = chat.getSenderID();
@@ -182,7 +182,7 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     chatTimeTV.setText(days + " days ago");
             }
 
-            if(chatLayout != null) {
+            if (chatLayout != null) {
                 chatLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -204,7 +204,154 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     pos2 = -1;
                 }
             } else {
-                if(chatLayout != null) {
+                if (chatLayout != null) {
+                    chatLayout.setSelected(false);
+                }
+                chatTimeTV.setVisibility(View.GONE);
+            }
+
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    AppCompatActivity appCompatActivity = new AppCompatActivity();
+                    FragmentManager fragmentManager = appCompatActivity.getSupportFragmentManager();
+                    String sender_id = chat.getSenderID();
+                    String C_id = chat.getID();
+                    String E_id = chat.getEventID();
+                    String message = chat.getMessage();
+                    String userID = FirebaseAuth.getInstance().getUid();
+                    if (userID.equals(sender_id)) {
+                        Bundle args = new Bundle();
+                        args.putString("c_id", C_id);
+                        args.putString("e_id", E_id);
+                        args.putString("check", "true");
+                        args.putString("message", message);
+                        CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
+                        bottom_sheet.setArguments(args);
+                        bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
+                    } else {
+                        Bundle args = new Bundle();
+                        args.putString("c_id", C_id);
+                        args.putString("e_id", E_id);
+                        args.putString("check", "false");
+                        args.putString("message", message);
+                        CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
+                        bottom_sheet.setArguments(args);
+                        bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
+                    }
+                    return true;
+                }
+            });
+
+        }
+    }
+
+    public class ViewHolderLeftImage extends RecyclerView.ViewHolder {
+        private TextView chatTimeTV;
+        private CircleImageView chat_profileImage;
+        private RelativeLayout chatLayout;
+        private ImageView image;
+
+        public ViewHolderLeftImage(@NonNull View itemView) {
+            super(itemView);
+            chat_profileImage = itemView.findViewById(R.id.chat_profileImage);
+            chatTimeTV = itemView.findViewById(R.id.chatTimeTV);
+            chatLayout = itemView.findViewById(R.id.chatLayout);
+            image = itemView.findViewById(R.id.image);
+        }
+
+
+        void setData(GuidChat chat, int position) {
+            try {
+                GlideApp.with(itemView.getContext())
+                        .load(chat.getImageMessage())
+                        .fitCenter()
+                        .into(image);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (!ID.matches(chat.getSenderID())) {
+                chat_profileImage.setVisibility(View.VISIBLE);
+                if (chat.getSenderImage() != null) {
+                    if (!chat.getSenderImage().isEmpty()) {
+                        GlideApp.with(itemView.getContext())
+                                .load(chat.getSenderImage())
+                                .fitCenter()
+                                .into(chat_profileImage);
+                    } else {
+                        if (chat.getSenderSex().matches("male")) {
+                            GlideApp.with(itemView.getContext())
+                                    .load(R.drawable.man)
+                                    .centerInside()
+                                    .into(chat_profileImage);
+                        } else if (chat.getSenderSex().matches("female")) {
+                            GlideApp.with(itemView.getContext())
+                                    .load(R.drawable.woman)
+                                    .centerInside()
+                                    .into(chat_profileImage);
+                        }
+                    }
+                }
+            } else {
+                chat_profileImage.setVisibility(View.INVISIBLE);
+            }
+            ID = chat.getSenderID();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
+            Date past = null;
+            try {
+                past = format.parse(chat.getCommentTime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Date now = new Date();
+            long seconds = TimeUnit.MILLISECONDS.toSeconds(now.getTime() - past.getTime());
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(now.getTime() - past.getTime());
+            long hours = TimeUnit.MILLISECONDS.toHours(now.getTime() - past.getTime());
+            long days = TimeUnit.MILLISECONDS.toDays(now.getTime() - past.getTime());
+            if (seconds < 60) {
+                chatTimeTV.setText("now");
+            } else if (minutes < 60) {
+                if (minutes == 1) {
+                    chatTimeTV.setText("1 minute ago");
+                } else
+                    chatTimeTV.setText(minutes + " minutes ago");
+            } else if (hours < 24) {
+                if (hours == 1) {
+                    chatTimeTV.setText("1 hour ago");
+                } else
+                    chatTimeTV.setText(hours + " hours ago");
+            } else {
+                if (days == 1) {
+                    chatTimeTV.setText("1 day ago");
+                } else
+                    chatTimeTV.setText(days + " days ago");
+            }
+
+            if (chatLayout != null) {
+                chatLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        row_index = getAdapterPosition();
+                        ID = "";
+                        notifyDataSetChanged();
+                        //Log.d(TAG, "onClick: "+row_index);
+                    }
+                });
+            }
+
+            if (position == row_index) {
+                chatLayout.setSelected(true);
+                if (position > pos2 || position < pos2) {
+                    chatTimeTV.setVisibility(View.VISIBLE);
+                    pos2 = position;
+                } else if (position == pos2) {
+                    chatTimeTV.setVisibility(View.GONE);
+                    pos2 = -1;
+                }
+            } else {
+                if (chatLayout != null) {
                     chatLayout.setSelected(false);
                 }
                 chatTimeTV.setVisibility(View.GONE);
@@ -251,7 +398,6 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private TextView showMessage, chatTimeTV;
         private CircleImageView chat_profileImage;
         private RelativeLayout chatLayout;
-        private ImageView image;
 
         public ViewHolderRight(@NonNull View itemView) {
             super(itemView);
@@ -259,30 +405,11 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             chat_profileImage = itemView.findViewById(R.id.chat_profileImage);
             chatTimeTV = itemView.findViewById(R.id.chatTimeTV);
             chatLayout = itemView.findViewById(R.id.chatLayout);
-            image = itemView.findViewById(R.id.image);
         }
 
         void setData(GuidChat chat, int position) {
-            if(chat.getImageMessage() != null){
-                if(chat.getImageMessage().trim().length() != 0) {
-                    try {
-                        showMessage.setVisibility(View.GONE);
-                        GlideApp.with(itemView.getContext())
-                                .load(chat.getImageMessage())
-                                .fitCenter()
-                                .into(image);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }else {
-                    image.setVisibility(View.GONE);
-                    showMessage.setText(chat.getMessage());
-                }
-            }else {
-                image.setVisibility(View.GONE);
-                showMessage.setText(chat.getMessage());
-            }
-            if(!ID.matches(chat.getSenderID())) {
+            showMessage.setText(chat.getMessage());
+            if (!ID.matches(chat.getSenderID())) {
                 chat_profileImage.setVisibility(View.VISIBLE);
                 if (chat.getSenderImage() != null) {
                     if (!chat.getSenderImage().isEmpty()) {
@@ -304,7 +431,7 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         }
                     }
                 }
-            }else {
+            } else {
                 chat_profileImage.setVisibility(View.INVISIBLE);
             }
             ID = chat.getSenderID();
@@ -339,7 +466,7 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     chatTimeTV.setText(days + " days ago");
             }
 
-            if(chatLayout != null) {
+            if (chatLayout != null) {
                 chatLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -361,7 +488,7 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     pos2 = -1;
                 }
             } else {
-                if(chatLayout != null) {
+                if (chatLayout != null) {
                     chatLayout.setSelected(false);
                 }
                 chatTimeTV.setVisibility(View.GONE);
@@ -405,4 +532,154 @@ public class GuideChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
     }
+
+    public class ViewHolderRightImage extends RecyclerView.ViewHolder {
+        private TextView chatTimeTV;
+        private CircleImageView chat_profileImage;
+        private RelativeLayout chatLayout;
+        private ImageView image;
+
+        public ViewHolderRightImage(@NonNull View itemView) {
+            super(itemView);
+            chat_profileImage = itemView.findViewById(R.id.chat_profileImage);
+            chatTimeTV = itemView.findViewById(R.id.chatTimeTV);
+            chatLayout = itemView.findViewById(R.id.chatLayout);
+            image = itemView.findViewById(R.id.image);
+        }
+
+        void setData(GuidChat chat, int position) {
+            try {
+                GlideApp.with(itemView.getContext())
+                        .load(chat.getImageMessage())
+                        .fitCenter()
+                        .into(image);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (!ID.matches(chat.getSenderID())) {
+                chat_profileImage.setVisibility(View.VISIBLE);
+                if (chat.getSenderImage() != null) {
+                    if (!chat.getSenderImage().isEmpty()) {
+                        GlideApp.with(itemView.getContext())
+                                .load(chat.getSenderImage())
+                                .fitCenter()
+                                .into(chat_profileImage);
+                    } else {
+                        if (chat.getSenderSex().matches("male")) {
+                            GlideApp.with(itemView.getContext())
+                                    .load(R.drawable.man)
+                                    .centerInside()
+                                    .into(chat_profileImage);
+                        } else if (chat.getSenderSex().matches("female")) {
+                            GlideApp.with(itemView.getContext())
+                                    .load(R.drawable.woman)
+                                    .centerInside()
+                                    .into(chat_profileImage);
+                        }
+                    }
+                }
+            } else {
+                chat_profileImage.setVisibility(View.INVISIBLE);
+            }
+            ID = chat.getSenderID();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
+            Date past = null;
+            try {
+                past = format.parse(chat.getCommentTime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Date now = new Date();
+            long seconds = TimeUnit.MILLISECONDS.toSeconds(now.getTime() - past.getTime());
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(now.getTime() - past.getTime());
+            long hours = TimeUnit.MILLISECONDS.toHours(now.getTime() - past.getTime());
+            long days = TimeUnit.MILLISECONDS.toDays(now.getTime() - past.getTime());
+            if (seconds < 60) {
+                chatTimeTV.setText("now");
+            } else if (minutes < 60) {
+                if (minutes == 1) {
+                    chatTimeTV.setText("1 minute ago");
+                } else
+                    chatTimeTV.setText(minutes + " minutes ago");
+            } else if (hours < 24) {
+                if (hours == 1) {
+                    chatTimeTV.setText("1 hour ago");
+                } else
+                    chatTimeTV.setText(hours + " hours ago");
+            } else {
+                if (days == 1) {
+                    chatTimeTV.setText("1 day ago");
+                } else
+                    chatTimeTV.setText(days + " days ago");
+            }
+
+            if (chatLayout != null) {
+                chatLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        row_index = getAdapterPosition();
+                        ID = "";
+                        notifyDataSetChanged();
+                        //Log.d(TAG, "onClick: "+row_index);
+                    }
+                });
+            }
+
+            if (position == row_index) {
+                chatLayout.setSelected(true);
+                if (position > pos2 || position < pos2) {
+                    chatTimeTV.setVisibility(View.VISIBLE);
+                    pos2 = position;
+                } else if (position == pos2) {
+                    chatTimeTV.setVisibility(View.GONE);
+                    pos2 = -1;
+                }
+            } else {
+                if (chatLayout != null) {
+                    chatLayout.setSelected(false);
+                }
+                chatTimeTV.setVisibility(View.GONE);
+            }
+
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    AppCompatActivity appCompatActivity = new AppCompatActivity();
+                    FragmentManager fragmentManager = appCompatActivity.getSupportFragmentManager();
+                    String sender_id = chat.getSenderID();
+                    String C_id = chat.getID();
+                    String E_id = chat.getEventID();
+                    String message = chat.getMessage();
+                    String userID = FirebaseAuth.getInstance().getUid();
+                    if (userID.equals(sender_id)) {
+                        Bundle args = new Bundle();
+                        args.putString("c_id", C_id);
+                        args.putString("e_id", E_id);
+                        args.putString("check", "true");
+                        args.putString("message", message);
+                        CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
+                        bottom_sheet.setArguments(args);
+                        bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
+                    } else {
+                        Bundle args = new Bundle();
+                        args.putString("c_id", C_id);
+                        args.putString("e_id", E_id);
+                        args.putString("check", "false");
+                        args.putString("message", message);
+                        CommentSettingsBottomSheet bottom_sheet = new CommentSettingsBottomSheet();
+                        bottom_sheet.setArguments(args);
+                        bottom_sheet.show(((FragmentActivity) mContext).getSupportFragmentManager(), bottom_sheet.getTag());
+                    }
+                    return true;
+                }
+            });
+
+
+        }
+
+    }
+
+
 }

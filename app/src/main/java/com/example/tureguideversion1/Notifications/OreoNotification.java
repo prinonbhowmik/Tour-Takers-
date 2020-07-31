@@ -67,7 +67,7 @@ public class OreoNotification extends ContextWrapper {
                 .setContentIntent(pendingIntent)
                 .setContentTitle(title)
                 .setContentText(body)
-                .setSmallIcon(Integer.parseInt(icon))
+                .setSmallIcon(R.drawable.ic_stat_ic_notification)
                 .setLargeIcon(userImage)
                 .setAutoCancel(true);
     }

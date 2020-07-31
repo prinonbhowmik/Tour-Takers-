@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tureguideversion1.Adapters.ChatAdapter;
 import com.example.tureguideversion1.Model.Chat;
+import com.example.tureguideversion1.Model.Reply;
 import com.example.tureguideversion1.MyEditText;
 import com.example.tureguideversion1.Notifications.APIService;
 import com.example.tureguideversion1.Notifications.Client;
@@ -69,6 +70,7 @@ public class CommentsBox extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private RecyclerView chatRecyclerView;
     private List<Chat> mChat;
+    private List<Reply> replyList;
     private ChatAdapter chatAdapter;
     private APIService apiService;
     private boolean notify = false;
@@ -352,7 +354,7 @@ public class CommentsBox extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         chatRecyclerView.setLayoutManager(linearLayoutManager);
-        chatAdapter = new ChatAdapter(getApplicationContext(), mChat);
+        chatAdapter = new ChatAdapter(getApplicationContext(), mChat, replyList);
         chatRecyclerView.setAdapter(chatAdapter);
         chatRecyclerView.setHasFixedSize(true);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
@@ -430,6 +432,7 @@ public class CommentsBox extends AppCompatActivity {
         hashMap.put("commentTime", commentTime);
         hashMap.put("eventID", currentEventId);
         hashMap.put("hasReply", "no");
+        hashMap.put("replyType", "none");
         ref.child(id).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -491,12 +494,12 @@ public class CommentsBox extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mChat = new ArrayList<>();
-                chatAdapter = new ChatAdapter(CommentsBox.this, mChat);
+                replyList = new ArrayList<>();
+                chatAdapter = new ChatAdapter(CommentsBox.this, mChat, replyList);
                 chatRecyclerView.setAdapter(chatAdapter);
                 chatRecyclerView.setHasFixedSize(true);
-                chatRecyclerView.setItemViewCacheSize(20);
+                chatRecyclerView.setItemViewCacheSize(50);
                 chatRecyclerView.setDrawingCacheEnabled(true);
-                chatRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
                 chatAdapter.notifyDataSetChanged();
                 if (dataSnapshot.exists()) {
                     mChat.clear();
@@ -505,6 +508,7 @@ public class CommentsBox extends AppCompatActivity {
                         mChat.add(chat);
                         chatAdapter.notifyDataSetChanged();
                     }
+
                     if (p != 1) {
                         if (e != 1) {
                             receiveSound.start();

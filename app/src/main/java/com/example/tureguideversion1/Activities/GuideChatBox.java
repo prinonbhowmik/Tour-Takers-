@@ -83,7 +83,7 @@ public class GuideChatBox extends AppCompatActivity {
         Intent intent = getIntent();
         currentEventId = intent.getStringExtra("eventId");
         chatPartnerID = intent.getStringExtra("chatPartnerID");
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("profile").child(chatPartnerID);
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("GuideProfile").child(chatPartnerID);
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -256,9 +256,8 @@ public class GuideChatBox extends AppCompatActivity {
                 chatAdapter = new GuideChatAdapter(GuideChatBox.this, mChat);
                 chatRecyclerView.setAdapter(chatAdapter);
                 chatRecyclerView.setHasFixedSize(true);
-                chatRecyclerView.setItemViewCacheSize(20);
+                chatRecyclerView.setItemViewCacheSize(50);
                 chatRecyclerView.setDrawingCacheEnabled(true);
-                chatRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
                 chatAdapter.notifyDataSetChanged();
                 if (dataSnapshot.exists()) {
                     mChat.clear();

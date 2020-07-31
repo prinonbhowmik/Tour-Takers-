@@ -184,6 +184,11 @@ public class ReplyBox extends AppCompatActivity {
         });
         DatabaseReference cRef = databaseReference.child("eventComments").child(eventId).child(commentId);
         cRef.child("hasReply").setValue("yes");
+        if(reply.matches("")){
+            cRef.child("replyType").setValue("image");
+        }else {
+            cRef.child("replyType").setValue("text");
+        }
         DatabaseReference check = FirebaseDatabase.getInstance().getReference().child("eventCommentsTokens").child(eventId);
         check.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
