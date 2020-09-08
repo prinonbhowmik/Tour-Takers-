@@ -355,46 +355,6 @@ public class WeatherFragment extends Fragment {
                         String setTime = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(weatherResponse.currentWeather.sunset * 1000));
                         sunSet.setText(setTime);
 
-                        Calendar c = Calendar.getInstance();
-                        int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
-                        Log.d("CurrentHour", String.valueOf(timeOfDay));
-
-                        if (timeOfDay >= 6 && timeOfDay < 18) {
-                            weatherLayout.setBackgroundResource(R.drawable.weatherday);
-                        }
-                        else if (timeOfDay >= 18 && timeOfDay <= 19) {
-                            weatherLayout.setBackgroundResource(R.drawable.weatherevening);
-                        }
-                        else if (timeOfDay > 19 && timeOfDay <= 23) {
-                            weatherLayout.setBackgroundResource(R.drawable.weathernight);
-                        }
-                        else if (timeOfDay >= 0 && timeOfDay < 6) {
-                            weatherLayout.setBackgroundResource(R.drawable.weathernight);
-                        }
-
-
-                        if(weatherResponse.currentWeather.weather.get(0).description.matches("scattered clouds") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("broken clouds") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("overcast clouds")
-                        || weatherResponse.currentWeather.weather.get(0).description.matches("few clouds")){
-                            weatherLayout.setBackgroundResource(R.drawable.weathercloudyday);
-                        }
-                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light rain") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("moderate rain") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy intensity rain") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("very heavy rain") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("extreme rain")){
-                            weatherLayout.setBackgroundResource(R.drawable.weatherrain);
-                        }
-                        else if(weatherResponse.currentWeather.weather.get(0).description.matches("light thunderstorm") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("thunderstorm") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("heavy thunderstorm") ||
-                                weatherResponse.currentWeather.weather.get(0).description.matches("ragged thunderstorm"))
-                        {
-                            weatherLayout.setBackgroundResource(R.drawable.weatherstorm);
-                        }
-
-
                         statusTxt.setText(weatherResponse.currentWeather.weather.get(0).description);
                         tempTxt.setText(Math.round(weatherResponse.currentWeather.temp) + "°C");
                         feels_like.setText("Feels Like: " + Math.round(weatherResponse.currentWeather.feels_like) + "°C");
