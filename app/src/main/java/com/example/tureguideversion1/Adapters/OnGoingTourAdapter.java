@@ -26,7 +26,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
@@ -38,7 +37,6 @@ import com.example.tureguideversion1.Activities.GuideChatBox;
 import com.example.tureguideversion1.Activities.JoinMemberDetails;
 import com.example.tureguideversion1.Activities.LocationImage;
 import com.example.tureguideversion1.Activities.NoInternetConnection;
-import com.example.tureguideversion1.Fragments.OnGoingTour;
 import com.example.tureguideversion1.GlideApp;
 import com.example.tureguideversion1.Model.Event;
 import com.example.tureguideversion1.Model.EventLocationList;
@@ -54,26 +52,20 @@ import com.glide.slider.library.animations.DescriptionAnimation;
 import com.glide.slider.library.slidertypes.BaseSliderView;
 import com.glide.slider.library.slidertypes.TextSliderView;
 import com.glide.slider.library.transformers.BaseTransformer;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
@@ -338,6 +330,10 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                                                 (String) map.get("email"),
                                                                 (String) map.get("image"),
                                                                 (String) map.get("sex"),
+                                                                (Long) map.get("tour"),
+                                                                (Long) map.get("event"),
+                                                                (Long) map.get("ratingCounter"),
+                                                                (Double) map.get("rating"),
                                                                 event.getId(),
                                                                 event.getGuideID(),
                                                                 "guide");
@@ -546,6 +542,10 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                         (String) map.get("email"),
                                         (String) map.get("image"),
                                         (String) map.get("sex"),
+                                        (Long) map.get("tour"),
+                                        (Long) map.get("event"),
+                                        (Long) map.get("ratingCounter"),
+                                        (Double) map.get("rating"),
                                         event.getId(),
                                         event.getEventPublisherId(),
                                         "admin");
@@ -751,6 +751,10 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                                             (String) map.get("email"),
                                                             (String) map.get("image"),
                                                             (String) map.get("sex"),
+                                                            (Long) map.get("tour"),
+                                                            (Long) map.get("event"),
+                                                            (Long) map.get("ratingCounter"),
+                                                            (Double) map.get("rating"),
                                                             event.getId(),
                                                             event.getGuideID(),
                                                             "guide");
@@ -1159,8 +1163,12 @@ public class OnGoingTourAdapter extends PagerAdapter {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public void ShowProfilePopup(String member_name, String member_phone, String member_email, String member_image, String member_gender, String eventID, String memberID, String forChat) {
-        TextView namePopUp, phonePopUp, emailPopUp;
+    public void ShowProfilePopup(String member_name, String member_phone, String member_email, String member_image, String member_gender,
+                                 long tour, long event, long ratingCounter, double rating, String eventID, String memberID, String forChat) {
+        TextView namePopUp, phonePopUp, emailPopUp, tourPopUp, eventPopUp, ratingPopUp;
+
+        DecimalFormat df = new DecimalFormat("0.0");
+        double averageRating = rating / ratingCounter;
         ImageView pic;
         Button callBTN, textBTN;
         CircleImageView close;
@@ -1170,6 +1178,9 @@ public class OnGoingTourAdapter extends PagerAdapter {
         namePopUp = profileDialog.findViewById(R.id.namePopUp);
         phonePopUp = profileDialog.findViewById(R.id.phonePopUp);
         emailPopUp = profileDialog.findViewById(R.id.emailPopUp);
+        eventPopUp = profileDialog.findViewById(R.id.eventPopUp);
+        tourPopUp = profileDialog.findViewById(R.id.tourPopUp);
+        ratingPopUp = profileDialog.findViewById(R.id.ratingPopUp);
         pic = profileDialog.findViewById(R.id.pic);
         callBTN = profileDialog.findViewById(R.id.callBTN);
         textBTN = profileDialog.findViewById(R.id.textBTN);
@@ -1227,6 +1238,9 @@ public class OnGoingTourAdapter extends PagerAdapter {
         namePopUp.setText(member_name);
         phonePopUp.setText(member_phone);
         emailPopUp.setText(member_email);
+        eventPopUp.setText(String.valueOf(event));
+        tourPopUp.setText(String.valueOf(tour));
+        ratingPopUp.setText(df.format(averageRating));
         if (!member_image.matches("")) {
             GlideApp.with(profileDialog.getContext())
                     .load(member_image)

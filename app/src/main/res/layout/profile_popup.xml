@@ -94,10 +94,11 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tourPopUp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/amarante"
-                    android:text="19"
+                    android:text="0"
                     android:textColor="@color/defaultTextColor"
                     android:textSize="18sp" />
 
@@ -119,10 +120,11 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/ratingPopUp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/amarante"
-                    android:text="4.5"
+                    android:text="0.0"
                     android:textColor="@color/defaultTextColor"
                     android:textSize="18sp" />
 
@@ -144,10 +146,11 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/eventPopUp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/amarante"
-                    android:text="10"
+                    android:text="0"
                     android:textColor="@color/defaultTextColor"
                     android:textSize="18sp" />
 

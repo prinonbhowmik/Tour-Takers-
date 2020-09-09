@@ -19,7 +19,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -69,19 +68,15 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import es.dmoral.toasty.Toasty;
 
@@ -104,12 +99,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String userId, name, email, image, currentFragment;
     private Uri imageUri;
     private ImageView circularImageView;
-    private TextView UserName, userEmail;
+    private TextView UserName, userEmail, navRating;
     private LinearLayout ratingLaout;
     private Boolean tokenUpdated = false;
     private ValueEventListener prevlistener;
     private boolean hasTour;
     private boolean hasEvent;
+
+    private int ratingCounter;
+    private float rating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,8 +174,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 email = profile.getEmail();
                                 image = profile.getImage();
 
+                                rating = profile.getRating();
+                                ratingCounter = profile.getRatingCounter();
+
+                                DecimalFormat df = new DecimalFormat("0.0");
+                                float averageRating = rating / ratingCounter;
+
                                 UserName.setText(name);
                                 userEmail.setText(email);
+                                navRating.setText(String.valueOf(df.format(averageRating)));
                                 if (!image.isEmpty() || !image.matches("")) {
                                     try {
                                         Glide.with(MainActivity.this)
@@ -401,6 +406,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         circularImageView = navigationView.getHeaderView(0).findViewById(R.id.navImageView);
         UserName = navigationView.getHeaderView(0).findViewById(R.id.namefromNavigation);
         userEmail = navigationView.getHeaderView(0).findViewById(R.id.email_fromNavigation);
+        navRating = navigationView.getHeaderView(0).findViewById(R.id.navRating);
         ratingLaout = navigationView.getHeaderView(0).findViewById(R.id.ratingLayout);
     }
 

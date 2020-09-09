@@ -7,7 +7,6 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,17 +47,19 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.text.DecimalFormat;
+
 import es.dmoral.toasty.Toasty;
 
 public class UserProfile extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private LinearLayout ratingLayout, totalTourLayout, totalEventLayout;
-    private TextView profilename, profileemail, profilephoneno, n2, p2;
+    private TextView profilename, profileemail, profilephoneno, ratingTV, eventTV, tourTV, n2, p2;
     private CardView phoneUpdate, nameUpdate;
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference reference;
-    private String userId, name, email, phone, image, rating;
+    private String userId, name, email, phone, image;
     private StorageReference storageReference;
     private FirebaseStorage storage;
     private Uri imageUri;
@@ -67,6 +68,8 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
     private ConnectivityReceiver connectivityReceiver;
     private IntentFilter intentFilter;
     private CardView activityCard;
+    private int event, tour, ratingCounter;
+    private float rating;
     ProgressBar progressBar;
     Animation topAnim, bottomAnim2, leftAnim, rightAnim, fadeIn, scaleAnim, ball3Anim, edittext_anim, blink;
 
@@ -93,10 +96,20 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
                 email = profile.getEmail();
                 phone = profile.getPhone();
                 image = profile.getImage();
+                event = profile.getEvent();
+                tour = profile.getTour();
+                rating = profile.getRating();
+                ratingCounter = profile.getRatingCounter();
+
+                DecimalFormat df = new DecimalFormat("0.0");
+                float averageRating = rating / ratingCounter;
 
                 profilename.setText(name);
                 profileemail.setText(email);
                 profilephoneno.setText(phone);
+                ratingTV.setText(String.valueOf(df.format(averageRating)));
+                eventTV.setText(String.valueOf(event));
+                tourTV.setText(String.valueOf(tour));
                 if (!image.isEmpty() || !image.matches("")) {
                     try {
                         GlideApp.with(UserProfile.this)
@@ -343,6 +356,9 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
         phoneUpdate = findViewById(R.id.phoneUpdate);
         profilename = findViewById(R.id.profileusername);
         profileemail = findViewById(R.id.profileemail);
+        ratingTV = findViewById(R.id.ratingTV);
+        eventTV = findViewById(R.id.eventTV);
+        tourTV = findViewById(R.id.tourTV);
         profilephoneno = findViewById(R.id.profilephoneNo);
         progressBar = findViewById(R.id.progressBar);
         profileImage = findViewById(R.id.profileIV);

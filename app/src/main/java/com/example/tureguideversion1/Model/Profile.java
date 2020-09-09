@@ -9,14 +9,18 @@ public class Profile {
     String phone;
     String image;
     String sex;
-    String rating;
+    float rating;
     String token;
+    int ratingCounter;
+    int event;
+    int tour;
 
     public Profile() {
     }
 
 
-    public Profile(String id, String name, String email, String password, String address, String phone, String image, String sex, String rating, String token) {
+    public Profile(String id, String name, String email, String password, String address, String phone,
+                   String image, String sex, float rating, String token, int ratingCounter, int event, int tour) {
         Id = id;
         this.name = name;
         this.email = email;
@@ -27,15 +31,15 @@ public class Profile {
         this.sex = sex;
         this.rating = rating;
         this.token = token;
+        this.ratingCounter = ratingCounter;
+        this.event = event;
+        this.tour = tour;
     }
 
     public String getId() {
         return Id;
     }
 
-    public String getRating() {
-        return rating;
-    }
 
     public String getToken() {
         return token;
@@ -67,5 +71,21 @@ public class Profile {
 
     public String getImage() {
         return image;
+    }
+
+    public int getRatingCounter() {
+        return ratingCounter;
+    }
+
+    public int getEvent() {
+        return event;
+    }
+
+    public int getTour() {
+        return tour;
+    }
+
+    public float getRating() {
+        return rating;
     }
 }
