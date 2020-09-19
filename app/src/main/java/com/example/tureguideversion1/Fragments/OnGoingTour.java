@@ -152,14 +152,19 @@ public class OnGoingTour extends Fragment implements OnGoingTourAdapter.OnPositi
                     inboxes.clear();
                     inboxAdapter.notifyDataSetChanged();
                 }
-                indexForEventID = eventIDsPosition.indexOf(position);
+                if(tourTitle.getText().toString().matches("Event")) {
+                    indexForEventID = eventIDsPosition.indexOf(position);
+                    Log.d(TAG, "onPageSelected: " + indexForEventID);
 
-                if(admins.get(indexForEventID).matches(auth.getUid())){
-                    inboxBTN.setVisibility(View.VISIBLE);
-                    inboxRecycler.setVisibility(View.VISIBLE);
-                }else {
-                    inboxBTN.setVisibility(View.GONE);
-                    inboxRecycler.setVisibility(View.GONE);
+                    if (indexForEventID != -1) {
+                        if (admins.get(indexForEventID).matches(auth.getUid())) {
+                            inboxBTN.setVisibility(View.VISIBLE);
+                            inboxRecycler.setVisibility(View.VISIBLE);
+                        } else {
+                            inboxBTN.setVisibility(View.GONE);
+                            inboxRecycler.setVisibility(View.GONE);
+                        }
+                    }
                 }
             }
 

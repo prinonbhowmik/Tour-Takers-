@@ -397,7 +397,6 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                             handler.postDelayed(runnable, 90000);
                                         }
                                     });
-                                    Toasty.info(context, "Your guide cancelled this tour! You can request again from this page...", Toasty.LENGTH_LONG).show();
                                 } else {
                                     tourStatus.setText(snapshot.getValue().toString());
                                     tourStatus.setTextColor(itemView.getResources().getColor(R.color.colorAccent));
@@ -505,6 +504,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                     }
                 });
             } else {
+                Log.d(TAG, "instantiateItem: "+event.getId());
                 DatabaseReference adminRef = FirebaseDatabase.getInstance().getReference().child("profile").child(event.getEventPublisherId());
                 adminRef.addValueEventListener(new ValueEventListener() {
                     @Override

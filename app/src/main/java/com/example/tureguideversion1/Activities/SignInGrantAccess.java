@@ -270,6 +270,12 @@ public class SignInGrantAccess extends AppCompatActivity implements Connectivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(connectivityReceiver);
+    }
+
+    @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
         showSnack(isConnected);
     }
