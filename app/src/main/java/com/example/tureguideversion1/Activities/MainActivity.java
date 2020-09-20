@@ -178,7 +178,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 ratingCounter = profile.getRatingCounter();
 
                                 DecimalFormat df = new DecimalFormat("0.0");
-                                float averageRating = rating / ratingCounter;
+                                float averageRating = 0;
+                                if(rating!=0){
+                                    averageRating = rating / ratingCounter;
+                                }
 
                                 UserName.setText(name);
                                 userEmail.setText(email);

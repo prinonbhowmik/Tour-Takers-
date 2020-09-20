@@ -195,7 +195,10 @@ public class SignUp extends AppCompatActivity implements ConnectivityReceiver.Co
                     userInfo.put("password", password);
                     userInfo.put("sex", gender);
                     userInfo.put("image", "");
-                    userInfo.put("rating", "");
+                    userInfo.put("rating", 0.0);
+                    userInfo.put("ratingCounter", 0);
+                    userInfo.put("tour", 0);
+                    userInfo.put("event", 0);
                     userInfo.put("Id", userId);
 
 

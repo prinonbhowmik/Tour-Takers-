@@ -102,8 +102,10 @@ public class UserProfile extends AppCompatActivity implements ConnectivityReceiv
                 ratingCounter = profile.getRatingCounter();
 
                 DecimalFormat df = new DecimalFormat("0.0");
-                float averageRating = rating / ratingCounter;
-
+                float averageRating = 0;
+                if(rating!=0){
+                    averageRating = rating / ratingCounter;
+                }
                 profilename.setText(name);
                 profileemail.setText(email);
                 profilephoneno.setText(phone);

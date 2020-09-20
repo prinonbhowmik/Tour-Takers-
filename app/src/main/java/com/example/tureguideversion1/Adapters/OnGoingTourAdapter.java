@@ -1168,7 +1168,10 @@ public class OnGoingTourAdapter extends PagerAdapter {
         TextView namePopUp, phonePopUp, emailPopUp, tourPopUp, eventPopUp, ratingPopUp;
 
         DecimalFormat df = new DecimalFormat("0.0");
-        double averageRating = rating / ratingCounter;
+        double averageRating = 0;
+        if(rating!=0){
+            averageRating = rating / ratingCounter;
+        }
         ImageView pic;
         Button callBTN, textBTN;
         CircleImageView close;
