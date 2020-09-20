@@ -333,7 +333,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                                                 (Long) map.get("tour"),
                                                                 (Long) map.get("event"),
                                                                 (Long) map.get("ratingCounter"),
-                                                                (Double) map.get("rating"),
+                                                                (Long) map.get("rating"),
                                                                 event.getId(),
                                                                 event.getGuideID(),
                                                                 "guide");
@@ -545,7 +545,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                         (Long) map.get("tour"),
                                         (Long) map.get("event"),
                                         (Long) map.get("ratingCounter"),
-                                        (Double) map.get("rating"),
+                                        (Long) map.get("rating"),
                                         event.getId(),
                                         event.getEventPublisherId(),
                                         "admin");
@@ -754,7 +754,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
                                                             (Long) map.get("tour"),
                                                             (Long) map.get("event"),
                                                             (Long) map.get("ratingCounter"),
-                                                            (Double) map.get("rating"),
+                                                            (Long) map.get("rating"),
                                                             event.getId(),
                                                             event.getGuideID(),
                                                             "guide");
@@ -1164,7 +1164,7 @@ public class OnGoingTourAdapter extends PagerAdapter {
 
     @SuppressLint("ClickableViewAccessibility")
     public void ShowProfilePopup(String member_name, String member_phone, String member_email, String member_image, String member_gender,
-                                 long tour, long event, long ratingCounter, double rating, String eventID, String memberID, String forChat) {
+                                 long tour, long event, long ratingCounter, long rating, String eventID, String memberID, String forChat) {
         TextView namePopUp, phonePopUp, emailPopUp, tourPopUp, eventPopUp, ratingPopUp;
 
         DecimalFormat df = new DecimalFormat("0.0");
