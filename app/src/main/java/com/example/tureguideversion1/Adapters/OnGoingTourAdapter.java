@@ -196,6 +196,11 @@ public class OnGoingTourAdapter extends PagerAdapter {
                     if (snapshot.exists()){
                         String status = snapshot.child("status").getValue().toString();
                         tourStatus.setText(status);
+                        if (status.equals("◦•●◉✿ RUNNING ✿◉●•◦")){
+                            cancel_joinBtn.setVisibility(View.GONE);
+                        }else if (status.equals("◦•●◉✿ END ✿◉●•◦")){
+                            cancel_joinBtn.setVisibility(View.GONE);
+                        }
                     }
                 }
 
@@ -636,7 +641,8 @@ public class OnGoingTourAdapter extends PagerAdapter {
                     });
                 }
             });
-        } else if (forView.matches("tour")) {
+        }
+        else if (forView.matches("tour")) {
             forEvenLayout.setVisibility(View.GONE);
             cencelTourBTN.setText("Cancel Tour");
 
@@ -647,6 +653,11 @@ public class OnGoingTourAdapter extends PagerAdapter {
                     if (snapshot.exists()){
                         String status = snapshot.child("status").getValue().toString();
                         tourStatus.setText(status);
+                        if (status.equals("◦•●◉✿ RUNNING ✿◉●•◦")){
+                            cancel_joinBtn.setVisibility(View.GONE);
+                        }else if (status.equals("◦•●◉✿ END ✿◉●•◦")){
+                            cancel_joinBtn.setVisibility(View.GONE);
+                        }
                     }
                 }
 
