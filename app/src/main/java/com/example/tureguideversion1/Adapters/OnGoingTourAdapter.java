@@ -306,7 +306,8 @@ public class OnGoingTourAdapter extends PagerAdapter {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-                            if (snapshot.getValue().toString().matches("◦•●◉✿ ACTIVE ✿◉●•◦")) {
+                            if (snapshot.getValue().toString().matches("◦•●◉✿ ACTIVE ✿◉●•◦")||
+                                    snapshot.getValue().toString().matches("◦•●◉✿ RUNNING ✿◉●•◦")) {
                                 tourStatus.setText(snapshot.getValue().toString());
                                 tourStatus.setTextColor(itemView.getResources().getColor(R.color.colorBlack));
                                 if (event.getGuideID() != null) {
@@ -745,7 +746,8 @@ public class OnGoingTourAdapter extends PagerAdapter {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
-                        if (snapshot.getValue().toString().matches("◦•●◉✿ ACTIVE ✿◉●•◦")) {
+                        if (snapshot.getValue().toString().matches("◦•●◉✿ ACTIVE ✿◉●•◦") ||
+                                snapshot.getValue().toString().matches("◦•●◉✿ RUNNING ✿◉●•◦")) {
                             tourStatus.setText(snapshot.getValue().toString());
                             tourStatus.setTextColor(itemView.getResources().getColor(R.color.colorBlack));
                             if (event.getGuideID() != null) {
