@@ -188,6 +188,24 @@ public class OnGoingTourAdapter extends PagerAdapter {
             onEvent.getEventID(position, event.getId(),event.getEventPublisherId());
             forTourLayout.setVisibility(View.GONE);
             cencelEventBTN.setText("Cancel Event");
+
+            DatabaseReference statusRef = FirebaseDatabase.getInstance().getReference("event").child(event.getId());
+            statusRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()){
+                        String status = snapshot.child("status").getValue().toString();
+                        tourStatus.setText(status);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+
             DatabaseReference locationListRef = FirebaseDatabase.getInstance().getReference().child("eventLocationList").child(event.getId());
             locationListRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -620,6 +638,24 @@ public class OnGoingTourAdapter extends PagerAdapter {
         } else if (forView.matches("tour")) {
             forEvenLayout.setVisibility(View.GONE);
             cencelTourBTN.setText("Cancel Tour");
+
+            DatabaseReference statusRef = FirebaseDatabase.getInstance().getReference("tour").child(event.getId());
+            statusRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()){
+                        String status = snapshot.child("status").getValue().toString();
+                        tourStatus.setText(status);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+
             DatabaseReference locationListRef = FirebaseDatabase.getInstance().getReference().child("tourLocationList").child(event.getId());
             locationListRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
